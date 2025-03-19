@@ -1,0 +1,259 @@
+{
+    "user": {
+        "username": "admin-desarrollo",
+        "id": "fa8580e0-c5c2-496d-bfeb-5c3310217cca",
+        "roleId": "c94354c4-6f7a-4695-ac01-8eaceafd8c2c",
+        "person": {
+            "givenNames": "Admin",
+            "lastName": "Desarrollo",
+            "address": "Av Pavayacu 185",
+            "email": "admin.desarrollo@gmail.com",
+            "phone": "953671026",
+            "documentType": "dni",
+            "type": "natural",
+            "documentNumber": "43319566",
+            "createdAt": "2024-10-09T18:45:06.734Z",
+            "id": "60f776b5-bfcc-4aa4-b173-7d23d8e303de"
+        },
+        "role": {
+            "name": "admin",
+            "createdAt": "2024-08-04T00:47:14.531Z",
+            "enterpriseId": "9e691a41-0ae9-4182-a6a8-d9e40f203bf8",
+            "isPermanent": true,
+            "permissions": [
+                {
+                    "id": "6dbb2340-ff58-42c4-b58e-e945c651e6f4",
+                    "module": "dashboard",
+                    "action": "create"
+                },
+                {
+                    "id": "ae783068-88ce-47da-9158-213ec536be44",
+                    "module": "dashboard",
+                    "action": "update"
+                },
+                {
+                    "id": "7b90b21f-2c7c-4936-b4ba-669f5c4243a9",
+                    "module": "users",
+                    "action": "delete"
+                },
+                {
+                    "id": "423621d9-7855-4b02-9251-98895d79e6b4",
+                    "module": "roles",
+                    "action": "read"
+                },
+                {
+                    "id": "296a2bbc-abf6-4c9d-9972-e8a053800444",
+                    "module": "roles",
+                    "action": "create"
+                },
+                {
+                    "id": "3e6b8d8c-0ca8-46f6-8f9c-9f77d80ed74d",
+                    "module": "roles",
+                    "action": "update"
+                },
+                {
+                    "id": "0db99b7f-3ecc-4800-9de2-cad521123e2e",
+                    "module": "roles",
+                    "action": "delete"
+                },
+                {
+                    "id": "f4c32dce-0905-491f-9214-e9f433517e62",
+                    "module": "menu",
+                    "action": "create"
+                },
+                {
+                    "id": "16efaff8-b2e8-4db4-af5e-124ecccc86c9",
+                    "module": "menu",
+                    "action": "read"
+                },
+                {
+                    "id": "b7300146-5b48-4db0-b46f-3fc418fe9d86",
+                    "module": "menu",
+                    "action": "update"
+                },
+                {
+                    "id": "b0abfdc5-dde7-41b2-971f-8bd7cda87ad3",
+                    "module": "menu",
+                    "action": "delete"
+                },
+                {
+                    "id": "b0abfdc5-dde7-41b2-971f-8bd7cda87ad3",
+                    "module": "menu",
+                    "action": "inactivate"
+                },
+                {
+                    "id": "c8e66da3-0939-4c22-a822-ebed0997acac",
+                    "module": "dashboard",
+                    "action": "read"
+                },
+                {
+                    "id": "acac94a0-744e-450c-bca2-9c4277d4e897",
+                    "module": "users",
+                    "action": "create"
+                },
+                {
+                    "id": "1865784f-b932-4332-8931-f9846077dd14",
+                    "module": "users",
+                    "action": "update"
+                },
+                {
+                    "id": "7c8e1e26-3e44-4fcb-9a1b-7da082d52d66",
+                    "module": "users",
+                    "action": "read"
+                },
+                {
+                    "id": "c08596e9-cebc-478e-839a-3ab8f005d5ad",
+                    "module": "roles",
+                    "action": "assign_permission"
+                },
+                {
+                    "id": "ea079a9d-ff9c-4ffa-bf89-8c4af5b71537",
+                    "module": "roles",
+                    "action": "unassign_permission"
+                },
+                {
+                    "id": "f4c32dce-0905-491f-9214-e9f433517e62",
+                    "module": "pages",
+                    "action": "create"
+                },
+                {
+                    "id": "16efaff8-b2e8-4db4-af5e-124ecccc86c9",
+                    "module": "pages",
+                    "action": "read"
+                },
+                {
+                    "id": "b7300146-5b48-4db0-b46f-3fc418fe9d86",
+                    "module": "pages",
+                    "action": "update"
+                },
+                {
+                    "id": "b0abfdc5-dde7-41b2-971f-8bd7cda87ad3",
+                    "module": "pages",
+                    "action": "delete"
+                },
+                {
+                    "id": "b0abfdc5-dde7-41b2-971f-8bd7cda87ad3",
+                    "module": "pages",
+                    "action": "inactivate"
+                },
+                {
+                    "id": "f4c32dce-0905-491f-9214-e9f433517e62",
+                    "module": "blocks",
+                    "action": "create"
+                },
+                {
+                    "id": "16efaff8-b2e8-4db4-af5e-124ecccc86c9",
+                    "module": "blocks",
+                    "action": "read"
+                },
+                {
+                    "id": "b7300146-5b48-4db0-b46f-3fc418fe9d86",
+                    "module": "blocks",
+                    "action": "update"
+                },
+                {
+                    "id": "b0abfdc5-dde7-41b2-971f-8bd7cda87ad3",
+                    "module": "blocks",
+                    "action": "delete"
+                },
+                {
+                    "id": "b0abfdc5-dde7-41b2-971f-8bd7cda87ad3",
+                    "module": "blocks",
+                    "action": "inactivate"
+                },
+                {
+                    "id": "f4c32dce-0905-491f-9214-e9f433517e62",
+                    "module": "gallery",
+                    "action": "create"
+                },
+                {
+                    "id": "16efaff8-b2e8-4db4-af5e-124ecccc86c9",
+                    "module": "gallery",
+                    "action": "read"
+                },
+                {
+                    "id": "b7300146-5b48-4db0-b46f-3fc418fe9d86",
+                    "module": "gallery",
+                    "action": "update"
+                },
+                {
+                    "id": "b0abfdc5-dde7-41b2-971f-8bd7cda87ad3",
+                    "module": "gallery",
+                    "action": "delete"
+                },
+                {
+                    "id": "b0abfdc5-dde7-41b2-971f-8bd7cda87ad3",
+                    "module": "gallery",
+                    "action": "inactivate"
+                },
+                {
+                    "id": "f4c32dce-0905-491f-9214-e9f433517e62",
+                    "module": "newsletter",
+                    "action": "create"
+                },
+                {
+                    "id": "16efaff8-b2e8-4db4-af5e-124ecccc86c9",
+                    "module": "newsletter",
+                    "action": "read"
+                },
+                {
+                    "id": "b7300146-5b48-4db0-b46f-3fc418fe9d86",
+                    "module": "newsletter",
+                    "action": "update"
+                },
+                {
+                    "id": "b0abfdc5-dde7-41b2-971f-8bd7cda87ad3",
+                    "module": "newsletter",
+                    "action": "delete"
+                },
+                {
+                    "id": "b0abfdc5-dde7-41b2-971f-8bd7cda87ad3",
+                    "module": "newsletter",
+                    "action": "inactivate"
+                },
+                {
+                    "id": "f4c32dce-0905-491f-9214-e9f433517e62",
+                    "module": "press_releases",
+                    "action": "create"
+                },
+                {
+                    "id": "16efaff8-b2e8-4db4-af5e-124ecccc86c9",
+                    "module": "press_releases",
+                    "action": "read"
+                },
+                {
+                    "id": "b7300146-5b48-4db0-b46f-3fc418fe9d86",
+                    "module": "press_releases",
+                    "action": "update"
+                },
+                {
+                    "id": "b0abfdc5-dde7-41b2-971f-8bd7cda87ad3",
+                    "module": "press_releases",
+                    "action": "delete"
+                },
+                {
+                    "id": "b0abfdc5-dde7-41b2-971f-8bd7cda87ad3",
+                    "module": "press_releases",
+                    "action": "inactivate"
+                }
+
+            ],
+            "id": "c94354c4-6f7a-4695-ac01-8eaceafd8c2c",
+            "updatedAt": "2024-10-27T15:50:31.754Z"
+        }
+    },
+    "enterprise": {
+        "address": "Calle Los Pinos 123",
+        "name": "Empresa Desarrollo",
+        "phone": "987654321",
+        "ruc": "987654321",
+        "id": "9e691a41-0ae9-4182-a6a8-d9e40f203bf8"
+    },
+    "subsidiary": {
+        "name": "Subsidiary Desarrollo",
+        "address": "av jhon doe",
+        "ruc": "66666666",
+        "id": "15321fdf-a6ef-4fa7-aa5d-2c2c56aa977a"
+    },
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmYTg1ODBlMC1jNWMyLTQ5NmQtYmZlYi01YzMzMTAyMTdjY2EiLCJ1c2VybmFtZSI6ImFkbWluLWRlc2Fycm9sbG8iLCJpYXQiOjE3MzkyMTQzMzd9.VKzaNN8YD_j14N5WPLDhL4ZwcBknkYjES5MjZuEeggc"
+}

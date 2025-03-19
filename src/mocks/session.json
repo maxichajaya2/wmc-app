@@ -1,0 +1,249 @@
+{
+    "state": {
+      "session": {
+        "user": {
+          "id": 1,
+          "name": "Admin",
+          "email": "admin@test.com",
+          "password": "password",
+          "isActive": true,
+          "createdAt": "2025-02-18T04:19:06.927Z",
+          "updatedAt": "2025-02-18T09:19:07.208Z",
+          "deletedAt": null,
+          "role": {
+            "id": 1,
+            "name": "Admin",
+            "createdAt": "2025-02-18T09:19:05.970Z",
+            "updatedAt": "2025-02-18T09:19:05.970Z",
+            "deletedAt": null,
+            "permissions": [
+              {
+                "id": 33,
+                "action": "create",
+                "module": "technical_works",
+                "isActive": true
+              },
+              {
+                "id": 35,
+                "action": "read",
+                "module": "technical_works",
+                "isActive": true
+              },
+              {
+                "id": 36,
+                "action": "update",
+                "module": "technical_works",
+                "isActive": true
+              },
+              {
+                "id": 37,
+                "action": "delete",
+                "module": "technical_works",
+                "isActive": true
+              },
+              {
+                "id": 33,
+                "action": "create",
+                "module": "dashboard",
+                "isActive": true
+              },
+              {
+                "id": 35,
+                "action": "read",
+                "module": "dashboard",
+                "isActive": true
+              },
+              {
+                "id": 36,
+                "action": "update",
+                "module": "dashboard",
+                "isActive": true
+              },
+              {
+                "id": 37,
+                "action": "delete",
+                "module": "dashboard",
+                "isActive": true
+              },
+              {
+                "id": 33,
+                "action": "create",
+                "module": "users",
+                "isActive": true
+              },
+              {
+                "id": 35,
+                "action": "read",
+                "module": "users",
+                "isActive": true
+              },
+              {
+                "id": 36,
+                "action": "update",
+                "module": "users",
+                "isActive": true
+              },
+              {
+                "id": 37,
+                "action": "delete",
+                "module": "users",
+                "isActive": true
+              },
+              {
+                "id": 33,
+                "action": "create",
+                "module": "roles",
+                "isActive": true
+              },
+              {
+                "id": 35,
+                "action": "read",
+                "module": "roles",
+                "isActive": true
+              },
+              {
+                "id": 36,
+                "action": "update",
+                "module": "roles",
+                "isActive": true
+              },
+              {
+                "id": 37,
+                "action": "delete",
+                "module": "roles",
+                "isActive": true
+              },
+              {
+                "id": 37,
+                "action": "assign_permission",
+                "module": "roles",
+                "isActive": true
+              },
+              {
+                "id": 37,
+                "action": "unassign_permission",
+                "module": "roles",
+                "isActive": true
+              },
+              {
+                "id": 33,
+                "action": "create",
+                "module": "web_users",
+                "isActive": true
+              },
+              {
+                "id": 35,
+                "action": "read",
+                "module": "web_users",
+                "isActive": true
+              },
+              {
+                "id": 36,
+                "action": "update",
+                "module": "web_users",
+                "isActive": true
+              },
+              {
+                "id": 37,
+                "action": "delete",
+                "module": "web_users",
+                "isActive": true
+              },
+              {
+                "id": 33,
+                "action": "create",
+                "module": "topics",
+                "isActive": true
+              },
+              {
+                "id": 35,
+                "action": "read",
+                "module": "topics",
+                "isActive": true
+              },
+              {
+                "id": 36,
+                "action": "update",
+                "module": "topics",
+                "isActive": true
+              },
+              {
+                "id": 37,
+                "action": "delete",
+                "module": "topics",
+                "isActive": true
+              },
+              {
+                "id": 33,
+                "action": "create",
+                "module": "categories",
+                "isActive": true
+              },
+              {
+                "id": 35,
+                "action": "read",
+                "module": "categories",
+                "isActive": true
+              },
+              {
+                "id": 36,
+                "action": "update",
+                "module": "categories",
+                "isActive": true
+              },
+              {
+                "id": 37,
+                "action": "delete",
+                "module": "categories",
+                "isActive": true
+              }
+            ]
+          }
+        },
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoiYWRtaW5AdGVzdC5jb20iLCJpYXQiOjE3NDE0NzU1MTd9.DHjBMZybmWBasjHCDpzDN3ELrHZy7YCsTSb3tBwD_-g"
+      },
+      "status": "authorized",
+      "permissions": [
+        "users:create",
+        "users:read",
+        "users:update",
+        "users:delete",
+        "roles:create",
+        "roles:read",
+        "roles:update",
+        "roles:delete",
+        "roles:assign_permission",
+        "roles:unassign_permission",
+        "web_users:create",
+        "web_users:read",
+        "web_users:update",
+        "web_users:delete",
+        "topics:create",
+        "topics:read",
+        "topics:update",
+        "topics:delete",
+        "categories:create",
+        "categories:read",
+        "categories:update",
+        "categories:delete",
+        "dashboard:create",
+        "dashboard:read",
+        "dashboard:update",
+        "dashboard:delete",
+        "technical_works:create",
+        "technical_works:read",
+        "technical_works:update",
+        "technical_works:delete",
+        "technical_works:create_comment",
+        "technical_works:read_comment",
+        "technical_works:update_comment",
+        "technical_works:delete_comment",
+        "technical_works:send_to_leader",
+        "technical_works:send_to_reviewer",
+        "technical_works:in_review",
+        "technical_works:approved",
+        "technical_works:dismiss"
+      ]
+    },
+    "version": 0
+  }

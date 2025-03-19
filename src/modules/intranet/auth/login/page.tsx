@@ -1,0 +1,157 @@
+import { useEffect } from "react"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { EyeIcon, EyeOffIcon, Loader2 } from "lucide-react"
+import { useNavigate } from "react-router-dom"
+import { ROUTES_PATHS } from "@/constants"
+import { useForm } from "react-hook-form"
+import { useAuthIntranetStore } from "../store"
+
+interface PayloadLogin {
+    email: string;
+    password: string;
+}
+
+export default function Login() {
+    const router = useNavigate()
+    const { register, handleSubmit, formState: { errors } } = useForm<PayloadLogin>({
+        values: {
+            email: '',
+            password: ''
+            // email: 'test@prueba.com',
+            // password: '1234'
+        }
+    })
+
+    const user = useAuthIntranetStore(state => state.user);
+    const loading = useAuthIntranetStore(state => state.loading)
+    const error = useAuthIntranetStore(state => state.error)
+    const login = useAuthIntranetStore(state => state.login)
+    const showPassword = useAuthIntranetStore(state => state.showPassword)
+    const setShowPassword = useAuthIntranetStore(state => state.setShowPassword)
+    const setError = useAuthIntranetStore(state => state.setError)
+
+    useEffect(() => {
+        setError('')
+        return () => {
+            setError('')
+        }
+    }, [])
+
+
+    const onSubmit = handleSubmit(async (data) => {
+        await login(data)
+        if (user) {
+            router(ROUTES_PATHS.PROFILE)
+        }
+    })
+
+    return (
+        <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-[#004d58] to-[#003540] p-4">
+            <div className="w-full max-w-md">
+                <div className="mb-8 flex flex-col items-center justify-center text-center">
+                    <div className="mb-4 flex items-center justify-center bg-white shadow-lg">
+                        <img src="/logo.png" className="w-80" alt="Perumin Logo" />
+                    </div>
+                    <h1 className="text-3xl font-bold text-white">FORO TIS</h1>
+                    <p className="mt-2 text-gray-300">
+                        Inicie sesión para acceder a la plataforma.
+                    </p>
+                </div>
+
+                <Card className="border-none shadow-xl">
+                    <CardHeader className="space-y-1">
+                        <CardTitle className="text-2xl font-bold text-center text-[#004d58]">Iniciar sesión</CardTitle>
+                        <CardDescription className="text-center">Ingresa tus credenciales para acceder al sistema</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <form onSubmit={onSubmit} className="space-y-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="email">Correo electrónico</Label>
+                                <Input
+                                    type="email" id="email" placeholder={'Correo electrónico'}
+                                    disabled={loading}
+                                    {...register('email', {
+                                        pattern: {
+                                            value: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/,
+                                            message: 'Correo electrónico inválido'
+                                        },
+                                        required: {
+                                            value: true,
+                                            message: 'Campo requerido'
+                                        },
+                                    })}
+                                />
+                                <span className="text-red-500 text-xs">{errors.email && (
+                                    <>{errors.email.message}</>
+                                )}</span>
+                            </div>
+                            <div className="space-y-2">
+                                <div className="flex items-center justify-between">
+                                    <Label htmlFor="password">Contraseña</Label>
+                                    {/* <Link to="/recuperar-password" className="text-xs text-[#d35e0d] hover:underline">
+                                        ¿Olvidaste tu contraseña?
+                                    </Link> */}
+                                </div>
+                                <div className="relative">
+                                    <Input
+                                        type={showPassword ? 'text' : 'password'}
+                                        id="password" placeholder={'Contraseña'}
+                                        disabled={loading}
+                                        {...register('password', {
+                                            required: {
+                                                value: true,
+                                                message: 'Campo requerido'
+                                            },
+                                        })}
+                                    />
+                                    <span className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                    >
+                                        {showPassword ? <EyeIcon size={24} className='pb-1 m-0' /> : <EyeOffIcon size={24} className='pb-1 m-0' />}
+
+                                    </span>
+                                </div>
+                                <span className="text-red-500 text-xs">{errors.password && (
+                                    <>{errors.password.message}</>
+                                )}</span>
+                            </div>
+                            <Button type="submit" className="w-full bg-[#004d58] hover:bg-[#003540]" disabled={loading}>
+                                {loading ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Iniciando sesión...
+                                    </>
+                                ) : (
+                                    "Iniciar sesión"
+                                )}
+                            </Button>
+                        </form>
+                    </CardContent>
+                    <CardFooter className="flex flex-col space-y-4">
+                        <div className="relative flex w-full items-center justify-center">
+                            <span className="absolute inset-x-0 top-1/2 h-px bg-gray-200"></span>
+                            <span className="relative bg-white px-2 text-sm text-gray-500">o</span>
+                        </div>
+                        <Button
+                            variant="outline"
+                            className="w-full border-[#838387] text-[#004d58]"
+                            onClick={() => router(ROUTES_PATHS.REGISTER)}
+                        >
+                            Crear una cuenta nueva
+                        </Button>
+
+                        {error && <p className='text-red-500 text-center mt-2'>{error}</p>}
+                    </CardFooter>
+                </Card>
+            </div>
+
+            <p className="mt-8 text-center text-sm text-gray-300">
+                © {new Date().getFullYear()} Perumin. Todos los derechos reservados.
+            </p>
+        </div>
+    )
+}
+
