@@ -40,18 +40,12 @@ function PapersManagementPage() {
   const setFilterTerm = usePaperStore(state => state.setFilterTerm);
   const openActionModal = usePaperStore(state => state.openActionModal);
 
-  const hasReadPermission = useCheckPermission(
-    ModulesRoles.TECHINICAL_WORKS,
-    ActionRoles.READ
-  );
 
   useEffect(() => {
-    if (hasReadPermission) {
-      findAll()
-      findAllCategories()
-      findAllTopics()
-      findCountries()
-    };
+    findAll()
+    findAllCategories()
+    findAllTopics()
+    findCountries()
   }, []);
 
   const handleCreate = useCallback(() => {
@@ -100,12 +94,10 @@ function PapersManagementPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {hasReadPermission && (
-              loading ? <DataTableSkeleton columns={columns} /> : (
-                <FadeInComponent className="overflow-auto">
-                  <DataTable columns={columns} data={filtered} />
-                </FadeInComponent>
-              )
+            {loading ? <DataTableSkeleton columns={columns} /> : (
+              <FadeInComponent className="overflow-auto">
+                <DataTable columns={columns} data={filtered} />
+              </FadeInComponent>
             )}
           </CardContent>
           <CardFooter />
