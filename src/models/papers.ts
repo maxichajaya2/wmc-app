@@ -107,6 +107,16 @@ export const MapStatePaper: Record<StatePaper, string> = {
   [StatePaper.DISMISSED]: "Descartado",
 };
 
+export const MapStatePaperForUser: Record<StatePaper, string> = {
+  [StatePaper.REGISTERED]: "Registrado",
+  [StatePaper.RECEIVED]: "Enviado",
+  [StatePaper.SENT]: "Enviado a Lider",
+  [StatePaper.ASSIGNED]: "Asignado",
+  [StatePaper.UNDER_REVIEW]: "En revisión",
+  [StatePaper.APPROVED]: "Aprobado",
+  [StatePaper.DISMISSED]: "Descartado",
+};
+
 export const MapProcessPaper: Record<ProcessPaper, string> = {
   [ProcessPaper.PRESELECCIONADO]: "Pre Selección",
   [ProcessPaper.SELECCIONADO]: "Selección",

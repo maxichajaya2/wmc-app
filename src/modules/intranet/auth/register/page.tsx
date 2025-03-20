@@ -99,19 +99,19 @@ export default function Registro() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-[#004d58] to-[#003540] p-4">
       <div className="w-full max-w-md">
-        <div className="mb-8 flex flex-col items-center justify-center text-center">
-          <div className="mb-4 flex items-center justify-center bg-white shadow-lg">
-            <img src="/logo.png" className="w-80" alt="Perumin Logo" />
-          </div>
-          <h1 className="text-3xl font-bold text-white">FORO TIS</h1>
-          <p className="mt-2 text-gray-300">
-            Regístrate para acceder a la plataforma.
-          </p>
-        </div>
 
         <Card className="border-none shadow-xl">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold text-center text-[#004d58]">Crear cuenta</CardTitle>
+            <div className="flex flex-col items-center justify-center text-center">
+              <div className="mb-4 flex items-center justify-center bg-white">
+                <img src="/logo.png" className="w-80" alt="Perumin Logo" />
+              </div>
+            </div>
+            <CardTitle className="text-center">
+              <h1 className="text-2xl font-bold text-[#004d58]">FORO TIS |
+                <span className="text-black"> Crear cuenta</span>
+              </h1>
+            </CardTitle>
             <CardDescription className="text-center">
               Completa el formulario para registrarte en el sistema
             </CardDescription>

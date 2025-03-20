@@ -12,7 +12,7 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components"
-import { type Paper as Entity, MapDocumentType, MapProcessPaper, MapStatePaper, MapTypePaper, ProcessPaper, StatePaper } from "@/models"
+import { type Paper as Entity, MapDocumentType, MapProcessPaper, MapStatePaperForUser, MapTypePaper, ProcessPaper, StatePaper } from "@/models"
 import type { ColumnDef } from "@tanstack/react-table"
 import { MoreHorizontal, MessageSquare } from "lucide-react"
 import { usePaperStore } from "../../store/papers.store"
@@ -113,7 +113,7 @@ const StatusCell = React.memo(({ item }: { item: Entity }) => {
                 return "Seleccionado"
             }
         } else {
-            return MapStatePaper[item.state]
+            return MapStatePaperForUser[item.state]
         }
     }
 

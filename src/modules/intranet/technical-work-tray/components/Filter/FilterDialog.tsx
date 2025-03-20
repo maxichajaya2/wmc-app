@@ -3,7 +3,7 @@ import { format } from "date-fns"
 import { CalendarIcon, Check, ChevronsUpDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, Button, Input, Popover, PopoverContent, PopoverTrigger, Calendar } from "@/components"
-import { MapStatePaper, StatePaper } from "@/models"
+import { MapStatePaper, MapStatePaperForUser, StatePaper } from "@/models"
 import { usePaperStore } from "../../store/papers.store"
 import { useTopicStore } from "@/modules/back-office/topics/store/topic.store"
 import { useCategoryStore } from "@/modules/back-office/category/store/category.store"
@@ -178,7 +178,7 @@ function CustomerFilters() {
                                         }}
                                     >
                                         <Check className={cn("mr-2 h-4 w-4", selectedState === state ? "opacity-100" : "opacity-0")} />
-                                        {MapStatePaper[state]}
+                                        {MapStatePaperForUser[state]}
                                     </CommandItem>
                                 ))}
                             </CommandGroup>
