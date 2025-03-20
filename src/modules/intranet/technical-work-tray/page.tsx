@@ -17,8 +17,6 @@ import { columns } from "./components"
 import { usePaperStore } from "./store/papers.store"
 import CustomerFilters from "./components/Filter/FilterDialog"
 import PaperDialog from "./components/Dialog/PaperDialog"
-import { useCheckPermission } from "@/utils"
-import { ActionRoles, ModulesRoles } from "@/constants"
 import CommentsDialog from "./components/Comments/CommentsDialog"
 import ConfirmDeleteComment from "./components/Comments/ConfirmDeleteComment"
 import { useCategoryStore } from "@/modules/back-office/category/store/category.store"
@@ -74,14 +72,12 @@ function PapersManagementPage() {
               Exportar
             </span>
           </Button>
-          {useCheckPermission(ModulesRoles.TECHINICAL_WORKS, ActionRoles.CREATE) && (
-            <Button size="sm" className="h-8 gap-1" onClick={handleCreate}>
-              <PlusCircle className="h-3.5 w-3.5 text-white" />
-              <span className="sr-only sm:not-sr-only sm:whitespace-nowrap text-white">
-                Añadir Trabajo Técnico
-              </span>
-            </Button>
-          )}
+          <Button size="sm" className="h-8 gap-1" onClick={handleCreate}>
+            <PlusCircle className="h-3.5 w-3.5 text-white" />
+            <span className="sr-only sm:not-sr-only sm:whitespace-nowrap text-white">
+              Añadir Trabajo Técnico
+            </span>
+          </Button>
         </div>
       </div>
       <CustomerFilters />
