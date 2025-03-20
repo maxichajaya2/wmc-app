@@ -8,7 +8,7 @@ function AuthLayout() {
     const hasHydrated = useAuthIntranetStore(state => state._hasHydrated);
 
     if (hasHydrated && user) {
-        return <Navigate to={ROUTES_PATHS.PROFILE} />
+        return <Navigate to={ROUTES_PATHS.TECHNICAL_WORK_TRAY} />
     }
 
     return (

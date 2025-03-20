@@ -17,7 +17,7 @@ function ConfirRegisterPage() {
             if (token) {
                 try {
                     await confirmRegister(token)
-                    router(ROUTES_PATHS.PROFILE)
+                    router(ROUTES_PATHS.TECHNICAL_WORK_TRAY)
                 } catch (error) {
                     console.error(error)
                     router(ROUTES_PATHS.LOGIN)

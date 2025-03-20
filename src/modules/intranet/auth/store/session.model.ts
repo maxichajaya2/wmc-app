@@ -1,6 +1,7 @@
 export interface PayloadLogin {
-  email: string;
-  password: string;
+    documentType: DocumentType;
+    documentNumber: number;
+    password: string;
 }
 
 export enum DocumentType {
