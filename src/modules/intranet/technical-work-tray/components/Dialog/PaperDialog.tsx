@@ -94,14 +94,13 @@ function PapersDialog() {
     const changeStatusPaper = usePaperStore(state => state.changeStatusPaper);
     const users = useUsersStore(state => state.data);
 
-
     const leadersUsers = users.filter((user) => user.role.id === PrimaryRoles.LEADER)
     const reviewersUsers = users.filter((user) => user.role.id === PrimaryRoles.REVIEWER)
     const leaders = useMemo(() => {
         if (!selected) {
             return []
         }
-        return leadersUsers.filter((user) => user.categoryId !== selected.categoryId)
+        return leadersUsers.filter((user) => user.categoryId === selected.categoryId)
     }, [selected, leadersUsers])
     const reviewers = useMemo(() => {
         if (!selected) {

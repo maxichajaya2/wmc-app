@@ -97,7 +97,7 @@ function PapersDialog() {
         if (!selected) {
             return []
         }
-        return leadersUsers.filter((user) => user.categoryId !== selected.categoryId)
+        return leadersUsers.filter((user) => user.categoryId === selected.categoryId)
     }, [selected, leadersUsers])
     const reviewers = useMemo(() => {
         if (!selected) {
