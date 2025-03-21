@@ -21,7 +21,6 @@ import { useCheckPermission } from "@/utils"
 import { ActionRoles, ModulesRoles } from "@/constants"
 
 const CorrelativeCell = React.memo(({ item }: { item: Entity }) => <div className="flex flex-col gap-1">{item.correlative || ''}</div>)
-const ProcessCell = React.memo(({ item }: { item: Entity }) => <div className="flex flex-col gap-1">{MapProcessPaper[item.process] || ''}</div>)
 const TopicCell = React.memo(({ item }: { item: Entity }) => (
     <div className="flex flex-col gap-1">
         <div className="flex flex-col gap-1">{item.category?.name ?? "Sin asignar"}</div>
@@ -73,6 +72,30 @@ const TypeAssignedCell = React.memo(({ item }: { item: Entity }) => (
 const ApproveDateCell = React.memo(({ item }: { item: Entity }) => (
     <div className="flex flex-col gap-2">{item.approvedDate ? formatDate(item.approvedDate) : "Sin fecha"}</div>
 ))
+
+const ProcessCell = React.memo(({ item }: { item: Entity }) => {
+    let className = "bg-blue-500 text-white hover:bg-blue-500/80"
+    if (item.process === ProcessPaper.SELECCIONADO) {
+        className = "bg-green-500 text-white hover:bg-green-500/80 font-extrabold h-6 w-[130px] flex justify-center items-center text-center"
+    } else if (item.process === ProcessPaper.PRESELECCIONADO) {
+        className = "bg-rose-500 text-white hover:bg-rose-500/80 font-extrabold h-6 w-[130px] flex justify-center items-center text-center"
+    }
+    const title = (item: Entity) => {
+        if (item.process === ProcessPaper.PRESELECCIONADO) {
+            return "PRE SELECCIÓN"
+        }
+        if (item.process === ProcessPaper.SELECCIONADO) {
+            return "SELECCIÓN"
+        }
+        return MapProcessPaper[item.process]
+    }
+
+    return (
+        <div className="flex flex-col gap-1">
+            <Badge className={className}>{title(item)}</Badge>
+        </div>
+    )
+})
 
 const StatusCell = React.memo(({ item }: { item: Entity }) => {
     let className = "bg-blue-500 text-white hover:bg-blue-500/80"

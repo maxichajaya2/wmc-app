@@ -181,11 +181,15 @@ function PapersDialog() {
                 if (selected) {
                     form.reset({
                         ...selected,
-                        file: selected.file || '',
-                        categoryId: selected.categoryId || undefined,
-                        topicId: selected.topicId || undefined,
-                        webUserId: selected.webUserId || undefined,
+                        file: selected.file ?? '',
+                        categoryId: selected.categoryId ?? undefined,
+                        topicId: selected.topicId ?? undefined,
+                        webUserId: selected.webUserId ?? undefined,
                         eventDate: selected.eventDate ? DateClass.DateToFormat(selected.eventDate, DateClass.FORMAT_INPUT_SHORT) : undefined,
+                        eventWhere: selected.eventWhere ?? '',
+                        eventWhich: selected.eventWhich ?? '',
+                        flagEvent: selected.flagEvent ?? false,
+                        keywords: selected.keywords ?? [],
                     })
                     try {
                         const authors = await PaperService.findAuthorsByPaper(selected.id);
