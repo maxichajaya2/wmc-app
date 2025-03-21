@@ -15,6 +15,7 @@ import {
 } from "@/models";
 import { PaperService as ApiService } from "../services/papers.service";
 import { useUsersStore } from "@/modules/back-office/users/store/users.store";
+import { useAuthIntranetStore } from "../../auth/store";
 
 type Payload = PayloadPaper;
 
@@ -99,9 +100,11 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
     throw new Error("Not implemented yet");
   },
   async findAll() {
+    const user = useAuthIntranetStore.getState().user;
+    if (!user) return;
     handleRequestStore(
       get(),
-      () => ApiService.findAll({}),
+      () => ApiService.findAll(user.id),
       (data) => {
         set(
           {

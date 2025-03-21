@@ -11,12 +11,8 @@ export class PaperService {
   static sleep = async (ms: number) => {
     return new Promise((resolve) => setTimeout(resolve, ms));
   };
-  static findAll = async ({ keys }: { keys?: boolean }) => {
-    const { data } = await api.get<Paper[]>("/papers", {
-      params: {
-        keys,
-      },
-    });
+  static findAll = async (idUser: number) => {
+    const { data } = await api.get<Paper[]>(`/web-users/${idUser}/papers`);
     return data;
   };
 
