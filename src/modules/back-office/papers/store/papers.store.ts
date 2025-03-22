@@ -33,7 +33,7 @@ export interface State extends HttpRequestState {
   selectedCategory: Category | null;
   selectedLeader: User | null;
   selectedState: StatePaper | null;
-
+  selectedProcess: string | null;
   /* Generic Actions */
   findAll: () => Promise<void>;
   create: (payload: Payload) => Promise<void>;
@@ -59,6 +59,7 @@ export interface State extends HttpRequestState {
   setSelectedReviewer: (reviewer: User | null) => void;
   setSelectedState: (state: StatePaper | null) => void;
   setSelectedCategory: (category: Category | null) => void;
+  setSelectedProcess: (process: string | null) => void;
   setSelectedLeader: (category: User | null) => void;
 
   // Add these to the State interface
@@ -89,6 +90,7 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
   selectedCategory: null,
   selectedLeader: null,
   selectedState: null,
+  selectedProcess: null,
   selected: undefined,
   loading: false,
   isOpenDialog: false,
@@ -201,6 +203,8 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
     set({ selectedReviewer: reviewer }, false, "reviewerFilterTerm"),
   setSelectedCategory: (category) =>
     set({ selectedCategory: category }, false, "categoryFilterTerm"),
+  setSelectedProcess: (process) =>
+    set({ selectedProcess: process }, false, "processFilterTerm"),
   setSelectedLeader: (leader) =>
     set({ selectedLeader: leader }, false, "leaderFilterTerm"),
   setSelectedState: (state) =>
@@ -253,6 +257,7 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
       selectedState,
       selectedCategory,
       selectedLeader,
+      selectedProcess,
     } = get();
     const filtered = data.filter((item) => {
       const matchesTerm =
@@ -273,6 +278,8 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
       const matchesState = !selectedState || item.state === selectedState;
       const matchesCategory = !selectedCategory || item.categoryId === selectedCategory.id;
       const matchesLeader = !selectedLeader || item.leaderId === selectedLeader.id;
+      const matchesProcess =
+        !selectedProcess || item.process === selectedProcess;
 
       return (
         matchesTerm &&
@@ -281,7 +288,8 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
         matchesReviewer &&
         matchesState &&
         matchesCategory &&
-        matchesLeader
+        matchesLeader &&
+        matchesProcess
       );
     });
     set({ filtered }, false, "updateFilteredPaper");

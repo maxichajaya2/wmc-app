@@ -8,7 +8,8 @@ import {
   DropdownMenuTrigger,
   Button,
   Input,
-  Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger
+  Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger,
+  Badge
 } from "@/components"
 import { cn } from "@/lib/utils"
 import { useState } from "react"
@@ -25,6 +26,7 @@ export function DashboardLayout() {
   const checkAuthStatus = useSessionBoundStore(state => state.checkAuthStatus)
   const isTokenValid = useSessionBoundStore(state => state.isTokenValid)
   const ROUTES = useSessionBoundStore(state => state.groups)
+  const user = useSessionBoundStore(state => state.session?.user)
 
   const [isExpand, setIsExpand] = useState(false)
 
@@ -142,7 +144,17 @@ export function DashboardLayout() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuLabel>
+                  <div className="flex items-center gap-2">
+                    <User className="h-6 w-6 text-muted-foreground" />
+                    <div className="flex flex-col">
+                      <span className="text-sm font-semibold">{user?.name}</span>
+                      <Badge className="bg-blue-500 text-white hover:bg-blue-500/80 font-extrabold h-4 w-fit flex justify-center items-center text-center text-xs">
+                        {user?.role?.name}
+                      </Badge>
+                    </div>
+                  </div>
+                </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem disabled>Settings</DropdownMenuItem>
                 <DropdownMenuItem disabled>Support</DropdownMenuItem>

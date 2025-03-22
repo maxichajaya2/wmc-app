@@ -3,7 +3,7 @@ import { format } from "date-fns"
 import { CalendarIcon, Check, ChevronsUpDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, Button, Input, Popover, PopoverContent, PopoverTrigger, Calendar } from "@/components"
-import { MapStatePaper, PrimaryRoles, StatePaper } from "@/models"
+import { MapProcessPaper, MapStatePaper, PrimaryRoles, ProcessPaper, StatePaper } from "@/models"
 import { usePaperStore } from "../../store/papers.store"
 import { useTopicStore } from "@/modules/back-office/topics/store/topic.store"
 import { useUsersStore } from "@/modules/back-office/users/store/users.store"
@@ -18,8 +18,12 @@ const states: StatePaper[] = [
     StatePaper.UNDER_REVIEW,
     StatePaper.APPROVED,
     StatePaper.DISMISSED,
-
 ]
+const processes: ProcessPaper[] = [
+    ProcessPaper.PRESELECCIONADO,
+    ProcessPaper.SELECCIONADO,
+    // ProcessPaper.ASIGNADO,
+];
 
 function CustomerFilters() {
     const {
@@ -30,12 +34,14 @@ function CustomerFilters() {
         selectedLeader,
         selectedReviewer,
         selectedState,
+        selectedProcess,
         setFilterTerm,
         setDateRange,
         setSelectedTopic,
         setSelectedCategory,
         setSelectedLeader,
         setSelectedReviewer,
+        setSelectedProcess,
         setSelectedState,
         updateFiltered,
     } = usePaperStore()
@@ -253,6 +259,38 @@ function CustomerFilters() {
                                     >
                                         <Check className={cn("mr-2 h-4 w-4", selectedState === state ? "opacity-100" : "opacity-0")} />
                                         {MapStatePaper[state]}
+                                    </CommandItem>
+                                ))}
+                            </CommandGroup>
+                        </CommandList>
+                    </Command>
+                </PopoverContent>
+            </Popover>
+
+            <Popover>
+                <PopoverTrigger asChild>
+                    <Button variant="outline" role="combobox" className="w-[200px] justify-between">
+                        {selectedProcess ? MapProcessPaper[selectedProcess as ProcessPaper] : "Elige un proceso"}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[200px] p-0">
+                    <Command>
+                        <CommandInput placeholder="Busca un proceso..." />
+                        <CommandList>
+                            <CommandEmpty>Proceso no encontrado</CommandEmpty>
+                            <CommandGroup>
+                                {processes.map((state) => (
+                                    <CommandItem
+                                        key={state}
+                                        onSelect={() => {
+                                            console.log({ state })
+                                            setSelectedProcess(selectedProcess === state ? null : state)
+                                            updateFiltered()
+                                        }}
+                                    >
+                                        <Check className={cn("mr-2 h-4 w-4", selectedProcess === state ? "opacity-100" : "opacity-0")} />
+                                        {MapProcessPaper[state]}
                                     </CommandItem>
                                 ))}
                             </CommandGroup>
