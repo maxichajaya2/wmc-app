@@ -7,7 +7,7 @@ import Creatable from 'react-select/creatable';
 import { useEffect, useMemo, useState } from 'react';
 import { usePaperStore } from '../../store/papers.store';
 import { DialogDescription } from '@radix-ui/react-dialog';
-import { AuthorType, MapTypePaper, PrimaryRoles, StatePaper, TypePaper, User } from '@/models';
+import { AuthorType, MapTypePaper, PrimaryRoles, ProcessPaper, StatePaper, TypePaper, User } from '@/models';
 import { CommonService } from '@/shared/services';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
@@ -581,7 +581,7 @@ function PapersDialog() {
                                 </div>
                             </div>
                         )}
-                        {(action === 'receive-paper' || action === 'send-paper' || action === 'assign-paper' || action === 'review-paper' || action === 'approve-paper' || action === 'dismiss-paper') && (
+                        {(action === 'receive-paper' || action === 'send-paper' || action === 'assign-paper' || action === 'review-paper' || (action === 'approve-paper') || action === 'dismiss-paper') && (
                             <div className='flex flex-row gap-3 p-3 rounded-md mb-3'>
                                 {action === 'send-paper' && (
                                     <Popover>
@@ -649,7 +649,7 @@ function PapersDialog() {
                                         </PopoverContent>
                                     </Popover>
                                 )}
-                                {action === 'approve-paper' && (
+                                {selected?.process === ProcessPaper.SELECCIONADO && action === 'approve-paper' && (
                                     <Popover>
                                         <PopoverTrigger asChild>
                                             <Button variant="outline" role="combobox" className="w-[200px] justify-between">
@@ -684,7 +684,7 @@ function PapersDialog() {
                                     </Popover>
                                 )}
                                 <Button
-                                    disabled={loading || (action === 'assign-paper' && !selectedReviewer) || (action === 'send-paper' && !selectedLeader) || (action === 'approve-paper' && !selectedTypePaper)}
+                                    disabled={loading || (action === 'assign-paper' && !selectedReviewer) || (action === 'send-paper' && !selectedLeader) || (selected?.process === ProcessPaper.SELECCIONADO && action === 'approve-paper' && !selectedTypePaper)}
                                     type="button"
                                     onClick={handleChangeStatus}
                                     className="font-bold py-2 px-4 rounded duration-300 text-white">
