@@ -37,6 +37,8 @@ function PapersDialog() {
 
     const title = () => {
         switch (action) {
+            case 'view':
+                return 'Ver Trabajo Técnico'
             case 'edit':
                 return 'Editar Trabajo Técnico'
             case 'delete':
@@ -285,7 +287,7 @@ function PapersDialog() {
                                 </TypographyH4>
                             </div>
                         )}
-                        {(action === 'create' || action === 'edit') && (
+                        {(action === 'create' || action === 'edit' || action === 'view') && (
                             <div className='space-y-6'>
                                 <FormField
                                     name="title"
@@ -296,6 +298,7 @@ function PapersDialog() {
                                             <FormControl>
                                                 <Input
                                                     {...field}
+                                                    readOnly={action === 'view'}
                                                     type="text"
                                                     placeholder="Título"
                                                     className="w-full"
@@ -314,6 +317,7 @@ function PapersDialog() {
                                             <FormControl>
                                                 <Textarea
                                                     {...field}
+                                                    readOnly={action === 'view'}
                                                     placeholder="Resumen"
                                                     className="w-full resize-y"
                                                 />
@@ -331,8 +335,10 @@ function PapersDialog() {
                                             <FormControl>
                                                 <Input
                                                     type="file"
+                                                    // aceptar solo document word
+                                                    accept=".doc,.docx"
                                                     onChange={(e) => handleFileUpload(e)}
-                                                    disabled={uploading}
+                                                    disabled={uploading || action === 'view'}
                                                     className="cursor-pointer block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 border-none py-0"
                                                 />
                                             </FormControl>
@@ -361,7 +367,9 @@ function PapersDialog() {
                                         <FormItem className="">
                                             <FormLabel>Categoría</FormLabel>
                                             <FormControl>
-                                                <Select onValueChange={field.onChange} defaultValue={field.value?.toString()}>
+                                                <Select
+                                                    disabled={action === 'view'}
+                                                    onValueChange={field.onChange} defaultValue={field.value?.toString()}>
                                                     <FormControl>
                                                         <SelectTrigger>
                                                             <SelectValue placeholder={'Escoge una categoría'} />
@@ -388,7 +396,9 @@ function PapersDialog() {
                                         <FormItem className="">
                                             <FormLabel>Tema</FormLabel>
                                             <FormControl>
-                                                <Select onValueChange={field.onChange} defaultValue={field.value?.toString()}>
+                                                <Select
+                                                    disabled={action === 'view'}
+                                                    onValueChange={field.onChange} defaultValue={field.value?.toString()}>
                                                     <FormControl>
                                                         <SelectTrigger>
                                                             <SelectValue placeholder={'Escoge un tema'} />
@@ -417,6 +427,7 @@ function PapersDialog() {
                                             <FormControl>
                                                 <Input
                                                     {...field}
+                                                    readOnly={action === 'view'}
                                                     type="text"
                                                     placeholder="Idioma"
                                                     className="w-full"
@@ -436,6 +447,7 @@ function PapersDialog() {
                                                 <Creatable
                                                     isMulti
                                                     {...field}
+                                                    isDisabled={action === 'view'}
                                                     placeholder="Palabras clave"
                                                     className="w-full"
                                                     value={form.watch('keywords') as any &&
@@ -465,6 +477,7 @@ function PapersDialog() {
                                             </div>
                                             <FormControl>
                                                 <Switch
+                                                    disabled={action === 'view'}
                                                     checked={field.value}
                                                     onCheckedChange={field.onChange}
                                                 />
@@ -483,6 +496,7 @@ function PapersDialog() {
                                                     <FormControl>
                                                         <Input
                                                             {...field}
+                                                            readOnly={action === 'view'}
                                                             type="text"
                                                             placeholder="Dónde?"
                                                             className="w-full"
@@ -501,6 +515,7 @@ function PapersDialog() {
                                                     <FormControl>
                                                         <Input
                                                             {...field}
+                                                            readOnly={action === 'view'}
                                                             type="text"
                                                             placeholder="En qué evento?"
                                                             className="w-full"
@@ -519,6 +534,7 @@ function PapersDialog() {
                                                     <FormControl>
                                                         <Input
                                                             {...field}
+                                                            readOnly={action === 'view'}
                                                             type="date"
                                                             className="w-full"
                                                         />
@@ -535,7 +551,9 @@ function PapersDialog() {
                                     <AuthorForm key={field.id} form={form} index={index} onRemove={() => remove(index)} />
                                 ))}
                                 <div className="flex flex-col gap-4">
-                                    <Button type="button" onClick={() => append({
+                                    <Button
+                                    disabled={loading || action === 'view'}
+                                    type="button" onClick={() => append({
                                         type: form.watch('authors')[0]?.type === AuthorType.AUTOR ? AuthorType.COAUTOR : AuthorType.AUTOR
                                     } as AuthorFormData)}>
                                         Añadir Autor

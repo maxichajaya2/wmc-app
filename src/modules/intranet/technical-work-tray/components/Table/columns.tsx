@@ -156,6 +156,20 @@ const StatusCell = React.memo(({ item }: { item: Entity }) => {
     )
 })
 
+const ButtonView = React.memo(({ item }: { item: Entity }) => {
+    const { openActionModal } = usePaperStore((state) => ({
+        openActionModal: state.openActionModal,
+    }))
+    const handleEdit = useCallback(() => {
+        openActionModal(item.id, "view")
+    }, [item, openActionModal])
+    return (
+        <DropdownMenuItem onClick={handleEdit}>
+            Ver
+        </DropdownMenuItem>
+    )
+})
+
 const ButtonEdit = React.memo(({ item }: { item: Entity }) => {
     const { openActionModal } = usePaperStore((state) => ({
         openActionModal: state.openActionModal,
@@ -217,6 +231,7 @@ const ActionsCell = React.memo(({ item }: { item: Entity }) => {
             <DropdownMenuContent>
                 <DropdownMenuLabel>Acciones</DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                <ButtonView item={item} />
                 <ButtonEdit item={item} />
                 <ButtonSend item={item} />
                 <ButtonViewComments item={item} />

@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input"
 import { useSpeakerStore } from "@/modules/back-office/speakers/store/speaker.store"
 import { CountryItem } from "@/modules/back-office/speakers/components/Dialog/CountryItem"
 import { AuthorType, MapAuthorType } from "@/models"
+import { usePaperStore } from "../../store/papers.store"
 // import type { PaperFormData } from "./schemas"
 
 interface AuthorFormProps {
@@ -21,6 +22,9 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
         label: country.name, // Usamos el nombre del país como label
     }));
 
+    const action = usePaperStore(state => state.action);
+    const loading = usePaperStore(state => state.loading);
+
     const selectedValue = form.watch(`authors.${index}.countryCode`) && countries.find((c) => c.code === form.watch(`authors.${index}.countryCode`));
     // END LOGIC COUNTRIES
     return (
@@ -32,7 +36,7 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
                     <FormItem>
                         <FormLabel>Nombre</FormLabel>
                         <FormControl>
-                            <Input {...field} />
+                            <Input {...field} readOnly={action === 'view'} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -45,7 +49,7 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
                     <FormItem>
                         <FormLabel>Apellido Paterno</FormLabel>
                         <FormControl>
-                            <Input {...field} />
+                            <Input {...field} readOnly={action === 'view'} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -58,7 +62,7 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
                     <FormItem>
                         <FormLabel>Apellido Materno</FormLabel>
                         <FormControl>
-                            <Input {...field} />
+                            <Input {...field} readOnly={action === 'view'} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -71,7 +75,7 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
                     <FormItem>
                         <FormLabel>Cargo</FormLabel>
                         <FormControl>
-                            <Input {...field} />
+                            <Input {...field} readOnly={action === 'view'} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -84,7 +88,7 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
                     <FormItem>
                         <FormLabel>Empresa</FormLabel>
                         <FormControl>
-                            <Input {...field} />
+                            <Input {...field} readOnly={action === 'view'} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -97,7 +101,7 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
                     <FormItem>
                         <FormLabel>País</FormLabel>
                         <FormControl>
-                            <Input {...field} />
+                            <Input {...field} readOnly={action === 'view'} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -112,7 +116,7 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
                         <FormControl>
                             <SelectSearch
                                 placeholder="Seleccione el país"
-                                // isDisabled={loading}
+                                isDisabled={loading || action === 'view'}
                                 options={countryOptions}
                                 value={selectedValue ? {
                                     value: selectedValue.code,
@@ -140,7 +144,7 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
                     <FormItem>
                         <FormLabel>Email Corporativo</FormLabel>
                         <FormControl>
-                            <Input {...field} type="emailCorp" />
+                            <Input {...field} readOnly={action === 'view'} type="emailCorp" />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -153,7 +157,7 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
                     <FormItem>
                         <FormLabel>Email</FormLabel>
                         <FormControl>
-                            <Input {...field} type="email" />
+                            <Input {...field} readOnly={action === 'view'} type="email" />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -166,7 +170,7 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
                     <FormItem>
                         <FormLabel>Celular</FormLabel>
                         <FormControl>
-                            <Input {...field} />
+                            <Input {...field} readOnly={action === 'view'} />
                         </FormControl>
                         <FormMessage />
                     </FormItem>
@@ -179,6 +183,7 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
                     <FormItem className="">
                         <FormLabel>Tipo de Autor</FormLabel>
                         <Select
+                            disabled={loading || action === 'view'}
                             onValueChange={(value) => field.onChange(value)}
                             defaultValue={field.value?.toString()}
                         >
@@ -196,7 +201,9 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
                     </FormItem>
                 )}
             />
-            <Button type="button" variant="destructive" onClick={onRemove}>
+            <Button
+            disabled={loading || action === 'view'}
+            type="button" variant="destructive" onClick={onRemove}>
                 Eliminar Autor
             </Button>
         </div>
