@@ -76,16 +76,16 @@ const ApproveDateCell = React.memo(({ item }: { item: Entity }) => (
 const ProcessCell = React.memo(({ item }: { item: Entity }) => {
     let className = "bg-blue-500 text-white hover:bg-blue-500/80"
     if (item.process === ProcessPaper.SELECCIONADO) {
-        className = "bg-green-500 text-white hover:bg-green-500/80 font-extrabold h-6 w-[130px] flex justify-center items-center text-center"
+        className = "bg-green-500 text-white hover:bg-green-500/80 font-extrabold h-6 w-[75px] flex justify-center items-center text-center"
     } else if (item.process === ProcessPaper.PRESELECCIONADO) {
-        className = "bg-rose-500 text-white hover:bg-rose-500/80 font-extrabold h-6 w-[130px] flex justify-center items-center text-center"
+        className = "bg-rose-500 text-white hover:bg-rose-500/80 font-extrabold h-6 w-[75px] flex justify-center items-center text-center"
     }
     const title = (item: Entity) => {
         if (item.process === ProcessPaper.PRESELECCIONADO) {
-            return "PRE SELECCIÓN"
+            return MapProcessPaper[item.process]
         }
         if (item.process === ProcessPaper.SELECCIONADO) {
-            return "SELECCIÓN"
+            return MapProcessPaper[item.process]
         }
         return MapProcessPaper[item.process]
     }

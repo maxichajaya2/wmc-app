@@ -118,8 +118,8 @@ export const MapStatePaperForUser: Record<StatePaper, string> = {
 };
 
 export const MapProcessPaper: Record<ProcessPaper, string> = {
-  [ProcessPaper.PRESELECCIONADO]: "Pre Selección",
-  [ProcessPaper.SELECCIONADO]: "Selección",
+  [ProcessPaper.PRESELECCIONADO]: "FASE 1",
+  [ProcessPaper.SELECCIONADO]: "FASE 2",
 };
 
 export interface PayloadCreateComment {
