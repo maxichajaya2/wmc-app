@@ -630,7 +630,7 @@ function PapersDialog() {
                                                 <CommandList>
                                                     <CommandEmpty>Revisor no encontrado.</CommandEmpty>
                                                     <CommandGroup>
-                                                        {reviewers.map((reviewer) => (
+                                                        {[...reviewers, ...leaders].map((reviewer) => (
                                                             <CommandItem
                                                                 key={reviewer.id}
                                                                 onSelect={() => {
