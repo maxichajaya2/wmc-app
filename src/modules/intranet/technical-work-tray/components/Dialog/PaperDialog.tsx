@@ -385,6 +385,14 @@ function PapersDialog() {
                                                     </Link>
                                                 </div>
                                             )}
+                                            {selected?.fullFileUrl && (
+                                                // Visor de archivo
+                                                <div className="flex items-center space-x-2">
+                                                    <Link to={selected.fullFileUrl || ''} target="_blank" className="text-blue-500 underline">
+                                                        Ver archivo completo (FASE 2)
+                                                    </Link>
+                                                </div>
+                                            )}
                                             <FormMessage />
                                         </FormItem>
                                     )}

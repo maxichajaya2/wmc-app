@@ -379,6 +379,14 @@ function PapersDialog() {
                                                     </Link>
                                                 </div>
                                             )}
+                                            {selected?.fullFileUrl && (
+                                                // Visor de archivo
+                                                <div className="flex items-center space-x-2">
+                                                    <Link to={selected.fullFileUrl || ''} target="_blank" className="text-blue-500 underline">
+                                                        Ver archivo completo (FASE 2)
+                                                    </Link>
+                                                </div>
+                                            )}
                                             <FormMessage />
                                         </FormItem>
                                     )}
@@ -571,10 +579,10 @@ function PapersDialog() {
                                 ))}
                                 <div className="flex flex-col gap-4">
                                     <Button
-                                    disabled={loading || action === 'view'}
-                                    type="button" onClick={() => append({
-                                        type: form.watch('authors')[0]?.type === AuthorType.AUTOR ? AuthorType.COAUTOR : AuthorType.AUTOR
-                                    } as AuthorFormData)}>
+                                        disabled={loading || action === 'view'}
+                                        type="button" onClick={() => append({
+                                            type: form.watch('authors')[0]?.type === AuthorType.AUTOR ? AuthorType.COAUTOR : AuthorType.AUTOR
+                                        } as AuthorFormData)}>
                                         Añadir Autor
                                     </Button>
                                     {/* <Button type="submit">Save</Button> */}
