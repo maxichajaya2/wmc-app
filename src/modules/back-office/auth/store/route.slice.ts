@@ -27,6 +27,11 @@ export const createRouteSlice: StateCreator<RouteSlice> = (_set, _get) => ({
             },
           ],
         },
+        {
+          name: "Reportes",
+          url: ROUTES_PATHS.REPORTS, // /usuarios
+          module: ModulesRoles.REPORTS, // users
+        },
       ],
     },
     {

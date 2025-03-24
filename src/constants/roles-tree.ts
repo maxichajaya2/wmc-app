@@ -57,6 +57,7 @@ export enum ModulesRoles {
   TECHINICAL_WORKS = "technical_works", //trabajos técnicos
   TOPICS = "topics", //temas
   CATEGORIES = "categories", //categorías
+  REPORTS = "reports", //reportes
 }
 
 export const ROLES_TREE = [
@@ -81,6 +82,31 @@ export const ROLES_TREE = [
       {
         id: undefined,
         module: ModulesRoles.USERS,
+        action: ActionRoles.DELETE,
+      },
+    ],
+  },
+  {
+    name: "Reportes",
+    modules: [
+      {
+        id: undefined,
+        module: ModulesRoles.REPORTS,
+        action: ActionRoles.CREATE,
+      },
+      {
+        id: undefined,
+        module: ModulesRoles.REPORTS,
+        action: ActionRoles.READ,
+      },
+      {
+        id: undefined,
+        module: ModulesRoles.REPORTS,
+        action: ActionRoles.UPDATE,
+      },
+      {
+        id: undefined,
+        module: ModulesRoles.REPORTS,
         action: ActionRoles.DELETE,
       },
     ],

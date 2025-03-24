@@ -11,7 +11,7 @@ import {
   CardTitle, Button,
   Input
 } from "@/components"
-import { useCallback, useEffect } from "react"
+import { useCallback, useEffect, useMemo } from "react"
 import { DataTable, DataTableSkeleton, FadeInComponent } from "@/shared"
 import { columns } from "./components"
 import { usePaperStore } from "./store/papers.store"
@@ -22,6 +22,18 @@ import ConfirmDeleteComment from "./components/Comments/ConfirmDeleteComment"
 import { useCategoryStore } from "@/modules/back-office/category/store/category.store"
 import { useTopicStore } from "@/modules/back-office/topics/store/topic.store"
 import { useSpeakerStore } from "@/modules/back-office/speakers/store/speaker.store"
+
+import dayjs from 'dayjs'
+// import utc from 'dayjs-plugin-utc';
+import timezone from 'dayjs/plugin/timezone'
+import utc from 'dayjs/plugin/utc'
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
+// Configurar los plugins de Day.js
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(isSameOrBefore);
+dayjs.extend(isSameOrAfter);
 
 function PapersManagementPage() {
   const loading = usePaperStore(state => state.loading);
@@ -38,8 +50,20 @@ function PapersManagementPage() {
   const setFilterTerm = usePaperStore(state => state.setFilterTerm);
   const openActionModal = usePaperStore(state => state.openActionModal);
 
+  const setLimitDates = usePaperStore(state => state.setLimitDates);
+  const limitDatePhaseOne = usePaperStore(state => state.limitDatePhaseOne);
+
+  const currentDate = dayjs().startOf('day');
+  const endDate = useMemo(() => {
+    if (!limitDatePhaseOne) return dayjs().startOf('day');
+    return dayjs.tz(limitDatePhaseOne, 'America/Lima').startOf('day');
+  }, [limitDatePhaseOne]);
+  const isValidDate: boolean = useMemo(() => {
+    return currentDate.isSameOrBefore(endDate);
+  }, [currentDate, endDate]);
 
   useEffect(() => {
+    setLimitDates()
     findAll()
     findAllCategories()
     findAllTopics()
@@ -72,12 +96,14 @@ function PapersManagementPage() {
               Exportar
             </span>
           </Button>
-          <Button size="sm" className="h-8 gap-1" onClick={handleCreate}>
-            <PlusCircle className="h-3.5 w-3.5 text-white" />
-            <span className="sr-only sm:not-sr-only sm:whitespace-nowrap text-white">
-              Añadir Trabajo Técnico
-            </span>
-          </Button>
+          {isValidDate && (
+            <Button size="sm" className="h-8 gap-1" onClick={handleCreate}>
+              <PlusCircle className="h-3.5 w-3.5 text-white" />
+              <span className="sr-only sm:not-sr-only sm:whitespace-nowrap text-white">
+                Añadir Trabajo Técnico
+              </span>
+            </Button>
+          )}
         </div>
       </div>
       <CustomerFilters />

@@ -31,6 +31,7 @@ function PapersDialog() {
     const create = usePaperStore(state => state.create);
     const update = usePaperStore(state => state.update);
     const deletePaper = usePaperStore(state => state.remove);
+    const uploadCompleteArchive = usePaperStore(state => state.uploadCompleteArchive);
     const topics = useTopicStore(state => state.data);
     const categories = useCategoryStore(state => state.data);
 
@@ -57,6 +58,8 @@ function PapersDialog() {
                 return 'Cambiar estado a: APROBADO'
             case 'dismiss-paper':
                 return 'Cambiar estado a: DESESTIMADO'
+            case 'charge-complete-archive':
+                return 'Cargar archivo completo'
             default:
                 return 'Trabajo Técnico'
         }
@@ -179,6 +182,32 @@ function PapersDialog() {
     };
     /* END LOGIC FILE UPLOAD */
 
+    /* START LOGIC FILE UPLOAD COMPLETE ARCHIVE */
+    const [uploadingCompleteArchive, setUploadingCompleteArchive] = useState(false);
+    const [fullFileUrl, setCompleteArchive] = useState<string | null>(null);
+    const handleFileUploadCompleteArchive = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            setUploadingCompleteArchive(true);
+            try {
+                const fileUrl = await CommonService.uploadFile(file);
+
+                setCompleteArchive(fileUrl);
+            } catch (error) {
+                console.error('Error al subir el archivo:', error);
+            } finally {
+                setUploadingCompleteArchive(false);
+                event.target.value = '';
+            }
+        }
+    };
+
+    const handleSendCompleteArchive = async () => {
+        if (fullFileUrl && selected) {
+            uploadCompleteArchive(fullFileUrl);
+        }
+    };
+    /* END LOGIC FILE UPLOAD COMPLETE ARCHIVE */
     // LOGIC AUTHORS
     useEffect(() => {
         (
@@ -552,10 +581,10 @@ function PapersDialog() {
                                 ))}
                                 <div className="flex flex-col gap-4">
                                     <Button
-                                    disabled={loading || action === 'view'}
-                                    type="button" onClick={() => append({
-                                        type: form.watch('authors')[0]?.type === AuthorType.AUTOR ? AuthorType.COAUTOR : AuthorType.AUTOR
-                                    } as AuthorFormData)}>
+                                        disabled={loading || action === 'view'}
+                                        type="button" onClick={() => append({
+                                            type: form.watch('authors')[0]?.type === AuthorType.AUTOR ? AuthorType.COAUTOR : AuthorType.AUTOR
+                                        } as AuthorFormData)}>
                                         Añadir Autor
                                     </Button>
                                     {/* <Button type="submit">Save</Button> */}
@@ -674,6 +703,44 @@ function PapersDialog() {
                                             <LoaderCircle size={24} className="animate-spin text-white" />
                                         </div>
                                     ) : "Enviar"}
+                                </Button>
+                            </div>
+                        )}
+
+                        {action === 'charge-complete-archive' && (
+                            <div className='space-y-6'>
+                                <Input
+                                    type="file"
+                                    // aceptar solo document word
+                                    accept=".doc,.docx"
+                                    onChange={(e) => handleFileUploadCompleteArchive(e)}
+                                    disabled={uploading}
+                                    className="cursor-pointer block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 border-none py-0"
+                                />
+                                {uploadingCompleteArchive && (
+                                    <div className="flex items-center space-x-2">
+                                        <LoaderCircle size={24} className="animate-spin text-blue-500" />
+                                        <span className="text-blue-500">Subiendo...</span>
+                                    </div>
+                                )}
+                                {fullFileUrl && (
+                                    // Visor de archivo
+                                    <div className="flex items-center space-x-2">
+                                        <Link to={fullFileUrl || ''} target="_blank" className="text-blue-500 underline">
+                                            Ver archivo
+                                        </Link>
+                                    </div>
+                                )}
+                                <Button
+                                    disabled={loading || !fullFileUrl}
+                                    type="button"
+                                    onClick={handleSendCompleteArchive}
+                                    className="font-bold py-2 px-4 rounded duration-300 text-white">
+                                    {loading ? (
+                                        <div className="flex items-center justify-center space-x-2">
+                                            <LoaderCircle size={24} className="animate-spin text-white" />
+                                        </div>
+                                    ) : "Enviar Archivo"}
                                 </Button>
                             </div>
                         )}

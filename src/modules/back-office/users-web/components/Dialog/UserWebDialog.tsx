@@ -1,4 +1,4 @@
-import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, Form, FormControl, FormField, FormItem, FormLabel, FormMessage, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components';
+import { Button, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Switch } from '@/components';
 import { TypographyH4 } from '@/shared/typography';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { EyeIcon, EyeOffIcon, LoaderCircle } from 'lucide-react';
@@ -24,6 +24,7 @@ const FormSchema = z.object({
     }),
     documentType: z.nativeEnum(DocumentType),
     documentNumber: z.string(),
+    isActive: z.boolean().optional(),
 }).superRefine((val, ctx) => {
     if (val.documentType === DocumentType.DNI && val.documentNumber.length !== 8) {
         ctx.addIssue({
@@ -47,6 +48,7 @@ const FormSchema = z.object({
         documentNumber: val.documentNumber,
         documentType: val.documentType,
         password: val.password || undefined,
+        isActive: val.isActive,
     }
 });
 
@@ -83,6 +85,7 @@ function UserWebDialog() {
             email: '',
             documentNumber: '',
             password: '',
+            isActive: true,
         },
     })
 
@@ -242,6 +245,27 @@ function UserWebDialog() {
                                                 <Input placeholder={'Nro Documento'} {...field} />
                                             </FormControl>
                                             <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    name="isActive"
+                                    control={form.control}
+                                    render={({ field }) => (
+                                        <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm mb-2 col-span-2">
+                                            <div className="space-y-0.5">
+                                                <FormLabel>Activar</FormLabel>
+                                                <FormDescription>
+                                                    Si lo oculta, no se mostrará en la lista.
+                                                </FormDescription>
+                                                <FormMessage />
+                                            </div>
+                                            <FormControl>
+                                                <Switch
+                                                    checked={field.value}
+                                                    onCheckedChange={field.onChange}
+                                                />
+                                            </FormControl>
                                         </FormItem>
                                     )}
                                 />

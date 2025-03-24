@@ -30,11 +30,11 @@ const PersonRolCell = React.memo(({ item }: { item: Entity }) => (
     </div>
 ));
 
-const IsActiveCell = React.memo(({ item }: { item: Entity }) => (
-    <div className="flex flex-col gap-1">
-        <span className="font-semibold text-base">{item.isActive ? 'Activo' : 'Inactivo'}</span>
-    </div>
-));
+// const IsActiveCell = React.memo(({ item }: { item: Entity }) => (
+//     <div className="flex flex-col gap-1">
+//         <span className="font-semibold text-base">{item.isActive ? 'Activo' : 'Inactivo'}</span>
+//     </div>
+// ));
 
 const ActionsCell = React.memo(({ item }: { item: Entity }) => {
     const openUserActionModal = useUsersStore(state => state.openActionModal)
@@ -82,11 +82,11 @@ export const columns: ColumnDef<Entity>[] = [
         cell: ({ row }) => <CategoryCell item={row.original
         } />,
     },
-    {
-        accessorKey: "isActive",
-        header: "Estado",
-        cell: ({ row }) => <IsActiveCell item={row.original} />,
-    },
+    // {
+    //     accessorKey: "isActive",
+    //     header: "Estado",
+    //     cell: ({ row }) => <IsActiveCell item={row.original} />,
+    // },
     {
         id: "actions",
         cell: ({ row }) => <ActionsCell item={row.original} />,

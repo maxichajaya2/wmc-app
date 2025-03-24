@@ -1,4 +1,4 @@
-import React, { useCallback } from "react"
+import React, { useCallback, useMemo } from "react"
 import {
     Badge,
     DropdownMenu,
@@ -17,6 +17,18 @@ import type { ColumnDef } from "@tanstack/react-table"
 import { MoreHorizontal, MessageSquare } from "lucide-react"
 import { usePaperStore } from "../../store/papers.store"
 import { formatDate } from "../../../../../utils/format-date"
+
+import dayjs from 'dayjs'
+// import utc from 'dayjs-plugin-utc';
+import timezone from 'dayjs/plugin/timezone'
+import utc from 'dayjs/plugin/utc'
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
+// Configurar los plugins de Day.js
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(isSameOrBefore);
+dayjs.extend(isSameOrAfter);
 
 const CorrelativeCell = React.memo(({ item }: { item: Entity }) => <div className="flex flex-col gap-1">{item.correlative || ''}</div>)
 const TopicCell = React.memo(({ item }: { item: Entity }) => (
@@ -195,11 +207,26 @@ const ButtonSend = React.memo(({ item }: { item: Entity }) => {
         openActionModal(item.id, "receive-paper")
     }, [item, openActionModal])
 
-    if (item.state !== StatePaper.REGISTERED) return null
+    if (item.state === StatePaper.REGISTERED || (item.process === ProcessPaper.PRESELECCIONADO && item.state === StatePaper.APPROVED && item.fullFileUrl)) {
+        return <DropdownMenuItem onClick={handleSend}>Enviar</DropdownMenuItem>
+    } else {
+        null
+    }
+})
 
-    return (
-        <DropdownMenuItem onClick={handleSend}>Enviar</DropdownMenuItem>
-    )
+const ButtonChargeCompleteArchive = React.memo(({ item }: { item: Entity }) => {
+    const { openActionModal } = usePaperStore((state) => ({
+        openActionModal: state.openActionModal,
+    }))
+    const handleChargeCompleteArchive = useCallback(() => {
+        openActionModal(item.id, "charge-complete-archive")
+    }, [item, openActionModal])
+
+    if ((item.process === ProcessPaper.PRESELECCIONADO && item.state === StatePaper.APPROVED && !item.fullFileUrl)) {
+        return <DropdownMenuItem onClick={handleChargeCompleteArchive}>Cargar archivo completo</DropdownMenuItem>
+    } else {
+        null
+    }
 })
 
 const ButtonViewComments = React.memo(({ item }: { item: Entity }) => {
@@ -223,6 +250,23 @@ const ButtonViewComments = React.memo(({ item }: { item: Entity }) => {
 
 const ActionsCell = React.memo(({ item }: { item: Entity }) => {
 
+    const limitDatePhaseOne = usePaperStore(state => state.limitDatePhaseOne);
+    const limitDatePhaseTwo = usePaperStore(state => state.limitDatePhaseTwo);
+
+    const currentDate = dayjs().startOf('day');
+    const endDate = useMemo(() => {
+        if (!limitDatePhaseOne) return dayjs().startOf('day');
+        return dayjs.tz(limitDatePhaseOne, 'America/Lima').startOf('day');
+    }, [limitDatePhaseOne]);
+    const isValidDate: boolean = useMemo(() => {
+        return currentDate.isSameOrBefore(endDate);
+    }, [currentDate, endDate]);
+    const isValidDatePhaseTwo: boolean = useMemo(() => {
+        if (!limitDatePhaseTwo) return false;
+        const endDatePhaseTwo = dayjs.tz(limitDatePhaseTwo, 'America/Lima').startOf('day');
+        return currentDate.isSameOrBefore(endDatePhaseTwo);
+    }, [currentDate, limitDatePhaseTwo]);
+
     return (
         <DropdownMenu modal={false}>
             <DropdownMenuTrigger>
@@ -232,8 +276,12 @@ const ActionsCell = React.memo(({ item }: { item: Entity }) => {
                 <DropdownMenuLabel>Acciones</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <ButtonView item={item} />
-                <ButtonEdit item={item} />
-                <ButtonSend item={item} />
+                {(isValidDate
+                    || (isValidDatePhaseTwo && item.process === ProcessPaper.PRESELECCIONADO && item.state === StatePaper.APPROVED))
+                    && <ButtonEdit item={item} />}
+                <ButtonChargeCompleteArchive item={item} />
+                {(isValidDate|| isValidDatePhaseTwo)
+                    && <ButtonSend item={item} />}
                 <ButtonViewComments item={item} />
                 {/* DEV
                     <DropdownMenuItem onClick={handleReceipt}>Recibir</DropdownMenuItem> */}

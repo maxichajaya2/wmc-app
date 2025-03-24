@@ -29,6 +29,9 @@ const UsersWeb = lazy(() => import("@/modules/back-office/users-web/page"));
 const Categories = lazy(() => import("@/modules/back-office/category/page"));
 const Topics = lazy(() => import("@/modules/back-office/topics/page"));
 const TechnicalWorks = lazy(() => import("@/modules/back-office/papers/page"));
+const Reports = lazy(() =>
+  import("@/modules/back-office/reports/page")
+);
 
 const lazyLoad = (Component: React.LazyExoticComponent<() => JSX.Element>) => (
   <Suspense fallback={<Loader />}>
@@ -84,6 +87,7 @@ export const routes: RouteObject[] = [
       { path: ROUTES_PATHS.CATEGORIES, element: lazyLoad(Categories) },
       { path: ROUTES_PATHS.TOPICS, element: lazyLoad(Topics) },
       { path: ROUTES_PATHS.TECHINICAL_WORKS, element: lazyLoad(TechnicalWorks) },
+      { path: ROUTES_PATHS.REPORTS, element: lazyLoad(Reports) },
     ],
   },
   // TODO: Add 404 page

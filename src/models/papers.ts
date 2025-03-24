@@ -10,6 +10,7 @@ export interface Paper {
   resume: string;
   file?: string;
   state: StatePaper;
+  fullFileUrl?: string;
   receivedDate?: string;
   selectedReceivedDate?: string;
   sentDate?: string;
@@ -166,3 +167,13 @@ export const MapAuthorType: Record<AuthorType, string> = {
   [AuthorType.AUTOR]: "Autor",
   [AuthorType.COAUTOR]: "Coautor",
 };
+
+export interface Parameter {
+  id:        number;
+  code:      string;
+  value:     string;
+  groupCode: null;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt: null;
+}

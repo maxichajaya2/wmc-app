@@ -55,6 +55,7 @@ export interface State extends HttpRequestState {
 
   /* Particular Actions */
   changeStatusPaper: (payload: PayloadChangeStatusPaper) => Promise<void>;
+  uploadCompleteArchive: (fullFileUrl: string) => Promise<void>;
 
   /* Particular Filter Actions */
   setDateRange: (range: { start: string; end: string }) => void;
@@ -78,6 +79,11 @@ export interface State extends HttpRequestState {
   isOpenConfirmDeleteComment: boolean;
   openConfirmDeleteComment: (id: number) => void;
   closeConfirmDeleteComment: () => void;
+
+  // Parameters limit dates
+  limitDatePhaseOne?: string;
+  limitDatePhaseTwo?: string;
+  setLimitDates: () => Promise<void>;
 }
 
 export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
@@ -111,8 +117,8 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
       (data) => {
         set(
           {
-            data: onlyPapersReceived(data),
-            filtered: onlyPapersReceived(data),
+            data: sortPapersByCreationDate(data),
+            filtered: sortPapersByCreationDate(data),
           },
           false,
           "getPaperSuccess"
@@ -131,8 +137,8 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
         const data = [newItem, ...get().data];
         set(
           {
-            data: onlyPapersReceived(data),
-            filtered: onlyPapersReceived(data),
+            data: sortPapersByCreationDate(data),
+            filtered: sortPapersByCreationDate(data),
             isOpenDialog: false,
           },
           false,
@@ -157,8 +163,8 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
         );
         set(
           {
-            data: onlyPapersReceived(data),
-            filtered: onlyPapersReceived(data),
+            data: sortPapersByCreationDate(data),
+            filtered: sortPapersByCreationDate(data),
             isOpenDialog: false,
             selected: undefined,
           },
@@ -182,8 +188,8 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
         const data = get().data.filter((u) => u.id !== selected.id);
         set(
           {
-            data: onlyPapersReceived(data),
-            filtered: onlyPapersReceived(data),
+            data: sortPapersByCreationDate(data),
+            filtered: sortPapersByCreationDate(data),
             isOpenDialog: false,
             selected: undefined,
           },
@@ -315,8 +321,8 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
         );
         set(
           {
-            data: onlyPapersReceived(data),
-            filtered: onlyPapersReceived(data),
+            data: sortPapersByCreationDate(data),
+            filtered: sortPapersByCreationDate(data),
             isOpenDialog: false,
             selected: undefined,
           },
@@ -364,6 +370,52 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
   closeConfirmDeleteComment: () => {
     set({ deletingCommentId: null, isOpenConfirmDeleteComment: false });
   },
+
+  setLimitDates: async () => {
+    handleRequestStore(
+      get(),
+      () => ApiService.getParameters(),
+      (data) => {
+        set(
+          {
+            limitDatePhaseOne: data.find(param => param.code === "limitDatePhase1")?.value,
+            // limitDatePhaseOne: '2025-03-23',
+            limitDatePhaseTwo: data.find(param => param.code === "limitDatePhase2")?.value,
+          },
+          false,
+          "getLimitDatesSuccess"
+        );
+      },
+      (error) => console.error(error)
+    );
+  },
+
+  uploadCompleteArchive: async (fullFileUrl: string) => {
+    const selected = get().selected;
+    if (!selected) return;
+    handleRequestStore(
+      get(),
+      () => ApiService.uploadFullFile(selected.id, { fullFileUrl }),
+      (updatedItem) => {
+        const data = get().data.map((item) =>
+          item.id === updatedItem.id ? updatedItem : item
+        );
+        set(
+          {
+            data: sortPapersByCreationDate(data),
+            filtered: sortPapersByCreationDate(data),
+            isOpenDialog: false,
+            selected: undefined,
+          },
+          false,
+          "uploadCompleteArchiveSuccess"
+        );
+        get().clearFilters();
+        get().closeActionModal();
+      },
+      (error) => console.error(error)
+    );
+  }
 });
 
 export const usePaperStore = create<State>()(
@@ -372,7 +424,7 @@ export const usePaperStore = create<State>()(
   })
 );
 
-function onlyPapersReceived(data: Entity[]): Entity[] {
+function sortPapersByCreationDate(data: Entity[]): Entity[] {
   // return data.filter((item) => item.state !== StatePaper.REGISTERED);
   return data.sort((a, b) => {
     if (a.createdAt < b.createdAt) return 1;

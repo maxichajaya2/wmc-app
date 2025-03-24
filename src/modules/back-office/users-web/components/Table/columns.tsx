@@ -35,6 +35,12 @@ const UpdateDateCell = React.memo(({ item }: { item: Entity }) => (
     </div>
 ));
 
+const IsActiveCell = React.memo(({ item }: { item: Entity }) => (
+    <div className="flex flex-col gap-1">
+        <span className="font-semibold text-base">{item.isActive ? 'Activo' : 'Inactivo'}</span>
+    </div>
+));
+
 const ActionsCell = React.memo(({ item }: { item: Entity }) => {
     const openActionModal = useUserWebStore(state => state.openActionModal);
 
@@ -79,6 +85,11 @@ export const columns: ColumnDef<Entity>[] = [
         accessorKey: "document",
         header: "Documento",
         cell: ({ row }) => <DocumentNumberCell item={row.original} />,
+    },
+    {
+        accessorKey: "isActive",
+        header: "Estado",
+        cell: ({ row }) => <IsActiveCell item={row.original} />,
     },
     {
         accessorKey: "updatedAt",

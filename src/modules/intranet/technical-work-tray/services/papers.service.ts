@@ -4,7 +4,8 @@ import {
   PayloadPaper,
   PayloadChangeStatusPaper, Commentary,
   PayloadCreateComment,
-  Author
+  Author,
+  Parameter
 } from "@/models";
 
 export class PaperService {
@@ -78,6 +79,23 @@ export class PaperService {
 
   static findAuthorsByPaper = async (id: number) => {
     const { data } = await api.get<Author[]>(`/papers/${id}/authors`);
+    return data;
+  }
+
+  // Parámetros para Papers
+  static getParameters = async () => {
+    const { data } = await api.get<Parameter[]>("/parameters");
+    return data;
+  }
+
+  // /papers/:id/upload-full-file
+  /* 
+  {
+   "fullFileUrl": 'strig',
+}
+  */
+  static uploadFullFile = async (id: number, payload: { fullFileUrl: string }) => {
+    const { data } = await api.post<Paper>(`/papers/${id}/upload-full-file`, payload);
     return data;
   }
 }

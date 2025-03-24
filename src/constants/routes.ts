@@ -19,6 +19,7 @@ export const ROUTES_PATHS = {
   CATEGORIES: `${BASE_PATH_ADMIN}/categorias`,
   TOPICS: `${BASE_PATH_ADMIN}/temas`,
   TECHINICAL_WORKS: `${BASE_PATH_ADMIN}/trabajos-tecnicos`,
+  REPORTS: `${BASE_PATH_ADMIN}/reportes`,
   // ERROR
   NOT_FOUND: "/not-found",
   ERROR: "/error",
