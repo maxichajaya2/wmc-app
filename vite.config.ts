@@ -15,6 +15,6 @@ export default defineConfig({
   },
   server: {
     port: 3001,
-    allowedHosts: ["www.slopestability2026.com", "slopestability2026.com", "admin.slopestability2026.com"],
+    allowedHosts: ["forotis.perumin.com", "backend.forotis.perumin.com"],
   }
 });
