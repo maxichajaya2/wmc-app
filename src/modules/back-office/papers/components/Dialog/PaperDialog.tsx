@@ -1,4 +1,4 @@
-import { Button, Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage, Input, Popover, PopoverContent, PopoverTrigger, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Separator, Switch, Textarea } from '@/components';
+import { Button, Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage, Input, Popover, PopoverContent, PopoverTrigger, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Separator, Switch } from '@/components';
 import { TypographyH4 } from '@/shared/typography';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Check, ChevronsUpDown, LoaderCircle } from 'lucide-react';
@@ -30,12 +30,13 @@ function PapersDialog() {
     const create = usePaperStore(state => state.create);
     const update = usePaperStore(state => state.update);
     const deletePaper = usePaperStore(state => state.remove);
+    const ratingPaper = usePaperStore(state => state.ratingPaper);
     const topics = useTopicStore(state => state.data);
     const categories = useCategoryStore(state => state.data);
     const webUsers = useUserWebStore(state => state.data);
 
 
-    const title = () => {
+    const title = useMemo(() => {
         switch (action) {
             case 'view':
                 return 'Ver Trabajo Técnico'
@@ -53,14 +54,16 @@ function PapersDialog() {
                 return 'Cambiar estado a: ASIGNADO'
             case 'review-paper':
                 return 'Cambiar estado a: EN REVISIÓN'
+            case 'rate-paper':
+                return 'Puntuación'
             case 'approve-paper':
-                return 'Cambiar estado a: APROBADO'
+                return `Cambiar estado a: ${(selected?.process === ProcessPaper.PRESELECCIONADO ? 'PRESELECCIONADO' : 'SELECCIONADO')}`
             case 'dismiss-paper':
                 return 'Cambiar estado a: DESESTIMADO'
             default:
                 return 'Trabajo Técnico'
         }
-    };
+    }, [selected, action])
 
     const form = useForm<PaperFormData>({
         resolver: zodResolver(paperSchema),
@@ -87,6 +90,42 @@ function PapersDialog() {
         control: form.control,
         name: "authors",
     })
+
+    /* START LOGIC RATE PAPER */
+    const [rating, setRating] = useState({
+        score1: 0,
+        score2: 0,
+        score3: 0,
+    });
+    const [errorRating, setErrorRating] = useState('');
+    const handleInputRate = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setErrorRating('');
+        // si el value es mayor a 10, se retorna un mensaje de error y se cambia el valor a 10
+        if (Number(value) > 10) {
+            setRating((prev) => ({
+                ...prev,
+                [name]: 0,
+            }));
+            setErrorRating('La puntuación no puede ser mayor a 10');
+            return;
+        }
+        setRating((prev) => ({
+            ...prev,
+            [name]: Number(value),
+        }));
+    };
+
+    const handleSubmitRating = async () => {
+        // si no hay al menos una puntuación, no se puede enviar
+        if (rating.score1 === 0 && rating.score2 === 0 && rating.score3 === 0) {
+            return;
+        }
+        if (selected) {
+            await ratingPaper(rating);
+        }
+    };
+    /* END   LOGIC RATE PAPER */
 
     /* START LOGIC CHANGE STATUS */
     const changeStatusPaper = usePaperStore(state => state.changeStatusPaper);
@@ -261,7 +300,7 @@ function PapersDialog() {
                     e.preventDefault()
                 }}>
                 <DialogHeader>
-                    <DialogTitle>{title()}</DialogTitle>
+                    <DialogTitle>{title}</DialogTitle>
                 </DialogHeader>
 
                 <DialogDescription />
@@ -331,7 +370,7 @@ function PapersDialog() {
                                         </FormItem>
                                     )}
                                 />
-                                <FormField
+                                {/* <FormField
                                     name="resume"
                                     control={form.control}
                                     render={({ field }) => (
@@ -348,7 +387,7 @@ function PapersDialog() {
                                             <FormMessage />
                                         </FormItem>
                                     )}
-                                />
+                                /> */}
                                 <FormField
                                     name="file"
                                     control={form.control}
@@ -383,7 +422,7 @@ function PapersDialog() {
                                                 // Visor de archivo
                                                 <div className="flex items-center space-x-2">
                                                     <Link to={selected.fullFileUrl || ''} target="_blank" className="text-blue-500 underline">
-                                                        Ver archivo completo (FASE 2)
+                                                        Ver trabajo completo (FASE 2)
                                                     </Link>
                                                 </div>
                                             )}
@@ -573,6 +612,92 @@ function PapersDialog() {
                                     </>
                                 )}
                                 <Separator />
+                                {selected?.phase1Score && (
+                                    <div className='flex flex-col gap-2'>
+                                        <h1 className='text-xl font-bold'>Puntuación: FASE 1</h1>
+                                        <div className='flex gap-3'>
+                                            <Input
+                                                name='score1'
+                                                readOnly
+                                                value={selected.phase1Score1}
+                                                type="number"
+                                                placeholder="Score 1"
+                                                className="w-full"
+                                            />
+                                            <Input
+                                                name='score2'
+                                                readOnly
+                                                value={selected.phase1Score2}
+                                                type="number"
+                                                placeholder="Score 2"
+                                                className="w-full"
+                                            />
+                                            <Input
+                                                name='score3'
+                                                readOnly
+                                                value={selected.phase1Score3}
+                                                type="number"
+                                                placeholder="Score 3"
+                                                className="w-full"
+                                            />
+                                            <div className='flex flex-row gap-3 w-full'>
+                                                <Separator orientation='vertical' />
+                                                <Input
+                                                    name='scoreFinal'
+                                                    readOnly
+                                                    value={selected.phase1Score}
+                                                    type="number"
+                                                    placeholder="Score 3"
+                                                    className="w-full"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                                <Separator />
+                                {selected?.phase2Score && (
+                                    <div className='flex flex-col gap-2'>
+                                        <h1 className='text-xl font-bold'>Puntuación: FASE 2</h1>
+                                        <div className='flex gap-3'>
+                                            <Input
+                                                name='score1'
+                                                readOnly
+                                                value={selected.phase2Score1}
+                                                type="number"
+                                                placeholder="Score 1"
+                                                className="w-full"
+                                            />
+                                            <Input
+                                                name='score2'
+                                                readOnly
+                                                value={selected.phase2Score2}
+                                                type="number"
+                                                placeholder="Score 2"
+                                                className="w-full"
+                                            />
+                                            <Input
+                                                name='score3'
+                                                readOnly
+                                                value={selected.phase2Score3}
+                                                type="number"
+                                                placeholder="Score 3"
+                                                className="w-full"
+                                            />
+                                            <div className='flex flex-row gap-3 w-full'>
+                                                <Separator orientation='vertical' />
+                                                <Input
+                                                    name='scoreFinal'
+                                                    readOnly
+                                                    value={selected.phase2Score}
+                                                    type="number"
+                                                    placeholder="Score 3"
+                                                    className="w-full"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                                <Separator />
                                 <h1 className='text-xl font-bold'>Autores</h1>
                                 {fields.map((field, index) => (
                                     <AuthorForm key={field.id} form={form} index={index} onRemove={() => remove(index)} />
@@ -702,6 +827,64 @@ function PapersDialog() {
                                         </div>
                                     ) : "Cambiar estado"}
                                 </Button>
+                            </div>
+                        )}
+
+                        {action === 'rate-paper' && (
+                            /* Tres inputs para insertar 3 scores */
+                            // ROW DIV FOR SCORES -> USE STATE RATING
+                            <div>
+                                <div className='flex gap-3'>
+                                    <Input
+                                        name='score1'
+                                        onChange={handleInputRate}
+                                        type="number"
+                                        placeholder="Score 1"
+                                        className="w-full"
+                                    />
+                                    <Input
+                                        name='score2'
+                                        onChange={handleInputRate}
+                                        type="number"
+                                        placeholder="Score 2"
+                                        className="w-full"
+                                    />
+                                    <Input
+                                        name='score3'
+                                        onChange={handleInputRate}
+                                        type="number"
+                                        placeholder="Score 3"
+                                        className="w-full"
+                                    />
+                                </div>
+                                {errorRating && (
+                                    <p className="text-red-500 text-sm mt-2">
+                                        {errorRating}
+                                    </p>
+                                )}
+                                {!errorRating && (
+                                    <Button
+                                        disabled={loading ||
+                                            rating.score1 === undefined ||
+                                            rating.score2 === undefined ||
+                                            rating.score3 === undefined ||
+                                            rating.score1 <= 0 ||
+                                            rating.score2 <= 0 ||
+                                            rating.score3 <= 0 ||
+                                            rating.score1 > 10 ||
+                                            rating.score2 > 10 ||
+                                            rating.score3 > 10
+                                        }
+                                        type="button"
+                                        onClick={handleSubmitRating}
+                                        className="font-bold py-2 px-4 rounded duration-300 text-white mt-2">
+                                        {loading ? (
+                                            <div className="flex items-center justify-center space-x-2">
+                                                <LoaderCircle size={24} className="animate-spin text-white" />
+                                            </div>
+                                        ) : "Calificar"}
+                                    </Button>
+                                )}
                             </div>
                         )}
 

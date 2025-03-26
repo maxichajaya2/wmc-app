@@ -62,6 +62,12 @@ export interface State extends HttpRequestState {
   setSelectedProcess: (process: string | null) => void;
   setSelectedLeader: (category: User | null) => void;
 
+  ratingPaper: (rating: {
+    score1: number;
+    score2: number;
+    score3: number;
+  }) => Promise<void>;
+
   // Add these to the State interface
   isOpenCommentsDialog: boolean;
   openCommentsDialog: (id: number) => void;
@@ -106,8 +112,8 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
       (data) => {
         set(
           {
-            data: onlyPapersReceived(data),
-            filtered: onlyPapersReceived(data),
+            data: sortPapers(data),
+            filtered: sortPapers(data),
           },
           false,
           "getPaperSuccess"
@@ -126,8 +132,8 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
         const data = [newItem, ...get().data];
         set(
           {
-            data: onlyPapersReceived(data),
-            filtered: onlyPapersReceived(data),
+            data: sortPapers(data),
+            filtered: sortPapers(data),
             isOpenDialog: false,
           },
           false,
@@ -152,8 +158,8 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
         );
         set(
           {
-            data: onlyPapersReceived(data),
-            filtered: onlyPapersReceived(data),
+            data: sortPapers(data),
+            filtered: sortPapers(data),
             isOpenDialog: false,
             selected: undefined,
           },
@@ -177,8 +183,8 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
         const data = get().data.filter((u) => u.id !== selected.id);
         set(
           {
-            data: onlyPapersReceived(data),
-            filtered: onlyPapersReceived(data),
+            data: sortPapers(data),
+            filtered: sortPapers(data),
             isOpenDialog: false,
             selected: undefined,
           },
@@ -308,8 +314,8 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
         );
         set(
           {
-            data: onlyPapersReceived(data),
-            filtered: onlyPapersReceived(data),
+            data: sortPapers(data),
+            filtered: sortPapers(data),
             isOpenDialog: false,
             selected: undefined,
           },
@@ -353,6 +359,33 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
   closeConfirmDeleteComment: () => {
     set({ deletingCommentId: null, isOpenConfirmDeleteComment: false });
   },
+
+  ratingPaper: async (rating) => {
+    const selected = get().selected;
+    if (!selected) return;
+    handleRequestStore(
+      get(),
+      () => ApiService.rate(selected.id, rating),
+      (updatedItem) => {
+        const data = get().data.map((item) =>
+          item.id === updatedItem.id ? updatedItem : item
+        );
+        set(
+          {
+            data: sortPapers(data),
+            filtered: sortPapers(data),
+            isOpenDialog: false,
+            selected: undefined,
+          },
+          false,
+          "ratingPaperSuccess"
+        );
+        get().clearFilters();
+        get().closeActionModal();
+      },
+      (error) => console.error(error)
+    );
+  }
 });
 
 export const usePaperStore = create<State>()(
@@ -361,7 +394,7 @@ export const usePaperStore = create<State>()(
   })
 );
 
-function onlyPapersReceived(data: Entity[]): Entity[] {
+function sortPapers(data: Entity[]): Entity[] {
   return data.filter((item) => item.state !== StatePaper.REGISTERED).sort((a, b) => {
     if (a.createdAt < b.createdAt) return 1;
     if (a.createdAt > b.createdAt) return -1;

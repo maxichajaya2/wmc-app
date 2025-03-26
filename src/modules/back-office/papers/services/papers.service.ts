@@ -2,9 +2,10 @@ import { api } from "@/api";
 import {
   Paper,
   PayloadPaper,
-  PayloadChangeStatusPaper, Commentary,
+  PayloadChangeStatusPaper,
+  Commentary,
   PayloadCreateComment,
-  Author
+  Author,
 } from "@/models";
 
 export class PaperService {
@@ -83,5 +84,17 @@ export class PaperService {
   static findAuthorsByPaper = async (id: number) => {
     const { data } = await api.get<Author[]>(`/papers/${id}/authors`);
     return data;
-  }
+  };
+
+  static rate = async (
+    id: number,
+    payload: {
+      score1: number;
+      score2: number;
+      score3: number;
+    }
+  ) => {
+    const { data } = await api.post<Paper>(`/papers/${id}/rate`, payload);
+    return data;
+  };
 }

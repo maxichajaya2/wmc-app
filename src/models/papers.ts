@@ -21,6 +21,15 @@ export interface Paper {
   selectedReviewedDate?: string;
   approvedDate?: string;
   selectedApprovedDate?: string;
+  author: Author;
+  phase1Score1?: number;
+  phase1Score2?: number;
+  phase1Score3?: number;
+  phase1Score?: number;
+  phase2Score1?: number;
+  phase2Score2?: number;
+  phase2Score3?: number;
+  phase2Score?: number;
   dismissedDate?: string;
   selectedDismissedDate?: string;
   webUserId?: number;
@@ -48,7 +57,6 @@ export interface Paper {
   deletedAt?: string | null;
 }
 
-
 export interface PayloadPaper {
   title: string;
   resume: string;
@@ -73,9 +81,9 @@ export interface PayloadChangeStatusPaper {
 }
 
 export enum TypePaper {
-  ORAL = 'O',
-  POSTER = 'P',
-  PRESENTACION_INTERACTIVA = 'PI',
+  ORAL = "O",
+  POSTER = "P",
+  PRESENTACION_INTERACTIVA = "PI",
 }
 
 export const MapTypePaper: Record<TypePaper, string> = {
@@ -94,8 +102,8 @@ export enum StatePaper {
   DISMISSED = 6,
 }
 export enum ProcessPaper {
-  PRESELECCIONADO = 'P',
-  SELECCIONADO = 'S',
+  PRESELECCIONADO = "P",
+  SELECCIONADO = "S",
 }
 
 export const MapStatePaper: Record<StatePaper, string> = {
@@ -130,37 +138,37 @@ export interface PayloadCreateComment {
 }
 
 export interface Commentary {
-  id:         number;
-  comentary:  string;
+  id: number;
+  comentary: string;
   fileUrl?: string;
   userId?: number;
   user?: User;
-  paperId:    number;
-  paper:      Paper;
-  createdAt:  string;
-  updatedAt:  string;
-  deletedAt:  string;
+  paperId: number;
+  paper: Paper;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string;
 }
 
 export interface Author {
-  id:            number;
-  type:          AuthorType;
-  name:          string;
-  middle:        string;
-  last:          string;
-  remissive:     string;
-  institution:   string;
-  countryCode:   string;
-  email:         string;
-  emailCorp:     string;
-  cellphone:     string;
-  paperId:       number;
-  country:       Country;
+  id: number;
+  type: AuthorType;
+  name: string;
+  middle: string;
+  last: string;
+  remissive: string;
+  institution: string;
+  countryCode: string;
+  email: string;
+  emailCorp: string;
+  cellphone: string;
+  paperId: number;
+  country: Country;
 }
 
 export enum AuthorType {
-  AUTOR = 'A',
-  COAUTOR = 'C',
+  AUTOR = "A",
+  COAUTOR = "C",
 }
 
 export const MapAuthorType: Record<AuthorType, string> = {
@@ -169,9 +177,9 @@ export const MapAuthorType: Record<AuthorType, string> = {
 };
 
 export interface Parameter {
-  id:        number;
-  code:      string;
-  value:     string;
+  id: number;
+  code: string;
+  value: string;
   groupCode: null;
   createdAt: Date;
   updatedAt: Date;

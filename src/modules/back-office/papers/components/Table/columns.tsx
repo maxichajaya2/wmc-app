@@ -69,8 +69,11 @@ const TypeAssignedCell = React.memo(({ item }: { item: Entity }) => (
         )}
     </div>
 ))
-const ApproveDateCell = React.memo(({ item }: { item: Entity }) => (
+const ApprovePhaseOneDateCell = React.memo(({ item }: { item: Entity }) => (
     <div className="flex flex-col gap-2">{item.approvedDate ? formatDate(item.approvedDate) : "Sin fecha"}</div>
+))
+const ApprovePhaseTwoDateCell = React.memo(({ item }: { item: Entity }) => (
+    <div className="flex flex-col gap-2">{item.selectedApprovedDate ? formatDate(item.selectedApprovedDate) : "Sin fecha"}</div>
 ))
 
 const ProcessCell = React.memo(({ item }: { item: Entity }) => {
@@ -270,6 +273,25 @@ const ButtonReview = React.memo(({ item }: { item: Entity }) => {
     )
 })
 
+const ButtonRate = React.memo(({ item }: { item: Entity }) => {
+    const canReview = useCheckPermission(ModulesRoles.TECHINICAL_WORKS, ActionRoles.IN_REVIEW)
+    const { openActionModal } = usePaperStore((state) => ({
+        openActionModal: state.openActionModal,
+    }))
+    const handleReview = useCallback(() => {
+        openActionModal(item.id, "rate-paper")
+    }, [item, openActionModal])
+
+    if (!canReview || item.state !== StatePaper.UNDER_REVIEW ||
+        (item.process === ProcessPaper.PRESELECCIONADO && item.phase1Score) ||
+        (item.process === ProcessPaper.SELECCIONADO && item.phase2Score)
+    ) return null
+
+    return (
+        <DropdownMenuItem onClick={handleReview}>Puntuación</DropdownMenuItem>
+    )
+})
+
 const ButtonApprove = React.memo(({ item }: { item: Entity }) => {
     const canApprove = useCheckPermission(ModulesRoles.TECHINICAL_WORKS, ActionRoles.APPROVED)
     const { openActionModal } = usePaperStore((state) => ({
@@ -279,7 +301,10 @@ const ButtonApprove = React.memo(({ item }: { item: Entity }) => {
         openActionModal(item.id, "approve-paper")
     }, [item, openActionModal])
 
-    if (!canApprove || item.state !== StatePaper.UNDER_REVIEW) return null
+    if (!canApprove || item.state !== StatePaper.UNDER_REVIEW
+        || (item.process === ProcessPaper.PRESELECCIONADO && !item.phase1Score)
+        || (item.process === ProcessPaper.SELECCIONADO && !item.phase2Score)
+    ) return null
 
     return (
         <DropdownMenuItem onClick={handleApprove}>
@@ -339,6 +364,7 @@ const ActionsCell = React.memo(({ item }: { item: Entity }) => {
                 <ButtonSendToLeader item={item} />
                 <ButtonSendToReviewer item={item} />
                 <ButtonReview item={item} />
+                <ButtonRate item={item} />
                 <ButtonApprove item={item} />
                 <ButtonViewComments item={item} />
                 <ButtonDismiss item={item} />
@@ -383,8 +409,13 @@ export const columns: ColumnDef<Entity>[] = [
     },
     {
         accessorKey: "approvedDate",
-        header: "F. Aprobación",
-        cell: ({ row }) => <ApproveDateCell item={row.original} />,
+        header: "F. Preselecc.",
+        cell: ({ row }) => <ApprovePhaseOneDateCell item={row.original} />,
+    },
+    {
+        accessorKey: "approvedDate",
+        header: "F. Selecc.",
+        cell: ({ row }) => <ApprovePhaseTwoDateCell item={row.original} />,
     },
     {
         accessorKey: "type",

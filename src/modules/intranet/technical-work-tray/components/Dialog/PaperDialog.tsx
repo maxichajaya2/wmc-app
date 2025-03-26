@@ -1,4 +1,4 @@
-import { Button, Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage, Input, Popover, PopoverContent, PopoverTrigger, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Separator, Switch, Textarea } from '@/components';
+import { Button, Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage, Input, Popover, PopoverContent, PopoverTrigger, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Separator, Switch } from '@/components';
 import { TypographyH4 } from '@/shared/typography';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Check, ChevronsUpDown, LoaderCircle } from 'lucide-react';
@@ -59,7 +59,7 @@ function PapersDialog() {
             case 'dismiss-paper':
                 return 'Cambiar estado a: DESESTIMADO'
             case 'charge-complete-archive':
-                return 'Cargar archivo completo'
+                return 'Cargar trabajo completo'
             default:
                 return 'Trabajo Técnico'
         }
@@ -337,7 +337,7 @@ function PapersDialog() {
                                         </FormItem>
                                     )}
                                 />
-                                <FormField
+                                {/* <FormField
                                     name="resume"
                                     control={form.control}
                                     render={({ field }) => (
@@ -354,7 +354,7 @@ function PapersDialog() {
                                             <FormMessage />
                                         </FormItem>
                                     )}
-                                />
+                                /> */}
                                 <FormField
                                     name="file"
                                     control={form.control}
@@ -389,7 +389,7 @@ function PapersDialog() {
                                                 // Visor de archivo
                                                 <div className="flex items-center space-x-2">
                                                     <Link to={selected.fullFileUrl || ''} target="_blank" className="text-blue-500 underline">
-                                                        Ver archivo completo (FASE 2)
+                                                        Ver trabajo completo (FASE 2)
                                                     </Link>
                                                 </div>
                                             )}

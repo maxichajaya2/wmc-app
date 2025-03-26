@@ -3,22 +3,22 @@ import { format } from "date-fns"
 import { CalendarIcon, Check, ChevronsUpDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, Button, Input, Popover, PopoverContent, PopoverTrigger, Calendar } from "@/components"
-import { MapProcessPaper, MapStatePaper, MapStatePaperForUser, ProcessPaper, StatePaper } from "@/models"
+import { MapProcessPaper, ProcessPaper } from "@/models"
 import { usePaperStore } from "../../store/papers.store"
 import { useTopicStore } from "@/modules/back-office/topics/store/topic.store"
 import { useCategoryStore } from "@/modules/back-office/category/store/category.store"
 
 
-const states: StatePaper[] = [
-    StatePaper.REGISTERED,
-    StatePaper.RECEIVED,
-    StatePaper.SENT,
-    StatePaper.ASSIGNED,
-    StatePaper.UNDER_REVIEW,
-    StatePaper.APPROVED,
-    StatePaper.DISMISSED,
+// const states: StatePaper[] = [
+//     StatePaper.REGISTERED,
+//     StatePaper.RECEIVED,
+//     StatePaper.SENT,
+//     StatePaper.ASSIGNED,
+//     StatePaper.UNDER_REVIEW,
+//     StatePaper.APPROVED,
+//     StatePaper.DISMISSED,
 
-]
+// ]
 const processes: ProcessPaper[] = [
     ProcessPaper.PRESELECCIONADO,
     ProcessPaper.SELECCIONADO,
@@ -31,12 +31,12 @@ function CustomerFilters() {
         dateRange,
         selectedTopic,
         selectedCategory,
-        selectedState,
+        // selectedState,
         setFilterTerm,
         setDateRange,
         setSelectedTopic,
         setSelectedCategory,
-        setSelectedState,
+        // setSelectedState,
         updateFiltered,
         selectedProcess,
         setSelectedProcess,
@@ -162,7 +162,7 @@ function CustomerFilters() {
                 </PopoverContent>
             </Popover>
 
-            <Popover>
+            {/* <Popover>
                 <PopoverTrigger asChild>
                     <Button variant="outline" role="combobox" className="w-[200px] justify-between">
                         {selectedState ? MapStatePaper[selectedState] : "Selecciona un estado"}
@@ -192,7 +192,7 @@ function CustomerFilters() {
                         </CommandList>
                     </Command>
                 </PopoverContent>
-            </Popover>
+            </Popover> */}
 
 
             <Popover>

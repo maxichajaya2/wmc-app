@@ -8,7 +8,7 @@ export const abstractSchema = z.object({
     .min(3, { message: "El título debe tener al menos 3 caracteres" }),
   resume: z
     .string()
-    .min(3, { message: "El resumen debe tener al menos 3 caracteres" }),
+    .optional(),
   file: z.string().optional(),
   categoryId: z.preprocess(
     (val) => Number(val || ""),
@@ -88,6 +88,7 @@ export const paperSchema = abstractSchema
       : undefined,
     eventWhere: data.flagEvent ? data.eventWhere : undefined,
     eventWhich: data.flagEvent ? data.eventWhich : undefined,
+    resume: "default",
   }));
 
 export type AbstractFormData = z.infer<typeof abstractSchema>;

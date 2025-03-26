@@ -14,7 +14,7 @@ function AuthLayout() {
     }
 
     if (authStatus === 'authorized') {
-        return <Navigate to={ROUTES_PATHS.DASHBOARD} />
+        return <Navigate to={ROUTES_PATHS.TECHINICAL_WORKS} />
     }
 
     return (

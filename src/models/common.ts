@@ -18,6 +18,7 @@ export type ActionsTypes =
   | "receive-paper"
   | "send-paper"
   | "review-paper"
+  | "rate-paper"
   | "assign-paper"
   | "approve-paper"
   | "dismiss-paper"

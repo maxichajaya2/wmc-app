@@ -12,7 +12,7 @@ import {
     TooltipProvider,
     TooltipTrigger,
 } from "@/components"
-import { type Paper as Entity, MapDocumentType, MapProcessPaper, MapStatePaperForUser, MapTypePaper, ProcessPaper, StatePaper } from "@/models"
+import { type Paper as Entity, MapProcessPaper, MapStatePaperForUser, MapTypePaper, ProcessPaper, StatePaper } from "@/models"
 import type { ColumnDef } from "@tanstack/react-table"
 import { MoreHorizontal, MessageSquare } from "lucide-react"
 import { usePaperStore } from "../../store/papers.store"
@@ -38,19 +38,21 @@ const TopicCell = React.memo(({ item }: { item: Entity }) => (
     </div>
 ))
 const TitleCell = React.memo(({ item }: { item: Entity }) => <div className="flex flex-col gap-1">{item.title || ''}</div>)
-const NameAndLastNameUserCell = React.memo(({ item }: { item: Entity }) => (
+const NameAndLastNameUserCell = React.memo(({ item }: { item: Entity }) => {
+    const author =item.author
+    return(
     <div className="flex flex-col gap-1">
         {item.webUser ? (
             <>
-                {item.webUser.name} {item.webUser.lastName} <br />
-                {item.webUser.email} <br />
-                {MapDocumentType[item.webUser.documentType]} {item.webUser.documentNumber}
+                {author?.name} {author?.middle} {author?.last} <br />
+                {author?.email} <br />
+                {author?.remissive} {author?.institution}
             </>
         ) : (
             "Sin asignar"
         )}
     </div>
-))
+)})
 const CreationDateCell = React.memo(({ item }: { item: Entity }) => (
     <div className="flex flex-col gap-2">{item.createdAt ? formatDate(item.createdAt) : "Sin fecha"}</div>
 ))
@@ -65,9 +67,9 @@ const TypeAssignedCell = React.memo(({ item }: { item: Entity }) => (
         )}
     </div>
 ))
-const ApproveDateCell = React.memo(({ item }: { item: Entity }) => (
-    <div className="flex flex-col gap-2">{item.approvedDate ? formatDate(item.approvedDate) : "Sin fecha"}</div>
-))
+// const ApproveDateCell = React.memo(({ item }: { item: Entity }) => (
+//     <div className="flex flex-col gap-2">{item.approvedDate ? formatDate(item.approvedDate) : "Sin fecha"}</div>
+// ))
 
 const ProcessCell = React.memo(({ item }: { item: Entity }) => {
     let className = "bg-blue-500 text-white hover:bg-blue-500/80"
@@ -223,7 +225,7 @@ const ButtonChargeCompleteArchive = React.memo(({ item }: { item: Entity }) => {
     }, [item, openActionModal])
 
     if ((item.process === ProcessPaper.PRESELECCIONADO && item.state === StatePaper.APPROVED && !item.fullFileUrl)) {
-        return <DropdownMenuItem onClick={handleChargeCompleteArchive}>Cargar archivo completo</DropdownMenuItem>
+        return <DropdownMenuItem onClick={handleChargeCompleteArchive}>Cargar trabajo completo</DropdownMenuItem>
     } else {
         null
     }
@@ -309,7 +311,7 @@ export const columns: ColumnDef<Entity>[] = [
     },
     {
         accessorKey: "userName",
-        header: "Nombres",
+        header: "Autor",
         cell: ({ row }) => <NameAndLastNameUserCell item={row.original} />,
     },
     {
@@ -317,11 +319,11 @@ export const columns: ColumnDef<Entity>[] = [
         header: "F. Enviado",
         cell: ({ row }) => <CreationDateCell item={row.original} />,
     },
-    {
-        accessorKey: "approvedDate",
-        header: "F. Aprobación",
-        cell: ({ row }) => <ApproveDateCell item={row.original} />,
-    },
+    // {
+    //     accessorKey: "approvedDate",
+    //     header: "F. Aprobación",
+    //     cell: ({ row }) => <ApproveDateCell item={row.original} />,
+    // },
     {
         accessorKey: "type",
         header: "Tipo",
