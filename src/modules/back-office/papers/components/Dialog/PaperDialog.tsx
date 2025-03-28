@@ -491,13 +491,20 @@ function PapersDialog() {
                                         <FormItem className="">
                                             <FormLabel>Idioma</FormLabel>
                                             <FormControl>
-                                                <Input
-                                                    {...field}
-                                                    readOnly={action === 'view'}
-                                                    type="text"
-                                                    placeholder="Idioma"
-                                                    className="w-full"
-                                                />
+                                                <Select
+                                                    disabled={action === 'view'}
+                                                    onValueChange={field.onChange} defaultValue={field.value?.toString()}>
+                                                    <FormControl>
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder={'Escoge un idioma'} />
+                                                        </SelectTrigger>
+                                                    </FormControl>
+                                                    <SelectContent>
+                                                        {/* Español, Inglés */}
+                                                        <SelectItem value="Español">Español</SelectItem>
+                                                        <SelectItem value="Inglés">Inglés</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
