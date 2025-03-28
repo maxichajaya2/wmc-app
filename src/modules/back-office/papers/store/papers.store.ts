@@ -17,6 +17,20 @@ import { PaperService as ApiService } from "../services/papers.service";
 import { useUsersStore } from "@/modules/back-office/users/store/users.store";
 import { ReportService } from "../../reports/services/reports.service";
 
+// DAYJS
+import dayjs from "dayjs";
+// import utc from 'dayjs-plugin-utc';
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+// import { formatDate } from '../../../../../utils/format-date';
+// Configurar los plugins de Day.js
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(isSameOrBefore);
+dayjs.extend(isSameOrAfter);
+
 type Payload = PayloadPaper;
 
 export interface State extends HttpRequestState {
@@ -269,16 +283,17 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
 
     handleRequestStore(
       get(),
-      () => ReportService.getPapersReport({
-        state: selectedState ?? undefined,
-        reviewerUserId: selectedReviewer?.id,
-        leaderId: selectedLeader?.id,
-        topicId: selectedTopic?.id,
-        categoryId: selectedCategory?.id,
-        process: selectedProcess ?? undefined,
-        startDate: dateRange.start || undefined,
-        endDate: dateRange.end || undefined,
-      }),
+      () =>
+        ReportService.getPapersReport({
+          state: selectedState ?? undefined,
+          reviewerUserId: selectedReviewer?.id,
+          leaderId: selectedLeader?.id,
+          topicId: selectedTopic?.id,
+          categoryId: selectedCategory?.id,
+          process: selectedProcess ?? undefined,
+          startDate: dateRange.start || undefined,
+          endDate: dateRange.end || undefined,
+        }),
       () => {
         // Aquí puedes manejar la respuesta de la descarga del reporte
         console.log("Reporte descargado con éxito");
@@ -309,8 +324,9 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
 
       const matchesDate =
         (!dateRange.start ||
-          new Date(item.createdAt) >= new Date(dateRange.start)) &&
-        (!dateRange.end || new Date(item.createdAt) <= new Date(dateRange.end));
+          dayjs(item.createdAt).isSameOrAfter(dayjs(dateRange.start))) &&
+        (!dateRange.end ||
+          dayjs(item.createdAt).isSameOrBefore(dayjs(dateRange.end)));
 
       const matchesTopic = !selectedTopic || item.topicId === selectedTopic.id;
       const matchesReviewer =

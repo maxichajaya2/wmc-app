@@ -1,5 +1,4 @@
 import type React from "react"
-import { format } from "date-fns"
 import { CalendarIcon, Check, ChevronsUpDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, Button, Input, Popover, PopoverContent, PopoverTrigger, Calendar } from "@/components"
@@ -78,6 +77,10 @@ function CustomerFilters() {
         updateFiltered()
     }
 
+    const formatDate = (date: string) => {
+        return dayjs(date).tz("America/Bogota").format(DateClass.FORMAT_INPUT_SHORT)
+    }
+
     return (
         <div className="flex flex-wrap gap-4 items-center p-4 bg-white shadow rounded-lg mb-4">
             <Input placeholder="Busca por nombre o documento" value={filterTerm} onChange={handleSearch} className="w-64" />
@@ -89,11 +92,11 @@ function CustomerFilters() {
                         {dateRange.start ? (
                             dateRange.end ? (
                                 <>
-                                    {dateRange.start} - {dateRange.end}
+                                    {formatDate(dateRange.start)} | {formatDate(dateRange.end)}
                                 </>
                             ) : (
                                 <>
-                                    {dayjs(dateRange.start).toDate()}
+                                    {formatDate(dateRange.start)}
                                 </>
                             )
                         ) : (

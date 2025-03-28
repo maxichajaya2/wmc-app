@@ -17,6 +17,20 @@ import { PaperService as ApiService } from "../services/papers.service";
 import { useUsersStore } from "@/modules/back-office/users/store/users.store";
 import { useAuthIntranetStore } from "../../auth/store";
 
+// DAYJS
+import dayjs from "dayjs";
+// import utc from 'dayjs-plugin-utc';
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+// import { formatDate } from '../../../../../utils/format-date';
+// Configurar los plugins de Day.js
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(isSameOrBefore);
+dayjs.extend(isSameOrAfter);
+
 type Payload = PayloadPaper;
 
 export interface State extends HttpRequestState {
@@ -280,8 +294,9 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
 
       const matchesDate =
         (!dateRange.start ||
-          new Date(item.createdAt) >= new Date(dateRange.start)) &&
-        (!dateRange.end || new Date(item.createdAt) <= new Date(dateRange.end));
+          dayjs(item.createdAt).isSameOrAfter(dayjs(dateRange.start))) &&
+        (!dateRange.end ||
+          dayjs(item.createdAt).isSameOrBefore(dayjs(dateRange.end)));
 
       const matchesTopic = !selectedTopic || item.topicId === selectedTopic.id;
       const matchesReviewer =
@@ -378,9 +393,13 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
       (data) => {
         set(
           {
-            limitDatePhaseOne: data.find(param => param.code === "limitDatePhase1")?.value,
+            limitDatePhaseOne: data.find(
+              (param) => param.code === "limitDatePhase1"
+            )?.value,
             // limitDatePhaseOne: '2025-03-23',
-            limitDatePhaseTwo: data.find(param => param.code === "limitDatePhase2")?.value,
+            limitDatePhaseTwo: data.find(
+              (param) => param.code === "limitDatePhase2"
+            )?.value,
           },
           false,
           "getLimitDatesSuccess"
@@ -415,7 +434,7 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
       },
       (error) => console.error(error)
     );
-  }
+  },
 });
 
 export const usePaperStore = create<State>()(
