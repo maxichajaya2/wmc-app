@@ -628,7 +628,7 @@ function PapersDialog() {
                                                 readOnly
                                                 value={selected.phase1Score1}
                                                 type="number"
-                                                placeholder="Score 1"
+                                                placeholder="Impacto"
                                                 className="w-full"
                                             />
                                             <Input
@@ -636,7 +636,7 @@ function PapersDialog() {
                                                 readOnly
                                                 value={selected.phase1Score2}
                                                 type="number"
-                                                placeholder="Score 2"
+                                                placeholder="Calidad"
                                                 className="w-full"
                                             />
                                             <Input
@@ -644,7 +644,7 @@ function PapersDialog() {
                                                 readOnly
                                                 value={selected.phase1Score3}
                                                 type="number"
-                                                placeholder="Score 3"
+                                                placeholder="Innovación"
                                                 className="w-full"
                                             />
                                             <div className='flex flex-row gap-3 w-full'>
@@ -671,7 +671,7 @@ function PapersDialog() {
                                                 readOnly
                                                 value={selected.phase2Score1}
                                                 type="number"
-                                                placeholder="Score 1"
+                                                placeholder="Impacto"
                                                 className="w-full"
                                             />
                                             <Input
@@ -679,7 +679,7 @@ function PapersDialog() {
                                                 readOnly
                                                 value={selected.phase2Score2}
                                                 type="number"
-                                                placeholder="Score 2"
+                                                placeholder="Calidad"
                                                 className="w-full"
                                             />
                                             <Input
@@ -687,7 +687,7 @@ function PapersDialog() {
                                                 readOnly
                                                 value={selected.phase2Score3}
                                                 type="number"
-                                                placeholder="Score 3"
+                                                placeholder="Innovación"
                                                 className="w-full"
                                             />
                                             <div className='flex flex-row gap-3 w-full'>
@@ -846,21 +846,21 @@ function PapersDialog() {
                                         name='score1'
                                         onChange={handleInputRate}
                                         type="number"
-                                        placeholder="Score 1"
+                                        placeholder="Impacto"
                                         className="w-full"
                                     />
                                     <Input
                                         name='score2'
                                         onChange={handleInputRate}
                                         type="number"
-                                        placeholder="Score 2"
+                                        placeholder="Calidad"
                                         className="w-full"
                                     />
                                     <Input
                                         name='score3'
                                         onChange={handleInputRate}
                                         type="number"
-                                        placeholder="Score 3"
+                                        placeholder="Innovación"
                                         className="w-full"
                                     />
                                 </div>
