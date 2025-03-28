@@ -264,7 +264,7 @@ export default function Registro() {
             {isSended && (
               <div className="bg-green-100 p-4 my-4">
                 <p className='text-green-950'>
-                  Se ha enviado un código de verificación a tu correo electrónico.
+                  Se ha enviado un correo de confirmación a tu bandeja correo electrónico.
                 </p>
               </div>
             )}

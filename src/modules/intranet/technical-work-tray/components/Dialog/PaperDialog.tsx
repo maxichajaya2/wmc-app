@@ -413,11 +413,14 @@ function PapersDialog() {
                                                         </SelectTrigger>
                                                     </FormControl>
                                                     <SelectContent>
-                                                        {categories.map((category) => (
-                                                            <SelectItem key={category.id} value={category.id.toString()}>
-                                                                {category.name}
-                                                            </SelectItem>
-                                                        ))}
+                                                        {categories
+                                                            // ordenar alfabéticamente
+                                                            .sort((a, b) => a.name.localeCompare(b.name))
+                                                            .map((category) => (
+                                                                <SelectItem key={category.id} value={category.id.toString()}>
+                                                                    {category.name}
+                                                                </SelectItem>
+                                                            ))}
                                                     </SelectContent>
                                                 </Select>
                                             </FormControl>
@@ -443,6 +446,8 @@ function PapersDialog() {
                                                     </FormControl>
                                                     <SelectContent>
                                                         {listTopics
+                                                            // ordenar alfabéticamente
+                                                            .sort((a, b) => a.name.localeCompare(b.name))
                                                             .map((topic) => (
                                                                 <SelectItem key={topic.id} value={topic.id.toString()}>
                                                                     {topic.name}
