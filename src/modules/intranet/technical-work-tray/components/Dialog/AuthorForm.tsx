@@ -30,8 +30,8 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
     return (
         <div className="space-y-4 border p-4 rounded-md mb-4">
             <FormField
-                control={form.control}
                 name={`authors.${index}.name`}
+                control={form.control}
                 render={({ field }) => (
                     <FormItem>
                         <FormLabel>Nombre</FormLabel>
@@ -43,8 +43,8 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
                 )}
             />
             <FormField
-                control={form.control}
                 name={`authors.${index}.middle`}
+                control={form.control}
                 render={({ field }) => (
                     <FormItem>
                         <FormLabel>Apellido Paterno</FormLabel>
@@ -56,8 +56,8 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
                 )}
             />
             <FormField
-                control={form.control}
                 name={`authors.${index}.last`}
+                control={form.control}
                 render={({ field }) => (
                     <FormItem>
                         <FormLabel>Apellido Materno</FormLabel>
@@ -69,8 +69,8 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
                 )}
             />
             <FormField
-                control={form.control}
                 name={`authors.${index}.remissive`}
+                control={form.control}
                 render={({ field }) => (
                     <FormItem>
                         <FormLabel>Cargo</FormLabel>
@@ -82,8 +82,8 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
                 )}
             />
             <FormField
-                control={form.control}
                 name={`authors.${index}.institution`}
+                control={form.control}
                 render={({ field }) => (
                     <FormItem>
                         <FormLabel>Empresa</FormLabel>
@@ -94,19 +94,6 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
                     </FormItem>
                 )}
             />
-            {/* <FormField
-                control={form.control}
-                name={`authors.${index}.countryCode`}
-                render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>País</FormLabel>
-                        <FormControl>
-                            <Input {...field} readOnly={action === 'view'} />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                )}
-            /> */}
             <FormField
                 name={`authors.${index}.countryCode`}
                 control={form.control}
@@ -139,8 +126,8 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
                 )}
             />
             <FormField
-                control={form.control}
                 name={`authors.${index}.emailCorp`}
+                control={form.control}
                 render={({ field }) => (
                     <FormItem>
                         <FormLabel>Email Corporativo</FormLabel>
@@ -152,8 +139,8 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
                 )}
             />
             <FormField
-                control={form.control}
                 name={`authors.${index}.email`}
+                control={form.control}
                 render={({ field }) => (
                     <FormItem>
                         <FormLabel>Email</FormLabel>
@@ -165,8 +152,8 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
                 )}
             />
             <FormField
-                control={form.control}
                 name={`authors.${index}.cellphone`}
+                control={form.control}
                 render={({ field }) => (
                     <FormItem>
                         <FormLabel>Celular</FormLabel>
@@ -194,17 +181,24 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
                                 </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                                <SelectItem value={AuthorType.AUTOR}>{MapAuthorType[AuthorType.AUTOR]}</SelectItem>
-                                <SelectItem value={AuthorType.COAUTOR}>{MapAuthorType[AuthorType.COAUTOR]}</SelectItem>
+                                {/* <SelectItem value={AuthorType.AUTOR}>{MapAuthorType[AuthorType.AUTOR]}</SelectItem>
+                                Solo mostrar cuado exista más de un autor */}
+                                {form.getValues('authors').length === 1 ? (
+                                    <SelectItem value={AuthorType.AUTOR}>{MapAuthorType[AuthorType.AUTOR]}</SelectItem>
+                                ) : (
+                                    <SelectItem value={AuthorType.COAUTOR}>{MapAuthorType[AuthorType.COAUTOR]}</SelectItem>
+                                )}
                             </SelectContent>
                         </Select>
                         <FormMessage />
                     </FormItem>
                 )}
             />
-            <Button disabled={loading || action === 'view'} type="button" variant="destructive" onClick={onRemove}>
-                Eliminar Autor
-            </Button>
+            {index > 0 && (
+                <Button disabled={loading || action === 'view'} type="button" variant="destructive" onClick={onRemove}>
+                    Eliminar Co autor
+                </Button>
+            )}
         </div>
     )
 }

@@ -193,19 +193,22 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
                                 </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                                <SelectItem value={AuthorType.AUTOR}>{MapAuthorType[AuthorType.AUTOR]}</SelectItem>
-                                <SelectItem value={AuthorType.COAUTOR}>{MapAuthorType[AuthorType.COAUTOR]}</SelectItem>
+                                {form.getValues('authors').length === 1 ? (
+                                    <SelectItem value={AuthorType.AUTOR}>{MapAuthorType[AuthorType.AUTOR]}</SelectItem>
+                                ) : (
+                                    <SelectItem value={AuthorType.COAUTOR}>{MapAuthorType[AuthorType.COAUTOR]}</SelectItem>
+                                )}
                             </SelectContent>
                         </Select>
                         <FormMessage />
                     </FormItem>
                 )}
             />
-            <Button
-            disabled={loading || action === 'view'}
-            type="button" variant="destructive" onClick={onRemove}>
-                Eliminar Autor
-            </Button>
+            {index > 0 && (
+                <Button disabled={loading || action === 'view'} type="button" variant="destructive" onClick={onRemove}>
+                    Eliminar Co autor
+                </Button>
+            )}
         </div>
     )
 }

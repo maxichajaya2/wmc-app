@@ -710,13 +710,15 @@ function PapersDialog() {
                                     <AuthorForm key={field.id} form={form} index={index} onRemove={() => remove(index)} />
                                 ))}
                                 <div className="flex flex-col gap-4">
-                                    <Button
-                                        disabled={loading || action === 'view'}
-                                        type="button" onClick={() => append({
-                                            type: form.watch('authors')[0]?.type === AuthorType.AUTOR ? AuthorType.COAUTOR : AuthorType.AUTOR
-                                        } as AuthorFormData)}>
-                                        Añadir Autor
-                                    </Button>
+                                    {form.getValues('authors').length < 3 && (
+                                        <Button
+                                            disabled={loading || action === 'view'}
+                                            type="button" onClick={() => append({
+                                                type: form.watch('authors')[0]?.type === AuthorType.AUTOR ? AuthorType.COAUTOR : AuthorType.AUTOR
+                                            } as AuthorFormData)}>
+                                            Añadir Co autor
+                                        </Button>
+                                    )}
                                     {/* <Button type="submit">Save</Button> */}
                                 </div>
                             </div>
