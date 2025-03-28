@@ -183,7 +183,7 @@ function ProfilePage() {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{'Tipo Documento'}</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select disabled onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder={'Tipo Documento'} />
@@ -209,7 +209,7 @@ function ProfilePage() {
                 <FormItem>
                   <FormLabel>{'Nro Documento'}</FormLabel>
                   <FormControl>
-                    <Input placeholder={'Nro Documento'} {...field} />
+                    <Input readOnly placeholder={'Nro Documento'} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
