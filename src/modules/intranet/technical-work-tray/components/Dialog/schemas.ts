@@ -6,9 +6,7 @@ export const abstractSchema = z.object({
   title: z
     .string()
     .min(3, { message: "El título debe tener al menos 3 caracteres" }),
-  resume: z
-    .string()
-    .optional(),
+  resume: z.string().optional(),
   file: z.string().optional(),
   categoryId: z.preprocess(
     (val) => Number(val || ""),
@@ -23,7 +21,9 @@ export const abstractSchema = z.object({
     })
   ),
   language: z.string().min(1, { message: "El idioma es obligatorio" }),
-  keywords: z.array(z.string()).optional(),
+  keywords: z.array(z.string()).max(6, {
+    message: "Máximo 6 palabras clave",
+  }),
   flagEvent: z.boolean().optional(),
   eventWhere: z.string().optional(),
   eventWhich: z.string().optional(),
