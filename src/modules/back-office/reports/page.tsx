@@ -12,7 +12,7 @@ export default function ReportsPage() {
     const handleDownloadExcel = async () => {
         setLoading(true)
         try {
-            await ReportService.getPapersReport()
+            await ReportService.getPapersReport({})
             toast({
                 title: "Descarga exitosa",
                 description: "El informe de trabajos técnicos se ha descargado correctamente.",

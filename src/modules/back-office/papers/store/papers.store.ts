@@ -9,11 +9,13 @@ import {
   PayloadChangeStatusPaper,
   PayloadPaper,
   StatePaper,
-  Topic, User,
-  Commentary
+  Topic,
+  User,
+  Commentary,
 } from "@/models";
 import { PaperService as ApiService } from "../services/papers.service";
 import { useUsersStore } from "@/modules/back-office/users/store/users.store";
+import { ReportService } from "../../reports/services/reports.service";
 
 type Payload = PayloadPaper;
 
@@ -52,6 +54,7 @@ export interface State extends HttpRequestState {
 
   /* Particular Actions */
   changeStatusPaper: (payload: PayloadChangeStatusPaper) => Promise<void>;
+  getReport: () => Promise<void>;
 
   /* Particular Filter Actions */
   setDateRange: (range: { start: string; end: string }) => void;
@@ -247,10 +250,41 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
   },
 
   closeActionModal() {
-    console.log('closeActionModal')
+    console.log("closeActionModal");
     get().setSelected(undefined);
     get().setAction("none");
     get().setIsOpenDialog(false);
+  },
+
+  getReport: async () => {
+    const {
+      dateRange,
+      selectedTopic,
+      selectedReviewer,
+      selectedState,
+      selectedCategory,
+      selectedLeader,
+      selectedProcess,
+    } = get();
+
+    handleRequestStore(
+      get(),
+      () => ReportService.getPapersReport({
+        state: selectedState ?? undefined,
+        reviewerUserId: selectedReviewer?.id,
+        leaderId: selectedLeader?.id,
+        topicId: selectedTopic?.id,
+        categoryId: selectedCategory?.id,
+        process: selectedProcess ?? undefined,
+        startDate: dateRange.start || undefined,
+        endDate: dateRange.end || undefined,
+      }),
+      () => {
+        // Aquí puedes manejar la respuesta de la descarga del reporte
+        console.log("Reporte descargado con éxito");
+      },
+      (error) => console.error(error)
+    );
   },
 
   updateFiltered() {
@@ -282,8 +316,10 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
       const matchesReviewer =
         !selectedReviewer || item.reviewerUserId === selectedReviewer.id;
       const matchesState = !selectedState || item.state === selectedState;
-      const matchesCategory = !selectedCategory || item.categoryId === selectedCategory.id;
-      const matchesLeader = !selectedLeader || item.leaderId === selectedLeader.id;
+      const matchesCategory =
+        !selectedCategory || item.categoryId === selectedCategory.id;
+      const matchesLeader =
+        !selectedLeader || item.leaderId === selectedLeader.id;
       const matchesProcess =
         !selectedProcess || item.process === selectedProcess;
 
@@ -334,10 +370,14 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
   openCommentsDialog: (id) => {
     const item = get().data.find((u) => u.id === id);
     if (!item) return;
-    set({ isOpenCommentsDialog: true, selected: item }, false, "openCommentsDialog");
+    set(
+      { isOpenCommentsDialog: true, selected: item },
+      false,
+      "openCommentsDialog"
+    );
   },
   closeCommentsDialog: () => {
-    console.log('entra aqui? closeCommentsDialog')
+    console.log("entra aqui? closeCommentsDialog");
     get().setSelected(undefined);
     set({ isOpenCommentsDialog: false }, false, "closeCommentsDialog");
   },
@@ -385,7 +425,7 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
       },
       (error) => console.error(error)
     );
-  }
+  },
 });
 
 export const usePaperStore = create<State>()(
@@ -395,10 +435,12 @@ export const usePaperStore = create<State>()(
 );
 
 function sortPapers(data: Entity[]): Entity[] {
-  return data.filter((item) => item.state !== StatePaper.REGISTERED).sort((a, b) => {
-    if (a.createdAt < b.createdAt) return 1;
-    if (a.createdAt > b.createdAt) return -1;
-    return 0;
-  });
+  return data
+    .filter((item) => item.state !== StatePaper.REGISTERED)
+    .sort((a, b) => {
+      if (a.createdAt < b.createdAt) return 1;
+      if (a.createdAt > b.createdAt) return -1;
+      return 0;
+    });
   // return data.filter((item) => item);
 }

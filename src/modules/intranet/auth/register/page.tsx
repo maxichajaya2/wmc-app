@@ -2,7 +2,7 @@ import { useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { EyeIcon, EyeOffIcon, Loader2 } from "lucide-react"
+import { Loader2 } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
 import { ROUTES_PATHS } from "@/constants"
 import { PayloadPreRegister, useAuthIntranetStore } from "../store"
@@ -17,13 +17,16 @@ export default function Registro() {
     email: z.string().email().min(1, {
       message: 'Campo requerido',
     }),
-    password: z.string().min(1, {
-      message: 'Campo requerido',
-    }),
+    // password: z.string().min(1, {
+    //   message: 'Campo requerido',
+    // }),
     name: z.string().min(1, {
       message: 'Campo requerido',
     }),
     lastName: z.string().min(1, {
+      message: 'Campo requerido',
+    }),
+    maternalLastName: z.string().min(1, {
       message: 'Campo requerido',
     }),
     documentType: z.nativeEnum(DocumentType),
@@ -44,31 +47,23 @@ export default function Registro() {
       });
     }
     // mostrar mensaje para la contraseña tenga al menos 8 digitos
-    if (val.password.length < 8) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["password"],
-        message: 'Campo debe tener al menos 8 dígitos',
-      });
-    }
-  }).transform((val) => {
-    return {
-      email: val.email,
-      name: val.name,
-      lastName: val.lastName,
-      documentNumber: val.documentNumber,
-      documentType: val.documentType,
-      password: val.password || undefined,
-    }
+    // if (val.password.length < 8) {
+    //   ctx.addIssue({
+    //     code: z.ZodIssueCode.custom,
+    //     path: ["password"],
+    //     message: 'Campo debe tener al menos 8 dígitos',
+    //   });
+    // }
   });
   const form = useForm<PayloadPreRegister>({
     resolver: zodResolver(FormSchema), defaultValues: {
       documentType: DocumentType.DNI,
       name: '',
       lastName: '',
+      maternalLastName: '',
       email: '',
       documentNumber: '',
-      password: '',
+      // password: '',
     }
   })
   const router = useNavigate();
@@ -76,8 +71,8 @@ export default function Registro() {
   const isSended = useAuthIntranetStore(state => state.isSended)
   // const sendVerificationCode = useAuthIntranetStore(state => state.sendVerificationCode)
   const registerUser = useAuthIntranetStore(state => state.registerUser)
-  const showPassword = useAuthIntranetStore(state => state.showPassword)
-  const setShowPassword = useAuthIntranetStore(state => state.setShowPassword)
+  // const showPassword = useAuthIntranetStore(state => state.showPassword)
+  // const setShowPassword = useAuthIntranetStore(state => state.setShowPassword)
   const setError = useAuthIntranetStore(state => state.setError)
   const token = useAuthIntranetStore(state => state.token)
 
@@ -119,16 +114,32 @@ export default function Registro() {
           <CardContent>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <div className="space-y-2">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{'Nombres'}</FormLabel>
+                        <FormControl>
+                          <Input placeholder={'Nombres'} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <FormField
                       control={form.control}
-                      name="name"
+                      name="lastName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{'Nombres'}</FormLabel>
+                          <FormLabel>{'Apellido Paterno'}</FormLabel>
                           <FormControl>
-                            <Input placeholder={'Nombres'} {...field} />
+                            <Input placeholder={'Apellido Paterno'} {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -138,12 +149,12 @@ export default function Registro() {
                   <div className="space-y-2">
                     <FormField
                       control={form.control}
-                      name="lastName"
+                      name="maternalLastName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{'Apellidos'}</FormLabel>
+                          <FormLabel>{'Apellido Materno'}</FormLabel>
                           <FormControl>
-                            <Input placeholder={'Apellidos'} {...field} />
+                            <Input placeholder={'Apellido Materno'} {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -213,7 +224,7 @@ export default function Registro() {
                   </div>
                 </div>
 
-                <div className="space-y-2">
+                {/* <div className="space-y-2">
                   <FormField
                     control={form.control}
                     name="password"
@@ -235,7 +246,7 @@ export default function Registro() {
                       </FormItem>
                     )}
                   />
-                </div>
+                </div> */}
 
                 <Button type="submit" className="w-full bg-[#004d58] hover:bg-[#003540]" disabled={loading}>
                   {loading ? (

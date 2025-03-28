@@ -1,10 +1,39 @@
 import { api } from "@/api";
+import { StatePaper } from "@/models";
 
 export class ReportService {
-  static getPapersReport = async () => {
+  static getPapersReport = async ({
+    state,
+    reviewerUserId,
+    leaderId,
+    topicId,
+    categoryId,
+    process,
+    startDate,
+    endDate,
+  }: {
+    state?: StatePaper;
+    reviewerUserId?: number;
+    leaderId?: number;
+    topicId?: number;
+    categoryId?: number;
+    process?: string;
+    startDate?: string;
+    endDate?: string;
+  }) => {
     try {
       const response = await api.get("/reports/papers", {
         responseType: "blob", // Importante para recibir el archivo correctamente
+        params: {
+          state,
+          reviewerUserId,
+          leaderId,
+          topicId,
+          categoryId,
+          process,
+          startDate,
+          endDate,
+        },
       });
 
       // Crear un blob a partir de la respuesta

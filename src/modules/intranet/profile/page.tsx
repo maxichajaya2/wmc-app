@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { Button, Form, FormControl, FormField, FormItem, FormLabel, FormMessage, Input, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components";
-import { EyeIcon, EyeOffIcon, LoaderCircle } from "lucide-react";
+import { LoaderCircle } from "lucide-react";
 
 function ProfilePage() {
 
@@ -13,11 +13,14 @@ function ProfilePage() {
     email: z.string().email().min(1, {
       message: 'Campo requerido',
     }),
-    password: z.string().optional(),
+    // password: z.string().optional(),
     name: z.string().min(1, {
       message: 'Campo requerido',
     }),
     lastName: z.string().min(1, {
+      message: 'Campo requerido',
+    }),
+    maternalLastName: z.string().min(1, {
       message: 'Campo requerido',
     }),
     documentType: z.nativeEnum(DocumentType),
@@ -42,16 +45,17 @@ function ProfilePage() {
       email: val.email,
       name: val.name,
       lastName: val.lastName,
+      maternalLastName: val.maternalLastName,
       documentNumber: val.documentNumber,
       documentType: val.documentType,
-      password: val.password || undefined,
+      // password: val.password || undefined,
     }
   });
 
   const user = useAuthIntranetStore(state => state.user);
   const loading = useAuthIntranetStore(state => state.loading);
-  const showPassword = useAuthIntranetStore(state => state.showPassword)
-  const setShowPassword = useAuthIntranetStore(state => state.setShowPassword)
+  // const showPassword = useAuthIntranetStore(state => state.showPassword)
+  // const setShowPassword = useAuthIntranetStore(state => state.setShowPassword)
   const updateDataUser = useAuthIntranetStore(state => state.updateDataUser);
   const getUserByToken = useAuthIntranetStore(state => state.getUserByToken);
   const hasHydrated = useAuthIntranetStore(state => state._hasHydrated);
@@ -60,15 +64,16 @@ function ProfilePage() {
       documentType: DocumentType.DNI,
       name: '',
       lastName: '',
+      maternalLastName: '',
       email: '',
       documentNumber: '',
-      password: '',
     }
   })
 
   useEffect(() => {
     if (!user) return
     if (hasHydrated && user) {
+      console.log({user})
       form.reset({
         ...user,
       })
@@ -116,9 +121,22 @@ function ProfilePage() {
               name="lastName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{'Apellidos'}</FormLabel>
+                  <FormLabel>{'Apellido Paterno'}</FormLabel>
                   <FormControl>
-                    <Input placeholder={'Apellidos'} {...field} />
+                    <Input placeholder={'Apellido Paterno'} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="maternalLastName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{'Apellido Materno'}</FormLabel>
+                  <FormControl>
+                    <Input placeholder={'Apellido Materno'} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -137,7 +155,7 @@ function ProfilePage() {
                 </FormItem>
               )}
             />
-            <FormField
+            {/* <FormField
               control={form.control}
               name="password"
               render={({ field }) => (
@@ -157,7 +175,7 @@ function ProfilePage() {
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
 
             <FormField
               control={form.control}

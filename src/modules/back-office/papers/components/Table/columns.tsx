@@ -413,7 +413,7 @@ export const columns: ColumnDef<Entity>[] = [
         cell: ({ row }) => <ApprovePhaseOneDateCell item={row.original} />,
     },
     {
-        accessorKey: "approvedDate",
+        accessorKey: "selectedApprovedDate",
         header: "F. Selecc.",
         cell: ({ row }) => <ApprovePhaseTwoDateCell item={row.original} />,
     },

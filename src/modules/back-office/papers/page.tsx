@@ -1,7 +1,5 @@
 
-import {
-  File, PlusCircle
-} from "lucide-react"
+import { FileSpreadsheet, PlusCircle } from "lucide-react"
 import {
   Card,
   CardContent,
@@ -34,6 +32,7 @@ function PapersManagementPage() {
   const isOpenConfirmDeleteComment = usePaperStore((state) => state.isOpenConfirmDeleteComment)
   const filtered = usePaperStore(state => state.filtered);
   const filterTerm = usePaperStore(state => state.filterTerm);
+  const getReport = usePaperStore(state => state.getReport);
 
   const findAll = usePaperStore(state => state.findAll);
   const findAllCategories = useCategoryStore(state => state.findAll);
@@ -79,10 +78,16 @@ function PapersManagementPage() {
             placeholder="Búsqueda..."
             className="h-9 md:min-w-80" />
         </div>
-        <div className="ml-auto flex items-center gap-2">
-          <Button size="sm" variant="outline" className="h-8 gap-1 hidden" disabled>
-            <File className="h-3.5 w-3.5" />
-            <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+        <div className="ml-auto flex items-center justify-between w-full gap-2">
+          <Button size="sm" className="h-8 gap-1 bg-green-500 hover:bg-green-400"
+            type="button"
+            onClick={async () => {
+              await getReport()
+            }}
+            disabled={loading}
+          >
+            <FileSpreadsheet className="h-4 w-4" />
+            <span className="sr-only sm:not-sr-only sm:whitespace-nowrap text-base">
               Exportar
             </span>
           </Button>

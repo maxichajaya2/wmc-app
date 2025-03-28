@@ -22,10 +22,11 @@ export const MapDocumentType: Record<DocumentType, string> = {
   [DocumentType.CREDENCIAL_DIPLOMATICA]: "Credencial Diplomática",
 };
 export interface PayloadPreRegister {
-  email: string;
-  password: string;
   name: string;
   lastName: string;
+  maternalLastName: string;
+  email: string;
+  password: string;
   documentType: DocumentType; //DNI, CE
   documentNumber: string;
 }
@@ -37,6 +38,7 @@ export interface Session {
 export interface User {
   name: string;
   lastName: string;
+  maternalLastName: string;
   documentType: DocumentType;
   documentNumber: string;
   email: string;
