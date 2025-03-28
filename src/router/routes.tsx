@@ -12,6 +12,12 @@ const DashboardLayout = lazy(
 );
 // LAZY LOAD PAGES USER
 const Login = lazy(() => import("@/modules/intranet/auth/login/page"));
+const RequestResetPassword = lazy(() =>
+  import("@/modules/intranet/auth/request-reset-password/page")
+);
+const ResetPassword = lazy(() =>
+  import("@/modules/intranet/auth/reset-password/page")
+);
 const Register = lazy(() => import("@/modules/intranet/auth/register/page"));
 const ConfirmRegister = lazy(() =>
   import("@/modules/intranet/auth/confirm-register/page")
@@ -59,6 +65,8 @@ export const routes: RouteObject[] = [
     children: [
       { path: ROUTES_PATHS.LOGIN, element: lazyLoad(Login) },
       { path: ROUTES_PATHS.REGISTER, element: lazyLoad(Register) },
+      { path: ROUTES_PATHS.RECOVER_PASSWORD, element: lazyLoad(RequestResetPassword) },
+      { path: ROUTES_PATHS.RESET_PASSWORD, element: lazyLoad(ResetPassword) },
     ],
   },
   // AUTH ADMIN

@@ -8,6 +8,21 @@ import { usePaperStore } from "../../store/papers.store"
 import { useTopicStore } from "@/modules/back-office/topics/store/topic.store"
 import { useCategoryStore } from "@/modules/back-office/category/store/category.store"
 
+// DAYJS
+import dayjs from 'dayjs'
+// import utc from 'dayjs-plugin-utc';
+import timezone from 'dayjs/plugin/timezone'
+import utc from 'dayjs/plugin/utc'
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
+import { DateClass } from "@/lib"
+// import { formatDate } from '../../../../../utils/format-date';
+// Configurar los plugins de Day.js
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.extend(isSameOrBefore);
+dayjs.extend(isSameOrAfter);
+
 
 // const states: StatePaper[] = [
 //     StatePaper.REGISTERED,
@@ -52,9 +67,15 @@ function CustomerFilters() {
 
     const handleDateChange = (date: Date | undefined, type: "start" | "end") => {
         if (date) {
-            setDateRange({ ...dateRange, [type]: format(date, "yyyy-MM-dd") })
+            const dateToFormat = dayjs(date).tz("America/Bogota").format(DateClass.FORMAT_INPUT_SHORT)
+            setDateRange({ ...dateRange, [type]: DateClass.DateToFormat(dateToFormat, DateClass.FORMAT_INPUT_SHORT) })
             updateFiltered()
         }
+    }
+    // funcion para resetear el filtro de fecha
+    const resetDateRange = () => {
+        setDateRange({ start: '', end: '' })
+        updateFiltered()
     }
 
     return (
@@ -68,10 +89,12 @@ function CustomerFilters() {
                         {dateRange.start ? (
                             dateRange.end ? (
                                 <>
-                                    {format(new Date(dateRange.start), "LLL dd, y")} - {format(new Date(dateRange.end), "LLL dd, y")}
+                                    {dateRange.start} - {dateRange.end}
                                 </>
                             ) : (
-                                format(new Date(dateRange.start), "LLL dd, y")
+                                <>
+                                    {dayjs(dateRange.start).toDate()}
+                                </>
                             )
                         ) : (
                             <span>Selecciona un rango de fechas</span>
@@ -82,10 +105,10 @@ function CustomerFilters() {
                     <Calendar
                         initialFocus
                         mode="range"
-                        defaultMonth={dateRange.start ? new Date(dateRange.start) : new Date()}
+                        defaultMonth={dateRange.start ? dayjs(dateRange.start).toDate() : undefined}
                         selected={{
-                            from: dateRange.start ? new Date(dateRange.start) : undefined,
-                            to: dateRange.end ? new Date(dateRange.end) : undefined,
+                            from: dateRange.start ? dayjs(dateRange.start).toDate() : undefined,
+                            to: dateRange.end ? dayjs(dateRange.end).toDate() : undefined,
                         }}
                         onSelect={(range) => {
                             if (range?.from) handleDateChange(range.from, "start")
@@ -93,6 +116,16 @@ function CustomerFilters() {
                         }}
                         numberOfMonths={2}
                     />
+                    <div className="flex items-center justify-between p-2">
+                        <Button
+                            variant="destructive"
+                            className="w-full"
+                            onClick={() => {
+                                resetDateRange()
+                            }}>
+                            Limpiar
+                        </Button>
+                    </div>
                 </PopoverContent>
             </Popover>
 

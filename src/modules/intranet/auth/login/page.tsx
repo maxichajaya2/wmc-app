@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { EyeIcon, EyeOffIcon, Loader2 } from "lucide-react"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { ROUTES_PATHS } from "@/constants"
 import { useForm } from "react-hook-form"
 import { PayloadLogin, useAuthIntranetStore } from "../store"
@@ -66,7 +66,7 @@ export default function Login() {
                             </div>
                         </div>
                         <CardTitle className="text-center">
-                            <h1 className="text-2xl font-bold text-[#004d58]">FORO TIS | 
+                            <h1 className="text-2xl font-bold text-[#004d58]">FORO TIS |
                                 <span className="text-black"> Iniciar sesión</span>
                             </h1>
                         </CardTitle>
@@ -125,7 +125,12 @@ export default function Login() {
                                         name="password"
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>{'Contraseña'}</FormLabel>
+                                                <div className="flex items-center justify-between">
+                                                    <FormLabel>{'Contraseña'}</FormLabel>
+                                                    <Link to={ROUTES_PATHS.RECOVER_PASSWORD} className="text-xs text-[#d35e0d] hover:underline">
+                                                        ¿Olvidaste tu contraseña?
+                                                    </Link>
+                                                </div>
                                                 <FormControl>
                                                     <div className='relative'>
                                                         <Input type={showPassword ? 'text' : 'password'} placeholder={'Contraseña'} {...field} />

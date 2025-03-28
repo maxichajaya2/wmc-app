@@ -7,6 +7,7 @@ export const ROUTES_PATHS = {
   LOGIN: "/inicio-sesion",
   REGISTER: "/registro",
   CONFIRM_REGISTER: "/confirmar-registro",
+  RECOVER_PASSWORD: "/recuperar-contrasena",
   RESET_PASSWORD: "/restablecer-contrasena",
   PROFILE: "/perfil",
   TECHNICAL_WORK_TRAY: "/bandeja-trabajos-tecnicos",
