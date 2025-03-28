@@ -58,12 +58,12 @@ function ConfirRegisterPage() {
                         </div>
                         <CardTitle className="text-center">
                             <h1 className="text-2xl font-bold text-[#004d58]">FORO TIS |
-                                <span className="text-black"> Recuperar Contraseña</span>
+                                <span className="text-black"> Restablecer Contraseña</span>
                             </h1>
                         </CardTitle>
                         <CardDescription className="text-center">
                             <p className="text-sm text-gray-500">
-                                Ingresa tu correo electrónico y te enviaremos un código de recuperación.
+                                Por favor, ingresa tu nueva contraseña para restablecerla.
                             </p>
                         </CardDescription>
                     </CardHeader>
@@ -77,10 +77,10 @@ function ConfirRegisterPage() {
                                             name="password"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>{'Contraseña'}</FormLabel>
+                                                    <FormLabel>{'Nueva contraseña'}</FormLabel>
                                                     <FormControl>
                                                         <div className='relative'>
-                                                            <Input type={showPassword ? 'text' : 'password'} placeholder={'Contraseña'} {...field} />
+                                                            <Input type={showPassword ? 'text' : 'password'} placeholder={'Nueva contraseña'} {...field} />
                                                             <span className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer"
                                                                 onClick={() => setShowPassword(!showPassword)}
                                                             >
