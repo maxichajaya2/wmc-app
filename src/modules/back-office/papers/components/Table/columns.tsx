@@ -209,9 +209,7 @@ const ButtonEdit = React.memo(({ item }: { item: Entity }) => {
 
 const ButtonDelete = React.memo(({ item }: { item: Entity }) => {
     const canDelete = useCheckPermission(ModulesRoles.TECHINICAL_WORKS, ActionRoles.DELETE)
-    const { openActionModal } = usePaperStore((state) => ({
-        openActionModal: state.openActionModal,
-    }))
+    const openActionModal = usePaperStore((state) => state.openActionModal)
     const handleDelete = useCallback(() => {
         openActionModal(item.id, "delete")
     }, [item, openActionModal])

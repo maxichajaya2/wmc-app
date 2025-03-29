@@ -261,10 +261,7 @@ function PapersDialog() {
 
     // Efecto que resetea el campo de temas cuando se cambia la categoría
     useEffect(() => {
-        // if (selected) {
-        //     form.setValue('topicId', selected.topicId)
-        // } else {
-        // }
+        if (action === 'delete') return
         form.setValue('topicId', undefined as unknown as number)
     }, [form.watch('categoryId')])
     // END LOGIC CATEGORIES
