@@ -1,4 +1,4 @@
-import { Button, Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage, Input, Popover, PopoverContent, PopoverTrigger, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Separator, Switch } from '@/components';
+import { Button, Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage, Input, Label, Popover, PopoverContent, PopoverTrigger, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Separator, Switch } from '@/components';
 import { TypographyH4 } from '@/shared/typography';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Check, ChevronsUpDown, LoaderCircle } from 'lucide-react';
@@ -620,40 +620,55 @@ function PapersDialog() {
                                     <div className='flex flex-col gap-2'>
                                         <h1 className='text-xl font-bold'>Puntuación: FASE 1</h1>
                                         <div className='flex gap-3'>
-                                            <Input
-                                                name='score1'
-                                                readOnly
-                                                value={selected.phase1Score1}
-                                                type="number"
-                                                placeholder="Impacto"
-                                                className="w-full"
-                                            />
-                                            <Input
-                                                name='score2'
-                                                readOnly
-                                                value={selected.phase1Score2}
-                                                type="number"
-                                                placeholder="Calidad"
-                                                className="w-full"
-                                            />
-                                            <Input
-                                                name='score3'
-                                                readOnly
-                                                value={selected.phase1Score3}
-                                                type="number"
-                                                placeholder="Innovación"
-                                                className="w-full"
-                                            />
-                                            <div className='flex flex-row gap-3 w-full'>
-                                                <Separator orientation='vertical' />
+                                            <div>
+                                                <Label className='text-sm'>Impacto</Label>
                                                 <Input
-                                                    name='scoreFinal'
+                                                    name='score1'
                                                     readOnly
-                                                    value={selected.phase1Score}
+                                                    value={selected.phase1Score1}
                                                     type="number"
-                                                    placeholder="Score 3"
+                                                    placeholder="Impacto"
                                                     className="w-full"
                                                 />
+                                            </div>
+                                            <div>
+                                                <Label className='text-sm'>Calidad</Label>
+                                                <Input
+                                                    name='score2'
+                                                    readOnly
+                                                    value={selected.phase1Score2}
+                                                    type="number"
+                                                    placeholder="Calidad"
+                                                    className="w-full"
+                                                />
+                                            </div>
+                                            <div>
+                                                <Label className='text-sm'>Innovación</Label>
+                                                <Input
+                                                    name='score3'
+                                                    readOnly
+                                                    value={selected.phase1Score3}
+                                                    type="number"
+                                                    placeholder="Innovación"
+                                                    className="w-full"
+                                                />
+                                            </div>
+
+
+
+                                            <div className='flex flex-row gap-3 w-full'>
+                                                <Separator orientation='vertical' />
+                                                <div className='w-full'>
+                                                    <Label className='text-sm'>Puntuación Final</Label>
+                                                    <Input
+                                                        name='scoreFinal'
+                                                        readOnly
+                                                        value={selected?.phase1Score}
+                                                        type="number"
+                                                        placeholder="Score 3"
+                                                        className="w-full"
+                                                    />
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -663,40 +678,53 @@ function PapersDialog() {
                                     <div className='flex flex-col gap-2'>
                                         <h1 className='text-xl font-bold'>Puntuación: FASE 2</h1>
                                         <div className='flex gap-3'>
-                                            <Input
-                                                name='score1'
-                                                readOnly
-                                                value={selected.phase2Score1}
-                                                type="number"
-                                                placeholder="Impacto"
-                                                className="w-full"
-                                            />
-                                            <Input
-                                                name='score2'
-                                                readOnly
-                                                value={selected.phase2Score2}
-                                                type="number"
-                                                placeholder="Calidad"
-                                                className="w-full"
-                                            />
-                                            <Input
-                                                name='score3'
-                                                readOnly
-                                                value={selected.phase2Score3}
-                                                type="number"
-                                                placeholder="Innovación"
-                                                className="w-full"
-                                            />
-                                            <div className='flex flex-row gap-3 w-full'>
-                                                <Separator orientation='vertical' />
+                                            <div className='w-full'>
+                                                <Label className='text-sm'>Impacto</Label>
                                                 <Input
-                                                    name='scoreFinal'
+                                                    name='score1'
                                                     readOnly
-                                                    value={selected.phase2Score}
+                                                    value={selected?.phase2Score1}
                                                     type="number"
-                                                    placeholder="Score 3"
+                                                    placeholder="Impacto"
                                                     className="w-full"
                                                 />
+                                            </div>
+                                            <div className='w-full'>
+                                                <Label className='text-sm'>Calidad</Label>
+                                                <Input
+                                                    name='score2'
+                                                    readOnly
+                                                    value={selected?.phase2Score2}
+                                                    type="number"
+                                                    placeholder="Calidad"
+                                                    className="w-full"
+                                                />
+                                            </div>
+                                            <div className='w-full'>
+                                                <Label className='text-sm'>Innovación</Label>
+                                                <Input
+                                                    name='score3'
+                                                    readOnly
+                                                    value={selected?.phase2Score3}
+                                                    type="number"
+                                                    placeholder="Innovación"
+                                                    className="w-full"
+                                                />
+                                            </div>
+
+                                            <div className='flex flex-row gap-3 w-full'>
+                                                <Separator orientation='vertical' />
+                                                <div className='w-full'>
+                                                    <Label className='text-sm'>Puntuación Final</Label>
+                                                    <Input
+                                                        name='scoreFinal'
+                                                        readOnly
+                                                        value={selected?.phase2Score}
+                                                        type="number"
+                                                        placeholder="Score 3"
+                                                        className="w-full"
+                                                    />
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -841,27 +869,36 @@ function PapersDialog() {
                             // ROW DIV FOR SCORES -> USE STATE RATING
                             <div>
                                 <div className='flex gap-3'>
-                                    <Input
-                                        name='score1'
-                                        onChange={handleInputRate}
-                                        type="number"
-                                        placeholder="Impacto"
-                                        className="w-full"
-                                    />
-                                    <Input
-                                        name='score2'
-                                        onChange={handleInputRate}
-                                        type="number"
-                                        placeholder="Calidad"
-                                        className="w-full"
-                                    />
-                                    <Input
-                                        name='score3'
-                                        onChange={handleInputRate}
-                                        type="number"
-                                        placeholder="Innovación"
-                                        className="w-full"
-                                    />
+                                    <div className='w-full'>
+                                        <Label className='text-sm'>Impacto</Label>
+                                        <Input
+                                            name='score1'
+                                            onChange={handleInputRate}
+                                            type="number"
+                                            placeholder="Impacto"
+                                            className="w-full"
+                                        />
+                                    </div>
+                                    <div className='w-full'>
+                                        <Label className='text-sm'>Calidad</Label>
+                                        <Input
+                                            name='score2'
+                                            onChange={handleInputRate}
+                                            type="number"
+                                            placeholder="Calidad"
+                                            className="w-full"
+                                        />
+                                    </div>
+                                    <div className='w-full'>
+                                        <Label className='text-sm'>Innovación</Label>
+                                        <Input
+                                            name='score3'
+                                            onChange={handleInputRate}
+                                            type="number"
+                                            placeholder="Innovación"
+                                            className="w-full"
+                                        />
+                                    </div>
                                 </div>
                                 {errorRating && (
                                     <p className="text-red-500 text-sm mt-2">
@@ -888,7 +925,7 @@ function PapersDialog() {
                                             <div className="flex items-center justify-center space-x-2">
                                                 <LoaderCircle size={24} className="animate-spin text-white" />
                                             </div>
-                                        ) : "Calificar"}
+                                        ) : `Calificar: ${Number(((rating.score1 + rating.score2 + rating.score3) / 3).toFixed(2))}`}
                                     </Button>
                                 )}
                             </div>

@@ -39,20 +39,21 @@ const TopicCell = React.memo(({ item }: { item: Entity }) => (
 ))
 const TitleCell = React.memo(({ item }: { item: Entity }) => <div className="flex flex-col gap-1">{item.title || ''}</div>)
 const NameAndLastNameUserCell = React.memo(({ item }: { item: Entity }) => {
-    const author =item.author
-    return(
-    <div className="flex flex-col gap-1">
-        {item.webUser ? (
-            <>
-                {author?.name} {author?.middle} {author?.last} <br />
-                {author?.email} <br />
-                {author?.remissive} {author?.institution}
-            </>
-        ) : (
-            "Sin asignar"
-        )}
-    </div>
-)})
+    const author = item.author
+    return (
+        <div className="flex flex-col gap-1">
+            {item.webUser ? (
+                <>
+                    {author?.name} {author?.middle} {author?.last} <br />
+                    {author?.email} <br />
+                    {author?.remissive} {author?.institution}
+                </>
+            ) : (
+                "Sin asignar"
+            )}
+        </div>
+    )
+})
 const CreationDateCell = React.memo(({ item }: { item: Entity }) => (
     <div className="flex flex-col gap-2">{item.createdAt ? formatDate(item.createdAt) : "Sin fecha"}</div>
 ))
@@ -170,6 +171,30 @@ const StatusCell = React.memo(({ item }: { item: Entity }) => {
     )
 })
 
+const Phase1ScoreFinalCell = React.memo(({ item }: { item: Entity }) => (
+    <div className="flex flex-col gap-2">
+        {item.phase1Score ? (
+            <div className="flex flex-col gap-1">
+                {item.phase1Score}
+            </div>
+        ) : (
+            "--"
+        )}
+    </div>
+))
+
+const Phase2ScoreFinalCell = React.memo(({ item }: { item: Entity }) => (
+    <div className="flex flex-col gap-2">
+        {item.phase2Score ? (
+            <div className="flex flex-col gap-1">
+                {item.phase2Score}
+            </div>
+        ) : (
+            "--"
+        )}
+    </div>
+))
+
 const ButtonView = React.memo(({ item }: { item: Entity }) => {
     const { openActionModal } = usePaperStore((state) => ({
         openActionModal: state.openActionModal,
@@ -282,7 +307,7 @@ const ActionsCell = React.memo(({ item }: { item: Entity }) => {
                     || (isValidDatePhaseTwo && item.process === ProcessPaper.PRESELECCIONADO && item.state === StatePaper.APPROVED))
                     && <ButtonEdit item={item} />}
                 <ButtonChargeCompleteArchive item={item} />
-                {(isValidDate|| isValidDatePhaseTwo)
+                {(isValidDate || isValidDatePhaseTwo)
                     && <ButtonSend item={item} />}
                 <ButtonViewComments item={item} />
                 {/* DEV
@@ -319,11 +344,16 @@ export const columns: ColumnDef<Entity>[] = [
         header: "F. Enviado",
         cell: ({ row }) => <CreationDateCell item={row.original} />,
     },
-    // {
-    //     accessorKey: "approvedDate",
-    //     header: "F. Aprobación",
-    //     cell: ({ row }) => <ApproveDateCell item={row.original} />,
-    // },
+    {
+        accessorKey: "phase1Score",
+        header: "Puntuación Fase 1",
+        cell: ({ row }) => <Phase1ScoreFinalCell item={row.original} />,
+    },
+    {
+        accessorKey: "phase2Score",
+        header: "Puntuación Fase 2",
+        cell: ({ row }) => <Phase2ScoreFinalCell item={row.original} />,
+    },
     {
         accessorKey: "type",
         header: "Tipo",

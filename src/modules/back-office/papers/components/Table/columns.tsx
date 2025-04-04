@@ -175,6 +175,30 @@ const StatusCell = React.memo(({ item }: { item: Entity }) => {
     )
 })
 
+const Phase1ScoreFinalCell = React.memo(({ item }: { item: Entity }) => (
+    <div className="flex flex-col gap-2">
+        {item.phase1Score ? (
+            <div className="flex flex-col gap-1">
+                {item.phase1Score}
+            </div>
+        ) : (
+            "--"
+        )}
+    </div>
+))
+
+const Phase2ScoreFinalCell = React.memo(({ item }: { item: Entity }) => (
+    <div className="flex flex-col gap-2">
+        {item.phase2Score ? (
+            <div className="flex flex-col gap-1">
+                {item.phase2Score}
+            </div>
+        ) : (
+            "--"
+        )}
+    </div>
+))
+
 const ButtonView = React.memo(({ item }: { item: Entity }) => {
     const { openActionModal } = usePaperStore((state) => ({
         openActionModal: state.openActionModal,
@@ -419,6 +443,16 @@ export const columns: ColumnDef<Entity>[] = [
         accessorKey: "type",
         header: "Tipo",
         cell: ({ row }) => <TypeAssignedCell item={row.original} />,
+    },
+    {
+        accessorKey: "phase1Score",
+        header: "Puntuación Fase 1",
+        cell: ({ row }) => <Phase1ScoreFinalCell item={row.original} />,
+    },
+    {
+        accessorKey: "phase2Score",
+        header: "Puntuación Fase 2",
+        cell: ({ row }) => <Phase2ScoreFinalCell item={row.original} />,
     },
     {
         accessorKey: "process",

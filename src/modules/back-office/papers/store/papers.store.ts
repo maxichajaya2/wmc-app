@@ -24,6 +24,8 @@ import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+import { AxiosError } from "axios";
+import { toast } from "@/components";
 // import { formatDate } from '../../../../../utils/format-date';
 // Configurar los plugins de Day.js
 dayjs.extend(utc);
@@ -298,7 +300,16 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
         // Aquí puedes manejar la respuesta de la descarga del reporte
         console.log("Reporte descargado con éxito");
       },
-      (error) => console.error(error)
+      (error) => {
+        if (error instanceof AxiosError) {
+          const errorMessage = error.response?.data.message;
+          toast({
+            title: "Error",
+            description: errorMessage,
+            variant: "destructive",
+          });
+        }
+      }
     );
   },
 
