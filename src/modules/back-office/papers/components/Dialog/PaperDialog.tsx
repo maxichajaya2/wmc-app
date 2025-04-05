@@ -93,9 +93,9 @@ function PapersDialog() {
 
     /* START LOGIC RATE PAPER */
     const [rating, setRating] = useState({
-        score1: 0,
-        score2: 0,
-        score3: 0,
+        score1: (selected?.process === ProcessPaper.PRESELECCIONADO ? selected.phase1Score1 : selected?.phase2Score1) || 0,
+        score2: (selected?.process === ProcessPaper.PRESELECCIONADO ? selected.phase1Score2 : selected?.phase2Score2) || 0,
+        score3: (selected?.process === ProcessPaper.PRESELECCIONADO ? selected.phase1Score3 : selected?.phase2Score3) || 0,
     });
     const [errorRating, setErrorRating] = useState('');
     const handleInputRate = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -877,6 +877,7 @@ function PapersDialog() {
                                             type="number"
                                             placeholder="Impacto"
                                             className="w-full"
+                                            value={rating.score1}
                                         />
                                     </div>
                                     <div className='w-full'>
@@ -887,6 +888,7 @@ function PapersDialog() {
                                             type="number"
                                             placeholder="Calidad"
                                             className="w-full"
+                                            value={rating.score2}
                                         />
                                     </div>
                                     <div className='w-full'>
@@ -897,6 +899,7 @@ function PapersDialog() {
                                             type="number"
                                             placeholder="Innovación"
                                             className="w-full"
+                                            value={rating.score3}
                                         />
                                     </div>
                                 </div>

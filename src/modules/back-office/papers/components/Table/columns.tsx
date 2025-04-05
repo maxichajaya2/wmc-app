@@ -304,9 +304,10 @@ const ButtonRate = React.memo(({ item }: { item: Entity }) => {
         openActionModal(item.id, "rate-paper")
     }, [item, openActionModal])
 
-    if (!canReview || item.state !== StatePaper.UNDER_REVIEW ||
-        (item.process === ProcessPaper.PRESELECCIONADO && item.phase1Score) ||
-        (item.process === ProcessPaper.SELECCIONADO && item.phase2Score)
+    if (!canReview || item.state !== StatePaper.UNDER_REVIEW
+        // || Comentamos esto para que puedan seguir calificando
+        // (item.process === ProcessPaper.PRESELECCIONADO && item.phase1Score) ||
+        // (item.process === ProcessPaper.SELECCIONADO && item.phase2Score)
     ) return null
 
     return (
