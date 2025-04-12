@@ -21,7 +21,9 @@ export const abstractSchema = z.object({
     })
   ),
   language: z.string().min(1, { message: "El idioma es obligatorio" }),
-  keywords: z.array(z.string()).max(6, {
+  keywords: z.array(z.string()).min(1, {
+    message: "Mínimo 1 palabra clave",
+  }).max(6, {
     message: "Máximo 6 palabras clave",
   }),
   flagEvent: z.boolean().optional(),
