@@ -1,4 +1,4 @@
-import { Button, Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage, Input, Label, Popover, PopoverContent, PopoverTrigger, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Separator, Switch } from '@/components';
+import { Button, Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage, Input, Label, Popover, PopoverContent, PopoverTrigger, Select, SelectContent, SelectItem, SelectTrigger, SelectValue, Separator, Switch, toast } from '@/components';
 import { TypographyH4 } from '@/shared/typography';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Check, ChevronsUpDown, LoaderCircle } from 'lucide-react';
@@ -159,8 +159,20 @@ function PapersDialog() {
     const [uploading, setUploading] = useState(false);
     const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>, index?: number) => {
         const file = event.target.files?.[0];
+        const allowedExtensions = ['doc', 'docx'];
         if (file) {
+            const extension = file.name.split('.').pop()?.toLowerCase();
             setUploading(true);
+            if (!allowedExtensions.includes(extension!)) {
+                toast({
+                    title: 'Error',
+                    description: 'Solo se permiten archivos .doc y .docx',
+                    variant: 'destructive',
+                })
+                event.target.value = ''// Limpia el input
+                setUploading(false);
+                return
+            }
             try {
                 const fileUrl = await CommonService.uploadFile(file);
 
@@ -360,7 +372,7 @@ function PapersDialog() {
                                     control={form.control}
                                     render={(_) => (
                                         <FormItem className="">
-                                            <FormLabel>Archivo</FormLabel>
+                                            <FormLabel>Archivo <small>(*Solo se permiten ficheros .doc y .docx)</small></FormLabel>
                                             <FormControl>
                                                 <Input
                                                     type="file"
