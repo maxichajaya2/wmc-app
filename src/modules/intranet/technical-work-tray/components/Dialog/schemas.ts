@@ -7,7 +7,9 @@ export const abstractSchema = z.object({
     .string()
     .min(3, { message: "El título debe tener al menos 3 caracteres" }),
   resume: z.string().optional(),
-  file: z.string().optional(),
+  file: z.string().min(1, {
+    message: "El archivo es requerido",
+  }),
   categoryId: z.preprocess(
     (val) => Number(val || ""),
     z.number().min(1, {
