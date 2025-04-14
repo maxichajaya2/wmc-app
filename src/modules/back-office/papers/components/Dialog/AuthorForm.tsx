@@ -193,7 +193,7 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
                                 </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                                {form.getValues('authors').length === 1 ? (
+                                {index === 0 ? (
                                     <SelectItem value={AuthorType.AUTOR}>{MapAuthorType[AuthorType.AUTOR]}</SelectItem>
                                 ) : (
                                     <SelectItem value={AuthorType.COAUTOR}>{MapAuthorType[AuthorType.COAUTOR]}</SelectItem>
