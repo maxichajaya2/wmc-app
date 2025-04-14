@@ -402,7 +402,7 @@ function PapersDialog() {
                                     control={form.control}
                                     render={(_) => (
                                         <FormItem className="">
-                                            <FormLabel>Archivo <small>(*Solo se permiten ficheros .doc y .docx)</small></FormLabel>
+                                            <FormLabel>Archivo <small>*(Solo se permiten archivos Word (.doc y .docx))</small></FormLabel>
                                             <FormControl>
                                                 <Input
                                                     type="file"
