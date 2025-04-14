@@ -183,7 +183,7 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
                             <SelectContent>
                                 {/* <SelectItem value={AuthorType.AUTOR}>{MapAuthorType[AuthorType.AUTOR]}</SelectItem>
                                 Solo mostrar cuado exista más de un autor */}
-                                {form.getValues('authors').length === 1 ? (
+                                {index === 0 ? (
                                     <SelectItem value={AuthorType.AUTOR}>{MapAuthorType[AuthorType.AUTOR]}</SelectItem>
                                 ) : (
                                     <SelectItem value={AuthorType.COAUTOR}>{MapAuthorType[AuthorType.COAUTOR]}</SelectItem>
