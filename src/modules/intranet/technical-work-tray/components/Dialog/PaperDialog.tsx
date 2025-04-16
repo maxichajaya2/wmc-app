@@ -294,9 +294,6 @@ function PapersDialog() {
         if (action === 'edit') {
             return update(data)
         }
-        if (action === 'delete') {
-            return deletePaper()
-        }
     }
 
     return (
@@ -331,6 +328,25 @@ function PapersDialog() {
                                 <TypographyH4 className="">
                                     ¿Estás seguro de eliminar a {selected?.title}?
                                 </TypographyH4>
+                                <DialogFooter className='col-span-1 md:col-span-2 ml-auto flex flex-row gap-2'>
+                                    <Button
+                                        disabled={loading}
+                                        type="button"
+                                        onClick={deletePaper}
+                                        className="font-bold py-2 px-4 rounded duration-300 text-white">
+                                        {loading ? (
+                                            <div className="flex items-center justify-center space-x-2">
+                                                <LoaderCircle size={24} className="animate-spin text-white" />
+                                            </div>
+                                        ) : "Eliminar"}
+                                    </Button>
+                                    <Button
+                                        disabled={loading}
+                                        onClick={closeActionModal}
+                                        className="bg-black hover:bg-gray-700 text-white font-bold py-2 px-4 rounded duration-300">
+                                        Cancelar
+                                    </Button>
+                                </DialogFooter>
                             </div>
                         )}
                         {(action === 'create' || action === 'edit' || action === 'view') && (
@@ -895,7 +911,7 @@ function PapersDialog() {
                             </div>
                         )}
 
-                        {(action === 'create' || action === 'edit' || action === 'delete') && (
+                        {(action === 'create' || action === 'edit') && (
                             <DialogFooter className='col-span-1 md:col-span-2 ml-auto flex flex-row gap-2'>
                                 <Button
                                     disabled={loading}
