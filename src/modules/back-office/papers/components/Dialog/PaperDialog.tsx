@@ -246,6 +246,12 @@ function PapersDialog() {
                     })
                     try {
                         const authors = await PaperService.findAuthorsByPaper(selected.id);
+                        // Ordenar por type, primero A y despues los C
+                        authors.sort((a, b) => {
+                            if (a.type === AuthorType.AUTOR && b.type !== AuthorType.AUTOR) return -1;
+                            if (a.type !== AuthorType.AUTOR && b.type === AuthorType.AUTOR) return 1;
+                            return 0;
+                        });
                         form.reset({
                             ...form.watch(),
                             authors: authors
