@@ -24,7 +24,7 @@ import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
-import { AxiosError } from "axios";
+import axios, { AxiosError } from "axios";
 import { toast } from "@/components";
 // import { formatDate } from '../../../../../utils/format-date';
 // Configurar los plugins de Day.js
@@ -161,7 +161,20 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
         get().clearFilters();
         useUsersStore.getState().clearPersonFound();
       },
-      (error) => console.error(error)
+      (error) => {
+        if (axios.isAxiosError(error)) {
+          if (error.response?.status === 409) {
+            // Mostrar error específico
+            toast({
+              title: "Error",
+              description: "El título que intenta registrar ya existe.",
+              duration: 5000,
+            });
+          } else {
+            alert("Ocurrió un error inesperado.");
+          }
+        }
+      }
     );
   },
 
