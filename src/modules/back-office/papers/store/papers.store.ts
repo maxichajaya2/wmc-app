@@ -445,7 +445,11 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
     if (!selected) return;
     handleRequestStore(
       get(),
-      () => ApiService.rate(selected.id, rating),
+      () => ApiService.rate(selected.id, {
+        score1: Number(rating.score1),
+        score2: Number(rating.score2),
+        score3: Number(rating.score3),
+      }),
       (updatedItem) => {
         const data = get().data.map((item) =>
           item.id === updatedItem.id ? updatedItem : item

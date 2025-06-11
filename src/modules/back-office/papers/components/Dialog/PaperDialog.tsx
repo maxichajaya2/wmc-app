@@ -962,7 +962,7 @@ function PapersDialog() {
                                             <div className="flex items-center justify-center space-x-2">
                                                 <LoaderCircle size={24} className="animate-spin text-white" />
                                             </div>
-                                        ) : `Calificar: ${Number(((rating.score1 + rating.score2 + rating.score3) / 3).toFixed(2))}`}
+                                        ) : `Calificar: ${Number(((Number(rating.score1) + Number(rating.score2) + Number(rating.score3)) / 3).toFixed(2))}`}
                                     </Button>
                                 )}
                             </div>
