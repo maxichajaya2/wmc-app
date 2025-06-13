@@ -319,16 +319,16 @@ const ActionsCell = React.memo(({ item }: { item: Entity }) => {
 })
 
 export const columns: ColumnDef<Entity>[] = [
-    {
-        accessorKey: "correlative",
-        header: "Nro",
-        cell: ({ row }) => <CorrelativeCell item={row.original} />,
-    },
-    {
-        accessorKey: "category",
-        header: "Categoría",
-        cell: ({ row }) => <TopicCell item={row.original} />,
-    },
+    // {
+    //     accessorKey: "correlative",
+    //     header: "Nro",
+    //     cell: ({ row }) => <CorrelativeCell item={row.original} />,
+    // },
+    // {
+    //     accessorKey: "category",
+    //     header: "Categoría",
+    //     cell: ({ row }) => <TopicCell item={row.original} />,
+    // },
     {
         accessorKey: "title",
         header: "Titulo",
@@ -344,16 +344,16 @@ export const columns: ColumnDef<Entity>[] = [
         header: "F. Enviado",
         cell: ({ row }) => <CreationDateCell item={row.original} />,
     },
-    {
-        accessorKey: "phase1Score",
-        header: "Puntuación Fase 1",
-        cell: ({ row }) => <Phase1ScoreFinalCell item={row.original} />,
-    },
-    {
-        accessorKey: "phase2Score",
-        header: "Puntuación Fase 2",
-        cell: ({ row }) => <Phase2ScoreFinalCell item={row.original} />,
-    },
+    // {
+    //     accessorKey: "phase1Score",
+    //     header: "Puntuación Fase 1",
+    //     cell: ({ row }) => <Phase1ScoreFinalCell item={row.original} />,
+    // },
+    // {
+    //     accessorKey: "phase2Score",
+    //     header: "Puntuación Fase 2",
+    //     cell: ({ row }) => <Phase2ScoreFinalCell item={row.original} />,
+    // },
     {
         accessorKey: "type",
         header: "Tipo",
