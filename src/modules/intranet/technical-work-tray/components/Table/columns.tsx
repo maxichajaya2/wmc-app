@@ -30,13 +30,13 @@ dayjs.extend(timezone);
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
 
-const CorrelativeCell = React.memo(({ item }: { item: Entity }) => <div className="flex flex-col gap-1">{item.correlative || ''}</div>)
-const TopicCell = React.memo(({ item }: { item: Entity }) => (
-    <div className="flex flex-col gap-1">
-        <div className="flex flex-col gap-1">{item.category?.name ?? "Sin asignar"}</div>
-        <div className="flex flex-col gap-1">{item.topic?.name ?? "Sin asignar"}</div>
-    </div>
-))
+// const CorrelativeCell = React.memo(({ item }: { item: Entity }) => <div className="flex flex-col gap-1">{item.correlative || ''}</div>)
+// const TopicCell = React.memo(({ item }: { item: Entity }) => (
+//     <div className="flex flex-col gap-1">
+//         <div className="flex flex-col gap-1">{item.category?.name ?? "Sin asignar"}</div>
+//         <div className="flex flex-col gap-1">{item.topic?.name ?? "Sin asignar"}</div>
+//     </div>
+// ))
 const TitleCell = React.memo(({ item }: { item: Entity }) => <div className="flex flex-col gap-1">{item.title || ''}</div>)
 const NameAndLastNameUserCell = React.memo(({ item }: { item: Entity }) => {
     const author = item.author
@@ -171,29 +171,29 @@ const StatusCell = React.memo(({ item }: { item: Entity }) => {
     )
 })
 
-const Phase1ScoreFinalCell = React.memo(({ item }: { item: Entity }) => (
-    <div className="flex flex-col gap-2">
-        {item.phase1Score ? (
-            <div className="flex flex-col gap-1">
-                {item.phase1Score}
-            </div>
-        ) : (
-            "--"
-        )}
-    </div>
-))
+// const Phase1ScoreFinalCell = React.memo(({ item }: { item: Entity }) => (
+//     <div className="flex flex-col gap-2">
+//         {item.phase1Score ? (
+//             <div className="flex flex-col gap-1">
+//                 {item.phase1Score}
+//             </div>
+//         ) : (
+//             "--"
+//         )}
+//     </div>
+// ))
 
-const Phase2ScoreFinalCell = React.memo(({ item }: { item: Entity }) => (
-    <div className="flex flex-col gap-2">
-        {item.phase2Score ? (
-            <div className="flex flex-col gap-1">
-                {item.phase2Score}
-            </div>
-        ) : (
-            "--"
-        )}
-    </div>
-))
+// const Phase2ScoreFinalCell = React.memo(({ item }: { item: Entity }) => (
+//     <div className="flex flex-col gap-2">
+//         {item.phase2Score ? (
+//             <div className="flex flex-col gap-1">
+//                 {item.phase2Score}
+//             </div>
+//         ) : (
+//             "--"
+//         )}
+//     </div>
+// ))
 
 const ButtonView = React.memo(({ item }: { item: Entity }) => {
     const { openActionModal } = usePaperStore((state) => ({
