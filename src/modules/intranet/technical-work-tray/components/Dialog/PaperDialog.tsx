@@ -628,8 +628,9 @@ function PapersDialog() {
                                     </>
                                 )}
                                 <Separator />
-                                {selected?.phase1Score && (
-                                    <div className='flex flex-col gap-2'>
+                                {/* TODO: se agrego && false porque el cliente ya no quiere mostrar estos datos */}
+                                {selected?.phase1Score && false && (
+                                    <div className='flex-col gap-2 hidden'>
                                         <h1 className='text-xl font-bold'>Puntuación: FASE 1</h1>
                                         <div className='flex gap-3'>
                                             <div className='w-full'>
@@ -684,8 +685,9 @@ function PapersDialog() {
                                     </div>
                                 )}
                                 <Separator />
-                                {selected?.phase2Score && (
-                                    <div className='flex flex-col gap-2'>
+                                {/* TODO: se agrego && false porque el cliente ya no quiere mostrar estos datos */}
+                                {selected?.phase2Score && false && (
+                                    <div className='flex-col gap-2 hidden'>
                                         <h1 className='text-xl font-bold'>Puntuación: FASE 2</h1>
                                         <div className='flex gap-3'>
                                             <div className='w-full'>
