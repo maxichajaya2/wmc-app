@@ -30,7 +30,7 @@ dayjs.extend(timezone);
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
 
-// const CorrelativeCell = React.memo(({ item }: { item: Entity }) => <div className="flex flex-col gap-1">{item.correlative || ''}</div>)
+const CorrelativeCell = React.memo(({ item }: { item: Entity }) => <div className="flex flex-col gap-1">{item.correlative || ''}</div>)
 // const TopicCell = React.memo(({ item }: { item: Entity }) => (
 //     <div className="flex flex-col gap-1">
 //         <div className="flex flex-col gap-1">{item.category?.name ?? "Sin asignar"}</div>
@@ -319,11 +319,11 @@ const ActionsCell = React.memo(({ item }: { item: Entity }) => {
 })
 
 export const columns: ColumnDef<Entity>[] = [
-    // {
-    //     accessorKey: "correlative",
-    //     header: "Nro",
-    //     cell: ({ row }) => <CorrelativeCell item={row.original} />,
-    // },
+    {
+        accessorKey: "correlative",
+        header: "Nro",
+        cell: ({ row }) => <CorrelativeCell item={row.original} />,
+    },
     // {
     //     accessorKey: "category",
     //     header: "Categoría",
