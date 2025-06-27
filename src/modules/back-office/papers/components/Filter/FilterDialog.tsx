@@ -16,6 +16,8 @@ import utc from 'dayjs/plugin/utc'
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore'
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter'
 import { DateClass } from "@/lib"
+import { useSessionBoundStore } from "@/modules/back-office/auth/store"
+import { useEffect } from "react"
 // import { formatDate } from '../../../../../utils/format-date';
 // Configurar los plugins de Day.js
 dayjs.extend(utc);
@@ -58,13 +60,34 @@ function CustomerFilters() {
         setSelectedProcess,
         setSelectedState,
         updateFiltered,
+        loading
     } = usePaperStore()
 
+    const user = useSessionBoundStore(state => state.session?.user)
     const categories = useCategoryStore(state => state.filtered);
     const topics = useTopicStore(state => state.filtered);
     const filteredUsers = useUsersStore(state => state.filtered);
+    const loadingUsers = useUsersStore(state => state.loading);
     const reviewers = filteredUsers.filter((user) => user.role.id === PrimaryRoles.REVIEWER)
     const leaders = filteredUsers.filter((user) => user.role.id === PrimaryRoles.LEADER)
+
+    // Efecto, si el usuario es un líder, entonces selecciona el líder por defecto, si es un revisor, selecciona el revisor por defecto
+    useEffect(() => {
+        if (!user || !leaders || !reviewers) return
+        if (selectedLeader || selectedReviewer) return  // Si ya hay un líder o revisor seleccionado, no hacer nada
+        if (loadingUsers || loading) return
+        if (user.role.id === PrimaryRoles.LEADER) {
+            const leader = leaders.find((leader) => leader.id === user.id)
+            if (leader) {
+                setSelectedLeader(leader)
+            }
+        } else if (user.role.id === PrimaryRoles.REVIEWER) {
+            const reviewer = reviewers.find((reviewer) => reviewer.id === user.id)
+            if (reviewer) {
+                setSelectedReviewer(reviewer)
+            }
+        }
+    }, [user, leaders, reviewers, selectedLeader, selectedReviewer, setSelectedLeader, setSelectedReviewer])
 
     const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFilterTerm(e.target.value)
@@ -241,7 +264,7 @@ function CustomerFilters() {
 
             <Popover>
                 <PopoverTrigger asChild>
-                    <Button variant="outline" role="combobox" className="w-[200px] justify-between">
+                    <Button variant="outline" role="combobox" className="w-[200px] justify-between" disabled={true}>
                         {selectedReviewer ? `${selectedReviewer.name}` : "Selecciona un revisor"}
                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
