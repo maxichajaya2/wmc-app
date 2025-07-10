@@ -12,10 +12,10 @@ export class PaperService {
   static sleep = async (ms: number) => {
     return new Promise((resolve) => setTimeout(resolve, ms));
   };
-  static findAll = async ({ keys }: { keys?: boolean }) => {
+  static findAll = async ({ viewAll }: { viewAll?: boolean }) => {
     const { data } = await api.get<Paper[]>("/papers", {
       params: {
-        keys,
+        viewAll,
       },
     });
     return data;

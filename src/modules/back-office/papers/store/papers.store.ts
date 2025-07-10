@@ -53,7 +53,7 @@ export interface State extends HttpRequestState {
   selectedState: StatePaper | null;
   selectedProcess: string | null;
   /* Generic Actions */
-  findAll: () => Promise<void>;
+  findAll: ({ viewAll }: { viewAll?: boolean }) => Promise<void>;
   create: (payload: Payload) => Promise<void>;
   update: (payload: Payload) => Promise<void>;
   remove: () => Promise<void>;
@@ -124,10 +124,10 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
   httpRequest: () => {
     throw new Error("Not implemented yet");
   },
-  async findAll() {
+  async findAll(prop) {
     handleRequestStore(
       get(),
-      () => ApiService.findAll({}),
+      () => ApiService.findAll({ viewAll: prop?.viewAll }),
       (data) => {
         set(
           {

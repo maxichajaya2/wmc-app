@@ -60,7 +60,8 @@ function CustomerFilters() {
         setSelectedProcess,
         setSelectedState,
         updateFiltered,
-        loading
+        loading,
+        findAll
     } = usePaperStore()
 
     const user = useSessionBoundStore(state => state.session?.user)
@@ -73,7 +74,7 @@ function CustomerFilters() {
 
     // Efecto, si el usuario es un líder, entonces selecciona el líder por defecto, si es un revisor, selecciona el revisor por defecto
     useEffect(() => {
-        if (!user || !leaders || !reviewers) return
+        if (!user || !leaders || !reviewers) return // Si ya hay un líder o revisor seleccionado, no hacer nada
         if (selectedLeader || selectedReviewer) return  // Si ya hay un líder o revisor seleccionado, no hacer nada
         if (loadingUsers || loading) return
         if (user.role.id === PrimaryRoles.LEADER) {
@@ -110,6 +111,12 @@ function CustomerFilters() {
 
     const formatDate = (date: string) => {
         return dayjs(date).tz("America/Bogota").format(DateClass.FORMAT_INPUT_SHORT)
+    }
+
+    // view all reviewers
+    const viewAllReviewers = () => {
+        findAll({ viewAll: true })
+        updateFiltered()
     }
 
     return (
@@ -264,7 +271,7 @@ function CustomerFilters() {
 
             <Popover>
                 <PopoverTrigger asChild>
-                    <Button variant="outline" role="combobox" className="w-[200px] justify-between" disabled={true}>
+                    <Button variant="outline" role="combobox" className="w-[200px] justify-between" disabled={false}>
                         {selectedReviewer ? `${selectedReviewer.name}` : "Selecciona un revisor"}
                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
@@ -294,6 +301,11 @@ function CustomerFilters() {
                     </Command>
                 </PopoverContent>
             </Popover>
+
+            {/* Ver todos los revisores */}
+            <Button variant="secondary" onClick={viewAllReviewers} className="w-[200px]">
+                Ver todo
+            </Button>
 
             <Popover>
                 <PopoverTrigger asChild>
