@@ -50,7 +50,7 @@ function PapersManagementPage() {
 
   useEffect(() => {
     if (hasReadPermission) {
-      findAll()
+      findAll({})
       findAllCategories()
       findAllTopics()
       findAllUsers()
