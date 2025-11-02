@@ -18,7 +18,7 @@ const RequestResetPassword = lazy(() =>
 const ResetPassword = lazy(() =>
   import("@/modules/intranet/auth/reset-password/page")
 );
-// const Register = lazy(() => import("@/modules/intranet/auth/register/page"));
+const Register = lazy(() => import("@/modules/intranet/auth/register/page"));
 const ConfirmRegister = lazy(() =>
   import("@/modules/intranet/auth/confirm-register/page")
 );
@@ -64,7 +64,7 @@ export const routes: RouteObject[] = [
     element: lazyLoad(AuthIntranetLayout),
     children: [
       { path: ROUTES_PATHS.LOGIN, element: lazyLoad(Login) },
-      // { path: ROUTES_PATHS.REGISTER, element: lazyLoad(Register) },
+      { path: ROUTES_PATHS.REGISTER, element: lazyLoad(Register) },
       { path: ROUTES_PATHS.RECOVER_PASSWORD, element: lazyLoad(RequestResetPassword) },
       { path: ROUTES_PATHS.RESET_PASSWORD, element: lazyLoad(ResetPassword) },
     ],

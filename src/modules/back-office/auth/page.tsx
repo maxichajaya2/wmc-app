@@ -40,7 +40,7 @@ function AuthPage() {
         // bg-[url(/img/mountain.svg)]
         <div className="w-screen h-screen bg-primary bg-no-repeat bg-container bg-bottom flex items-center justify-center relative overflow-hidden">
             <div className="flex flex-col items-center justify-center py-12 w-full max-w-[350px] md:max-w-[440px] h-auto bg-background-container rounded-2xl transition-all duration-300">
-                <img src="/logo.png" alt="Perumin" className="w-80" />
+                <img src="/logo-wmc.png" alt="Perumin" className="w-80" />
                 <TypographyH3>
                     Administrador
                 </TypographyH3>

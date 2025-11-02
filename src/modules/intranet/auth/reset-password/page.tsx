@@ -53,11 +53,11 @@ function ConfirRegisterPage() {
                     <CardHeader className="space-y-1">
                         <div className="flex flex-col items-center justify-center text-center">
                             <div className="mb-4 flex items-center justify-center bg-white">
-                                <img src="/logo.png" className="w-80" alt="Perumin Logo" />
+                                <img src="/logo-wmc.png" className="w-80" alt="Perumin Logo" />
                             </div>
                         </div>
                         <CardTitle className="text-center">
-                            <h1 className="text-2xl font-bold text-[#004d58]">FORO TIS |
+                            <h1 className="text-2xl font-bold text-[#004d58]">
                                 <span className="text-black"> Restablecer Contraseña</span>
                             </h1>
                         </CardTitle>
@@ -125,7 +125,7 @@ function ConfirRegisterPage() {
             </div>
 
             <p className="mt-8 text-center text-sm text-gray-300">
-                © {new Date().getFullYear()} Perumin. Todos los derechos reservados.
+                 © {new Date().getFullYear() + 1 } World Mining Congress. Todos los derechos reservados.
             </p>
         </div>
     )

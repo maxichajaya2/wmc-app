@@ -1,8 +1,8 @@
 import { useEffect } from "react"
-import { Button } from "@/components/ui/button"
+import { Button ,} from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Loader2 } from "lucide-react"
+import { Loader2 , EyeIcon,EyeOffIcon} from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
 import { ROUTES_PATHS } from "@/constants"
 import { PayloadPreRegister, useAuthIntranetStore } from "../store"
@@ -17,9 +17,9 @@ export default function Registro() {
     email: z.string().email().min(1, {
       message: 'Campo requerido',
     }),
-    // password: z.string().min(1, {
-    //   message: 'Campo requerido',
-    // }),
+    password: z.string().min(1, {
+      message: 'Campo requerido',
+    }),
     name: z.string().min(1, {
       message: 'Campo requerido',
     }),
@@ -47,13 +47,13 @@ export default function Registro() {
       });
     }
     // mostrar mensaje para la contraseña tenga al menos 8 digitos
-    // if (val.password.length < 8) {
-    //   ctx.addIssue({
-    //     code: z.ZodIssueCode.custom,
-    //     path: ["password"],
-    //     message: 'Campo debe tener al menos 8 dígitos',
-    //   });
-    // }
+    if (val.password.length < 8) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["password"],
+        message: 'Campo debe tener al menos 8 dígitos',
+      });
+    }
   });
   const form = useForm<PayloadPreRegister>({
     resolver: zodResolver(FormSchema), defaultValues: {
@@ -63,7 +63,7 @@ export default function Registro() {
       maternalLastName: '',
       email: '',
       documentNumber: '',
-      // password: '',
+      password: '',
     }
   })
   const router = useNavigate();
@@ -71,8 +71,8 @@ export default function Registro() {
   const isSended = useAuthIntranetStore(state => state.isSended)
   // const sendVerificationCode = useAuthIntranetStore(state => state.sendVerificationCode)
   const registerUser = useAuthIntranetStore(state => state.registerUser)
-  // const showPassword = useAuthIntranetStore(state => state.showPassword)
-  // const setShowPassword = useAuthIntranetStore(state => state.setShowPassword)
+  const showPassword = useAuthIntranetStore(state => state.showPassword)
+  const setShowPassword = useAuthIntranetStore(state => state.setShowPassword)
   const setError = useAuthIntranetStore(state => state.setError)
   const token = useAuthIntranetStore(state => state.token)
 
@@ -99,11 +99,11 @@ export default function Registro() {
           <CardHeader className="space-y-1">
             <div className="flex flex-col items-center justify-center text-center">
               <div className="mb-4 flex items-center justify-center bg-white">
-                <img src="/logo.png" className="w-80" alt="Perumin Logo" />
+                <img src="/logo-wmc.png" className="w-80" alt="Perumin Logo" />
               </div>
             </div>
             <CardTitle className="text-center">
-              <h1 className="text-2xl font-bold text-[#004d58]">FORO TIS |
+              <h1 className="text-2xl font-bold text-[#004d58]">
                 <span className="text-black"> Crear cuenta</span>
               </h1>
             </CardTitle>
@@ -224,7 +224,7 @@ export default function Registro() {
                   </div>
                 </div>
 
-                {/* <div className="space-y-2">
+                <div className="space-y-2">
                   <FormField
                     control={form.control}
                     name="password"
@@ -246,7 +246,7 @@ export default function Registro() {
                       </FormItem>
                     )}
                   />
-                </div> */}
+                </div>
 
                 <Button type="submit" className="w-full bg-[#004d58] hover:bg-[#003540]" disabled={loading}>
                   {loading ? (
@@ -281,7 +281,7 @@ export default function Registro() {
       </div>
 
       <p className="mt-8 text-center text-sm text-gray-300">
-        © {new Date().getFullYear()} Perumin. Todos los derechos reservados.
+        © {new Date().getFullYear() + 1 } World Mining Congress. Todos los derechos reservados.
       </p>
     </div>
   )

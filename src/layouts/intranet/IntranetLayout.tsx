@@ -77,7 +77,7 @@ export default function IntranetLayout() {
                             <SheetContent side="left" className="bg-[#004d58] text-white">
                                 <div className="flex flex-col gap-6 pt-6">
                                     <div className="flex items-center gap-2">
-                                        <img src="/logo.png" alt="" />
+                                        <img src="/logo-wmc.png" alt="" />
                                     </div>
                                     <nav className="flex flex-col gap-2">
                                         {navItems.map((item) => (
@@ -99,7 +99,7 @@ export default function IntranetLayout() {
                             </SheetContent>
                         </Sheet>
                         <div className="hidden items-center gap-2 md:flex">
-                            <img src="/logo.png" className="w-44" alt="" />
+                            <img src="/logo-wmc.png" className="w-44" alt="" />
                         </div>
                     </div>
 
