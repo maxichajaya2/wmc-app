@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, 
-    // CardFooter, 
+    CardFooter, 
     CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { EyeIcon, EyeOffIcon, Loader2 } from "lucide-react"
@@ -35,7 +35,7 @@ export default function Login() {
 
     const user = useAuthIntranetStore(state => state.user);
     const loading = useAuthIntranetStore(state => state.loading)
-    // const error = useAuthIntranetStore(state => state.error)
+    const error = useAuthIntranetStore(state => state.error)
     const login = useAuthIntranetStore(state => state.login)
     const showPassword = useAuthIntranetStore(state => state.showPassword)
     const setShowPassword = useAuthIntranetStore(state => state.setShowPassword)
@@ -162,7 +162,7 @@ export default function Login() {
                             </form>
                         </Form>
                     </CardContent>
-                    {/* <CardFooter className="flex flex-col space-y-4">
+                    <CardFooter className="flex flex-col space-y-4">
                         <div className="relative flex w-full items-center justify-center">
                             <span className="absolute inset-x-0 top-1/2 h-px bg-gray-200"></span>
                             <span className="relative bg-white px-2 text-sm text-gray-500">o</span>
@@ -176,7 +176,7 @@ export default function Login() {
                         </Button>
 
                         {error && <p className='text-red-500 text-center mt-2'>{error}</p>}
-                    </CardFooter> */}
+                    </CardFooter>
                 </Card>
             </div>
 
