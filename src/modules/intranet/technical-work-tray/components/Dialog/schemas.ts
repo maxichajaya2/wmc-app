@@ -2,11 +2,29 @@ import { DateClass } from "@/lib";
 import { AuthorType } from "@/models";
 import * as z from "zod";
 
+const maxWords = (n: number) => (v: string) =>
+  (v?.trim().split(/\s+/).filter(Boolean).length ?? 0) <= n;
+
+
 export const abstractSchema = z.object({
   title: z
     .string()
     .min(3, { message: "El título debe tener al menos 3 caracteres" }),
   resume: z.string().optional(),
+
+  authorBiography: z
+    .string()
+    .min(1, { message: "Author Biography es requerido" })
+    .refine(maxWords(100), { message: "Máximo 100 palabras" }),
+  abstractText: z
+    .string()
+    .min(1, { message: "Abstract es requerido" })
+    .refine(maxWords(400), { message: "Máximo 400 palabras" }),
+  proposalSignificance: z
+    .string()
+    .min(1, { message: "Proposal Significance es requerido" })
+    .refine(maxWords(100), { message: "Máximo 100 palabras" }),
+    
   file: z.string().min(1, {
     message: "El archivo es requerido",
   }),

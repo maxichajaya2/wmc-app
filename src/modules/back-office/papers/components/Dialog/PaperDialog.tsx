@@ -45,7 +45,8 @@ function PapersDialog() {
             case 'delete':
                 return 'Eliminar Trabajo Técnico'
             case 'create':
-                return 'Crear Trabajo Técnico'
+                // return 'Crear Trabajo Técnico'
+                return 'Create Technical Paper'
             case 'receive-paper':
                 return 'Cambiar estado a: RECIBIDO'
             case 'send-paper':

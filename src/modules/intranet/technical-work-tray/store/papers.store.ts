@@ -99,6 +99,7 @@ export interface State extends HttpRequestState {
   // Parameters limit dates
   limitDatePhaseOne?: string;
   limitDatePhaseTwo?: string;
+  limitDatePhaseThree?: string;
   setLimitDates: () => Promise<void>;
 }
 
@@ -414,6 +415,9 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
             // limitDatePhaseOne: '2025-03-23',
             limitDatePhaseTwo: data.find(
               (param) => param.code === "limitDatePhase2"
+            )?.value,
+            limitDatePhaseThree: data.find(
+              (param) => param.code === "limitDatePhase3"
             )?.value,
           },
           false,

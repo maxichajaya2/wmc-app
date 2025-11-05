@@ -38,3 +38,13 @@ export interface Country {
     updatedAt?: string;
     deletedAt?: string;
 }
+
+export interface ProfessionalDesignation {
+    code: string;
+    name: string;
+    icon: string;
+    createdAt: string;
+    updatedAt?: string;
+    deletedAt?: string;
+}
+

@@ -43,12 +43,12 @@ export default function Login() {
                         </div>
                         <CardTitle className="text-center">
                             <h1 className="text-2xl font-bold text-[#004d58]">
-                                <span className="text-black"> Recuperar Contraseña</span>
+                                <span className="text-black"> Recover Password</span>
                             </h1>
                         </CardTitle>
                         <CardDescription className="text-center">
                             <p className="text-sm text-gray-500">
-                                Ingresa tu correo electrónico y te enviaremos un código de recuperación.
+                               Enter your email address and we will send you a recovery code.
                             </p>
                         </CardDescription>
                     </CardHeader>
@@ -62,9 +62,9 @@ export default function Login() {
                                             name="email"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>{'Correo electrónico'}</FormLabel>
+                                                    <FormLabel>{'Email address'}</FormLabel>
                                                     <FormControl>
-                                                        <Input type="email" placeholder={'Correo electrónico'} {...field} />
+                                                        <Input type="email" placeholder={'Email address'} {...field} />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>
@@ -76,10 +76,10 @@ export default function Login() {
                                     {loading ? (
                                         <>
                                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                            Enviando código...
+                                           Sending code...
                                         </>
                                     ) : (
-                                        "Enviar código"
+                                        "Send Code"
                                     )}
                                 </Button>
                             </form>
@@ -95,14 +95,14 @@ export default function Login() {
                             className="w-full border-[#838387] text-[#004d58]"
                             onClick={() => router(ROUTES_PATHS.LOGIN)}
                         >
-                            Regresar a inicio de sesión
+                            Back to Sign In
                         </Button>
                     </CardFooter>
                 </Card>
             </div>
 
             <p className="mt-8 text-center text-sm text-gray-300">
-                 © {new Date().getFullYear() + 1 } World Mining Congress. Todos los derechos reservados.
+                 © {new Date().getFullYear() + 1 } World Mining Congress. All rights reserved.
             </p>
         </div>
     )

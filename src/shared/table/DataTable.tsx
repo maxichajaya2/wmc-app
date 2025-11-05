@@ -49,8 +49,8 @@ export function DataTable<TData, TValue>({
 
         return (
             <div className="text-xs text-muted-foreground">
-                Mostrando <strong>{startRow}-{endRow}</strong> de <strong>{totalRows}</strong>{" "}
-                resultados
+                Showing <strong>{startRow}-{endRow}</strong> of <strong>{totalRows}</strong>{" "}
+                results.
             </div>
         )
     }
@@ -95,7 +95,7 @@ export function DataTable<TData, TValue>({
                         ) : (
                             <TableRow>
                                 <TableCell colSpan={columns.length} className="h-24 text-center">
-                                    No se encontraron registros.
+                                    No technical papers found.
                                 </TableCell>
                             </TableRow>
                         )}

@@ -19,7 +19,7 @@ function ConfirRegisterPage() {
     const router = useNavigate();
 
     const FormSchema = z.object({
-        password: z.string().min(1, { message: "La contraseña es obligatoria" }),
+        password: z.string().min(1, { message: "Password is required" }),
     })
     const form = useForm<PayloadResetPassword>({
         resolver: zodResolver(FormSchema), defaultValues: {
@@ -58,12 +58,12 @@ function ConfirRegisterPage() {
                         </div>
                         <CardTitle className="text-center">
                             <h1 className="text-2xl font-bold text-[#004d58]">
-                                <span className="text-black"> Restablecer Contraseña</span>
+                                <span className="text-black">  Reset Password</span>
                             </h1>
                         </CardTitle>
                         <CardDescription className="text-center">
                             <p className="text-sm text-gray-500">
-                                Por favor, ingresa tu nueva contraseña para restablecerla.
+                                Please enter your new password to reset it.
                             </p>
                         </CardDescription>
                     </CardHeader>
@@ -77,10 +77,10 @@ function ConfirRegisterPage() {
                                             name="password"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>{'Nueva contraseña'}</FormLabel>
+                                                    <FormLabel>{'New Password'}</FormLabel>
                                                     <FormControl>
                                                         <div className='relative'>
-                                                            <Input type={showPassword ? 'text' : 'password'} placeholder={'Nueva contraseña'} {...field} />
+                                                            <Input type={showPassword ? 'text' : 'password'} placeholder={'New Password'} {...field} />
                                                             <span className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer"
                                                                 onClick={() => setShowPassword(!showPassword)}
                                                             >
@@ -99,10 +99,10 @@ function ConfirRegisterPage() {
                                     {loading ? (
                                         <>
                                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                            Actualizando contraseña...
+                                            New Password ...
                                         </>
                                     ) : (
-                                        "Actualizar contraseña"
+                                        "Update Password"
                                     )}
                                 </Button>
                             </form>
@@ -118,14 +118,14 @@ function ConfirRegisterPage() {
                             className="w-full border-[#838387] text-[#004d58]"
                             onClick={() => router(ROUTES_PATHS.LOGIN)}
                         >
-                            Regresar a inicio de sesión
+                             Back to Sign In
                         </Button>
                     </CardFooter>
                 </Card>
             </div>
 
             <p className="mt-8 text-center text-sm text-gray-300">
-                 © {new Date().getFullYear() + 1 } World Mining Congress. Todos los derechos reservados.
+                 © {new Date().getFullYear() + 1 } World Mining Congress. All rights reserved.
             </p>
         </div>
     )

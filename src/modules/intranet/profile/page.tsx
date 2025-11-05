@@ -96,7 +96,7 @@ function ProfilePage() {
       <div className="space-y-10 sm:space-y-12 pb-5">
         {/* HEADING */}
         <h2 className="text-2xl sm:text-3xl font-semibold text-black pt-6 mx-auto">
-          Actualizar perfil
+          Update Profile
         </h2>
         <pre className='bg-gray-100 p-4 hidden'>
           {JSON.stringify({ form: form.watch() }, null, 2)}

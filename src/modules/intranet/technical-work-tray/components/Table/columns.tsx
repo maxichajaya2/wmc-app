@@ -331,17 +331,17 @@ export const columns: ColumnDef<Entity>[] = [
     // },
     {
         accessorKey: "title",
-        header: "Titulo",
+        header: "Title",
         cell: ({ row }) => <TitleCell item={row.original} />,
     },
     {
         accessorKey: "userName",
-        header: "Autor",
+        header: "Author(s)",
         cell: ({ row }) => <NameAndLastNameUserCell item={row.original} />,
     },
     {
         accessorKey: "registeredDate",
-        header: "F. Enviado",
+        header: "Submission Date",
         cell: ({ row }) => <CreationDateCell item={row.original} />,
     },
     // {
@@ -356,17 +356,17 @@ export const columns: ColumnDef<Entity>[] = [
     // },
     {
         accessorKey: "type",
-        header: "Tipo",
+        header: "Type",
         cell: ({ row }) => <TypeAssignedCell item={row.original} />,
     },
     {
         accessorKey: "process",
-        header: "Proceso",
+        header: "Stage",
         cell: ({ row }) => <ProcessCell item={row.original} />,
     },
     {
         accessorKey: "state",
-        header: "Estado",
+        header: "Status",
         cell: ({ row }) => <StatusCell item={row.original} />,
     },
     // actions

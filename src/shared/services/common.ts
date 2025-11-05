@@ -19,6 +19,21 @@ export class CommonService {
     }
   }
 
+  static async getProfessionalDesignations() {
+    try {
+      const { data } = await api.get<Country[]>("/professional-designations");
+      return data;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        console.log(error.response?.data);
+        throw new Error(error.response?.data);
+      }
+
+      console.log(error);
+      throw new Error("No se pudieron obtener las designaciones profesionales.");
+    }
+  }
+
   static async uploadFile(
     file: File,
     onUploadProgress?: (progressEvent: AxiosProgressEvent) => void

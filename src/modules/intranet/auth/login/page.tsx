@@ -69,10 +69,10 @@ export default function Login() {
                         </div>
                         <CardTitle className="text-center">
                             <h1 className="text-2xl font-bold text-[#004d58]">
-                                <span className="text-black"> Iniciar sesión</span>
+                                <span className="text-black">Sign In</span>
                             </h1>
                         </CardTitle>
-                        <CardDescription className="text-center">Ingresa tus credenciales para acceder al sistema</CardDescription>
+                        <CardDescription className="text-center">Enter your credentials to access the system</CardDescription>
                     </CardHeader>
                     <CardContent>
                         <Form {...form}>
@@ -84,7 +84,7 @@ export default function Login() {
                                             name="documentType"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>{'Tipo Doc'}</FormLabel>
+                                                    <FormLabel>{'Document Type'}</FormLabel>
                                                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                                                         <FormControl>
                                                             <SelectTrigger>
@@ -111,9 +111,9 @@ export default function Login() {
                                             name="documentNumber"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>{'Nro Documento'}</FormLabel>
+                                                    <FormLabel>{'Document Number'}</FormLabel>
                                                     <FormControl>
-                                                        <Input placeholder={'Nro Documento'} {...field} />
+                                                        <Input placeholder={'Document Number'} {...field} />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>
@@ -128,14 +128,14 @@ export default function Login() {
                                         render={({ field }) => (
                                             <FormItem>
                                                 <div className="flex items-center justify-between">
-                                                    <FormLabel>{'Contraseña'}</FormLabel>
+                                                    <FormLabel>{'Password'}</FormLabel>
                                                     <Link to={ROUTES_PATHS.RECOVER_PASSWORD} className="text-xs text-[#d35e0d] hover:underline">
-                                                        ¿Olvidaste tu contraseña?
+                                                      Forgot your password?
                                                     </Link>
                                                 </div>
                                                 <FormControl>
                                                     <div className='relative'>
-                                                        <Input type={showPassword ? 'text' : 'password'} placeholder={'Contraseña'} {...field} />
+                                                        <Input type={showPassword ? 'text' : 'password'} placeholder={'Password'} {...field} />
                                                         <span className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer"
                                                             onClick={() => setShowPassword(!showPassword)}
                                                         >
@@ -153,10 +153,10 @@ export default function Login() {
                                     {loading ? (
                                         <>
                                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                            Iniciando sesión...
+                                            Signing in...
                                         </>
                                     ) : (
-                                        "Iniciar sesión"
+                                        "Sign In"
                                     )}
                                 </Button>
                             </form>
@@ -172,7 +172,7 @@ export default function Login() {
                             className="w-full border-[#838387] text-[#004d58]"
                             onClick={() => router(ROUTES_PATHS.REGISTER)}
                         >
-                            Crear una cuenta nueva
+                            Create a new account
                         </Button>
 
                         {error && <p className='text-red-500 text-center mt-2'>{error}</p>}
@@ -181,7 +181,7 @@ export default function Login() {
             </div>
 
             <p className="mt-8 text-center text-sm text-gray-300">
-                © {new Date().getFullYear() + 1} World Mining Congress. Todos los derechos reservados.
+                © {new Date().getFullYear() + 1} World Mining Congress. All rights reserved.
             </p>
         </div>
     )

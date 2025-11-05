@@ -26,9 +26,9 @@ export default function Registro() {
     lastName: z.string().min(1, {
       message: 'Campo requerido',
     }),
-    maternalLastName: z.string().min(1, {
-      message: 'Campo requerido',
-    }),
+    // maternalLastName: z.string().min(1, {
+    //   message: 'Campo requerido',
+    // }),
     documentType: z.nativeEnum(DocumentType),
     documentNumber: z.string(),
   }).superRefine((val, ctx) => {
@@ -51,7 +51,7 @@ export default function Registro() {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["password"],
-        message: 'Campo debe tener al menos 8 dígitos',
+        message: 'Password must contain at least 8 characters',
       });
     }
   });
@@ -99,16 +99,16 @@ export default function Registro() {
           <CardHeader className="space-y-1">
             <div className="flex flex-col items-center justify-center text-center">
               <div className="mb-4 flex items-center justify-center bg-white">
-                <img src="/logo-wmc.png" className="w-80" alt="Perumin Logo" />
+                <img src="/logo-wmc.png" className="w-80" alt="WMC Logo" />
               </div>
             </div>
             <CardTitle className="text-center">
               <h1 className="text-2xl font-bold text-[#004d58]">
-                <span className="text-black"> Crear cuenta</span>
+                <span className="text-black"> Create Account</span>
               </h1>
             </CardTitle>
             <CardDescription className="text-center">
-              Completa el formulario para registrarte en el sistema
+              Complete the form to register in the system.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -120,9 +120,9 @@ export default function Registro() {
                     name="name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{'Nombres'}</FormLabel>
+                        <FormLabel>{'First Name'}</FormLabel>
                         <FormControl>
-                          <Input placeholder={'Nombres'} {...field} />
+                          <Input placeholder={'First Name'} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -130,23 +130,23 @@ export default function Registro() {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="gap-4">
                   <div className="space-y-2">
                     <FormField
                       control={form.control}
                       name="lastName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{'Apellido Paterno'}</FormLabel>
+                          <FormLabel>{'Last Name'}</FormLabel>
                           <FormControl>
-                            <Input placeholder={'Apellido Paterno'} {...field} />
+                            <Input placeholder={'Last Name'} {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
                   </div>
-                  <div className="space-y-2">
+                  {/* <div className="space-y-2">
                     <FormField
                       control={form.control}
                       name="maternalLastName"
@@ -160,7 +160,7 @@ export default function Registro() {
                         </FormItem>
                       )}
                     />
-                  </div>
+                  </div> */}
                 </div>
 
                 <div className="space-y-2">
@@ -169,9 +169,9 @@ export default function Registro() {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{'Correo electrónico'}</FormLabel>
+                        <FormLabel>{'Email address'}</FormLabel>
                         <FormControl>
-                          <Input placeholder={'Correo electrónico'} {...field} />
+                          <Input placeholder={'Email address'} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -186,7 +186,7 @@ export default function Registro() {
                       name="documentType"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{'Tipo Doc'}</FormLabel>
+                          <FormLabel>{'Document Type'}</FormLabel>
                           <Select onValueChange={field.onChange} defaultValue={field.value}>
                             <FormControl>
                               <SelectTrigger>
@@ -213,9 +213,9 @@ export default function Registro() {
                       name="documentNumber"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{'Nro Documento'}</FormLabel>
+                          <FormLabel>{'Document Number'}</FormLabel>
                           <FormControl>
-                            <Input placeholder={'Nro Documento'} {...field} />
+                            <Input placeholder={'Doc. Number'} {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -230,10 +230,10 @@ export default function Registro() {
                     name="password"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{'Contraseña'}</FormLabel>
+                        <FormLabel>{'Password'}</FormLabel>
                         <FormControl>
                           <div className='relative'>
-                            <Input type={showPassword ? 'text' : 'password'} placeholder={'Contraseña'} {...field} />
+                            <Input type={showPassword ? 'text' : 'password'} placeholder={'Password'} {...field} />
                             <span className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer"
                               onClick={() => setShowPassword(!showPassword)}
                             >
@@ -255,7 +255,7 @@ export default function Registro() {
                       Procesando...
                     </>
                   ) : (
-                    "Registrarse"
+                    "Register"
                   )}
                 </Button>
               </form>
@@ -264,16 +264,16 @@ export default function Registro() {
             {isSended && (
               <div className="bg-green-100 p-4 my-4">
                 <p className='text-green-950'>
-                  Se ha enviado un correo de confirmación a tu bandeja correo electrónico.
+                 A confirmation email has been sent to your inbox.
                 </p>
               </div>
             )}
           </CardContent>
           <CardFooter className="flex justify-center">
             <p className="text-sm text-gray-500">
-              ¿Ya tienes una cuenta?{" "}
+              Already have an account?{" "}
               <Link to={ROUTES_PATHS.LOGIN} className="text-[#d35e0d] hover:underline">
-                Iniciar sesión
+               Sign In
               </Link>
             </p>
           </CardFooter>
@@ -281,7 +281,7 @@ export default function Registro() {
       </div>
 
       <p className="mt-8 text-center text-sm text-gray-300">
-        © {new Date().getFullYear() + 1 } World Mining Congress. Todos los derechos reservados.
+        © {new Date().getFullYear() + 1 } World Mining Congress. All rights reserved.
       </p>
     </div>
   )

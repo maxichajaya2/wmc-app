@@ -2,12 +2,11 @@ import { create, StateCreator } from "zustand";
 import { devtools } from "zustand/middleware";
 import { HttpRequestState, withHttpRequest } from "@/middlewares";
 import { handleRequestStore } from "@/utils/handle-request-store";
-import { ActionsTypes, Country, Speaker as Entity, PayloadSpeaker, ProfessionalDesignation } from "@/models";
-import { SpeakerService as ApiService } from "../services/speaker.service";
+import { ActionsTypes, Category as Entity, PayloadCategory } from "@/models";
+import { CategoryService as ApiService } from "../services/designations.service";
 import { useUsersStore } from "@/modules/back-office/users/store/users.store";
-import { CommonService } from "@/shared/services";
 
-type Payload = PayloadSpeaker;
+type Payload = PayloadCategory;
 
 export interface State extends HttpRequestState {
   data: Entity[];
@@ -17,10 +16,6 @@ export interface State extends HttpRequestState {
   loading: boolean;
   isOpenDialog: boolean;
   action: ActionsTypes;
-
-  /* Particular states */
-  countries: Country[];
-  professionalDesignation: ProfessionalDesignation[];
 
   /* Generic Actions */
   findAll: () => Promise<void>;
@@ -35,9 +30,6 @@ export interface State extends HttpRequestState {
   openActionModal: (id: number, action: ActionsTypes) => void;
   closeActionModal: () => void;
   updateFiltered: () => void;
-
-  /* Particular Actions */
-  findCountries: () => Promise<void>;
 }
 
 export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
@@ -45,8 +37,6 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
   get
 ) => ({
   data: [],
-  countries: [],
-  professionalDesignation: [],
   filtered: [],
   filterTerm: "",
   selected: undefined,
@@ -62,37 +52,13 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
       get(),
       () => ApiService.findAll(),
       (data) => {
-        set({ data, filtered: data }, false, "getSpeakerSuccess");
+        set({ data, filtered: data }, false, "getCategorySuccess");
         get().clearFilters();
       },
       (error) => console.error(error)
     );
   },
 
-  async findCountries() {
-    handleRequestStore(
-      get(),
-      () => CommonService.getCountries(),
-      (countries) => {
-        set({ countries }, false, "getSpeakerCountriesSuccess");
-        get().clearFilters();
-      },
-      (error) => console.error(error)
-    );
-  },
-
-  async findProfessionalDesignations() {
-    handleRequestStore(
-      get(),
-      () => CommonService.getProfessionalDesignations(),
-      (professionalDesignation) => {
-        set({ professionalDesignation }, false, "getProfessionalDesignationsSuccess");
-        get().clearFilters();
-      },
-      (error) => console.error(error)
-    );
-  },
-  
   async create(payload) {
     handleRequestStore(
       get(),
@@ -102,7 +68,7 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
         set(
           { data, filtered: data, isOpenDialog: false },
           false,
-          "createSpeakerSuccess"
+          "createCategorySuccess"
         );
         get().clearFilters();
         useUsersStore.getState().clearPersonFound();
@@ -129,7 +95,7 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
             selected: undefined,
           },
           false,
-          "updateSpeakerSsuccess"
+          "updateCategorySsuccess"
         );
         get().clearFilters();
         useUsersStore.getState().clearPersonFound();
@@ -154,7 +120,7 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
             selected: undefined,
           },
           false,
-          "deleteSpeakerSuccess"
+          "deleteCategorySuccess"
         );
         get().clearFilters();
       },
@@ -208,13 +174,13 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
     const filtered = data.filter((item) =>
       item.name?.toLowerCase().includes(filterTerm.toLowerCase())
     );
-    set({ filtered }, false, "updateFilteredSpeaker");
+    set({ filtered }, false, "updateFilteredCategory");
   },
 
 });
 
-export const useSpeakerStore = create<State>()(
+export const useCategoryStore = create<State>()(
   devtools(withHttpRequest(storeApi), {
-    name: "Speakers Store",
+    name: "Categorys Store",
   })
 );
