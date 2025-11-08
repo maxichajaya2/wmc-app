@@ -14,7 +14,7 @@ function CustomerFilters() {
                     variant="outline"
                     className="h-8 gap-1 flex justify-between transition-all duration-500"
                 >
-                    Filtros
+                    Filters
                 </Button>
 
             </DropdownMenuTrigger>

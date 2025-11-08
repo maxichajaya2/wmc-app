@@ -52,7 +52,7 @@ const ActionsCell = React.memo(({ item }: { item: Entity }) => {
                 <MoreHorizontal className="w-5 h-5" />
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-                <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                <DropdownMenuLabel>Actions</DropdownMenuLabel>
                 {useCheckPermission(ModulesRoles.DASHBOARD, ActionRoles.UPDATE) && (
                     <DropdownMenuItem onClick={handleEdit}>Editar</DropdownMenuItem>
                 )}

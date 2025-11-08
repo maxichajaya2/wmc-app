@@ -150,7 +150,8 @@ export default function IntranetLayout() {
       {/* Main content */}
       <div className="flex flex-1">
         {/* Sidebar - desktop only */}
-        <aside className="hidden w-64 flex-col border-r bg-[#004d58] text-white md:flex">
+        {/* <aside className="hidden w-64 flex-col border-r bg-[#004d58] text-white md:flex"> */}
+        <aside className="hidden w-64 flex-col border-r bg-[#0124e0]  text-white md:flex">
           <div className="flex flex-col gap-6 p-6">
             <nav className="flex flex-col gap-2">
               {navItems.map((item) => (

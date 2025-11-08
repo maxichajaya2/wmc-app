@@ -89,7 +89,8 @@ function PapersDialog() {
         // return 'Crear Trabajo Técnico'
         return "Create Technical Paper";
       case "receive-paper":
-        return "Enviar Trabajo Técnico";
+        // return "Enviar Trabajo Técnico";
+        return "Submit Technical Paper";
       case "send-paper":
         return "Cambiar estado a: ENVIADO";
       case "assign-paper":
@@ -130,6 +131,7 @@ function PapersDialog() {
       authorBiography: "",
       abstractText: "",
       proposalSignificance: "",
+      agreeTerms: false,
       authors: [
         {
           type: AuthorType.AUTOR,
@@ -393,6 +395,18 @@ function PapersDialog() {
         <DialogHeader>
           <DialogTitle>{title()}</DialogTitle>
         </DialogHeader>
+        {/* Aviso para Submit Technical Paper */}
+        {action === "receive-paper" && (
+          <div className="mb-4 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+            <p className="font-semibold">Important</p>
+            <p className="mt-1">
+              Once you submit, you will no longer be able to edit your abstract
+              or its details. A confirmation email will be sent to your
+              registered address confirming that your technical paper was
+              submitted successfully.
+            </p>
+          </div>
+        )}
 
         <DialogDescription />
 
@@ -434,7 +448,7 @@ function PapersDialog() {
                         />
                       </div>
                     ) : (
-                      "Eliminar"
+                      "Delete"
                     )}
                   </Button>
                   <Button
@@ -442,7 +456,7 @@ function PapersDialog() {
                     onClick={closeActionModal}
                     className="bg-black hover:bg-gray-700 text-white font-bold py-2 px-4 rounded duration-300"
                   >
-                    Cancelar
+                    Cancel
                   </Button>
                 </DialogFooter>
               </div>
@@ -498,11 +512,15 @@ function PapersDialog() {
                     <FormItem className="">
                       <FormLabel className="flex flex-col">
                         <p>
-                          File Upload <span className="text-red-500">*</span>
+                          Attach abstract <span className="text-red-500">*</span>
                         </p>
+                         <span className="text-xs text-gray-500 mt-1">
+                         If you encounter any issues uploading your abstract, please do not hesitate to contact us at wmc2026@iimp.org.pe for assistance.
+                        </span>
                         <span className="text-xs text-gray-500 mt-1">
                           (Only Word files are allowed (.doc and .docx))
                         </span>
+                         <span className="text-xs text-blue-500"> El tamaño máximo es de 10 MB.</span>
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -634,7 +652,7 @@ function PapersDialog() {
                   )}
                 />
                 <FormField
-                  name="resume"
+                  name="authorBiography"
                   control={form.control}
                   render={({ field }) => (
                     <FormItem className="">
@@ -650,8 +668,8 @@ function PapersDialog() {
                       </FormLabel>
                       <FormControl>
                         <Textarea
-                          //   {...field}
-                          //   readOnly={action === "view"}
+                          {...field}
+                          readOnly={action === "view"}
                           placeholder="Author Biography"
                           className="w-full resize-y"
                         />
@@ -661,7 +679,7 @@ function PapersDialog() {
                   )}
                 />
                 <FormField
-                  name="resume"
+                  name="abstractText"
                   control={form.control}
                   render={({ field }) => (
                     <FormItem className="">
@@ -677,8 +695,8 @@ function PapersDialog() {
                       </FormLabel>
                       <FormControl>
                         <Textarea
-                          //   {...field}
-                          //   readOnly={action === "view"}
+                          {...field}
+                          readOnly={action === "view"}
                           placeholder=" Abstract Submission"
                           className="w-full resize-y"
                         />
@@ -688,7 +706,7 @@ function PapersDialog() {
                   )}
                 />
                 <FormField
-                  name="resume"
+                  name="proposalSignificance"
                   control={form.control}
                   render={({ field }) => (
                     <FormItem className="">
@@ -704,8 +722,8 @@ function PapersDialog() {
                       </FormLabel>
                       <FormControl>
                         <Textarea
-                          //   {...field}
-                          //   readOnly={action === "view"}
+                          {...field}
+                          readOnly={action === "view"}
                           placeholder="Proposal Significance"
                           className="w-full resize-y"
                         />
@@ -799,6 +817,7 @@ function PapersDialog() {
                     </FormItem>
                   )}
                 />
+
                 {form.watch("flagEvent") && (
                   <>
                     <FormField
@@ -859,6 +878,41 @@ function PapersDialog() {
                     />
                   </>
                 )}
+                <FormField
+                  control={form.control}
+                  name="agreeTerms"
+                  render={({ field }) => (
+                    <FormItem className="space-y-3 border rounded p-4">
+                      <FormLabel className="text-sm leading-6">
+                        <strong>
+                          I hereby declare that I have the proper authority to
+                          use, reproduce, present, and display the material
+                          included in my submission, including but not limited
+                          to images, representations, videos, photographs,
+                          graphics, and texts, whether or not copyright is
+                          formally registered, and that doing so does not
+                          conflict with or infringe upon the intellectual
+                          property rights or other rights of any other
+                          individual or entity.
+                        </strong>
+                      </FormLabel>
+                      <br />
+                      <div className="flex items-center gap-3">
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+
+                        <FormDescription className="m-0">
+                          I agree
+                        </FormDescription>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <Separator />
                 {/* TODO: se agrego && false porque el cliente ya no quiere mostrar estos datos */}
                 {selected?.phase1Score && false && (
@@ -984,7 +1038,7 @@ function PapersDialog() {
                   />
                 ))}
                 <div className="flex flex-col gap-4">
-                  {form.getValues("authors").length < 3 && (
+                  {form.getValues("authors").length < 6 && (
                     <Button
                       disabled={loading || action === "view"}
                       type="button"
@@ -997,7 +1051,7 @@ function PapersDialog() {
                         } as AuthorFormData)
                       }
                     >
-                      Añadir Co autor
+                      Add Co-author
                     </Button>
                   )}
                 </div>
@@ -1177,7 +1231,7 @@ function PapersDialog() {
                       />
                     </div>
                   ) : (
-                    "Enviar"
+                    "Submit"
                   )}
                 </Button>
               </div>
@@ -1257,7 +1311,7 @@ function PapersDialog() {
                   onClick={closeActionModal}
                   className="bg-black hover:bg-gray-700 text-white font-bold py-2 px-4 rounded duration-300"
                 >
-                  Cancelar
+                  Cancel
                 </Button>
               </DialogFooter>
             )}

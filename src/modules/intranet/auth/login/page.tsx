@@ -57,7 +57,8 @@ export default function Login() {
     })
 
     return (
-        <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-[#004d58] to-[#003540] p-4">
+        // <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-[#004d58] to-[#003540] p-4">
+        <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-[#00b3dc] via-[#0124e0] to-[#00023f]">
             <div className="w-full max-w-md">
 
                 <Card className="border-none shadow-xl">
@@ -71,6 +72,7 @@ export default function Login() {
                             <h1 className="text-2xl font-bold text-[#004d58]">
                                 <span className="text-black">Sign In</span>
                             </h1>
+                            
                         </CardTitle>
                         <CardDescription className="text-center">Enter your credentials to access the system</CardDescription>
                     </CardHeader>
@@ -93,11 +95,11 @@ export default function Login() {
                                                         </FormControl>
                                                         <SelectContent>
                                                             <SelectItem value={DocumentType.DNI}>DNI</SelectItem>
-                                                            <SelectItem value={DocumentType.CE}>CE</SelectItem>
-                                                            <SelectItem value={DocumentType.NO_DOMICILIADO}>No Domiciliado</SelectItem>
-                                                            <SelectItem value={DocumentType.PASSPORT}>Pasaporte</SelectItem>
+                                                            <SelectItem value={DocumentType.CE}>Foreign Meat</SelectItem>
+                                                            <SelectItem value={DocumentType.NO_DOMICILIADO}>Not Domiciled</SelectItem>
+                                                            <SelectItem value={DocumentType.PASSPORT}>Passport</SelectItem>
                                                             <SelectItem value={DocumentType.RUC}>RUC</SelectItem>
-                                                            <SelectItem value={DocumentType.CREDENCIAL_DIPLOMATICA}>Credencial Diplomática</SelectItem>
+                                                            <SelectItem value={DocumentType.CREDENCIAL_DIPLOMATICA}>Diplomatic Credential</SelectItem>
                                                         </SelectContent>
                                                     </Select>
                                                     <FormMessage />
@@ -149,7 +151,8 @@ export default function Login() {
                                         )}
                                     />
                                 </div>
-                                <Button type="submit" className="w-full bg-[#004d58] hover:bg-[#003540]" disabled={loading}>
+                                {/* <Button type="submit" className="w-full bg-[#004d58] hover:bg-[#003540]" disabled={loading}> */}
+                                <Button type="submit" className="w-full bg-gradient-to-r from-[#00b3dc] via-[#0124e0] to-[#00023f] hover:bg-[#003540]" disabled={loading}>
                                     {loading ? (
                                         <>
                                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />

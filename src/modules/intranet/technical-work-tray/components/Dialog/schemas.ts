@@ -5,7 +5,6 @@ import * as z from "zod";
 const maxWords = (n: number) => (v: string) =>
   (v?.trim().split(/\s+/).filter(Boolean).length ?? 0) <= n;
 
-
 export const abstractSchema = z.object({
   title: z
     .string()
@@ -24,7 +23,12 @@ export const abstractSchema = z.object({
     .string()
     .min(1, { message: "Proposal Significance es requerido" })
     .refine(maxWords(100), { message: "Máximo 100 palabras" }),
-    
+
+  agreeTerms: z
+  .boolean()
+  .refine((v) => v === true, { message: "Debes aceptar la declaración" }),
+
+
   file: z.string().min(1, {
     message: "El archivo es requerido",
   }),
@@ -41,11 +45,14 @@ export const abstractSchema = z.object({
     })
   ),
   language: z.string().min(1, { message: "El idioma es obligatorio" }),
-  keywords: z.array(z.string()).min(1, {
-    message: "Mínimo 1 palabra clave",
-  }).max(6, {
-    message: "Máximo 6 palabras clave",
-  }),
+  keywords: z
+    .array(z.string())
+    .min(1, {
+      message: "Mínimo 1 palabra clave",
+    })
+    .max(6, {
+      message: "Máximo 6 palabras clave",
+    }),
   flagEvent: z.boolean().optional(),
   eventWhere: z.string().optional(),
   eventWhich: z.string().optional(),
@@ -65,29 +72,39 @@ export const authorSchema = z.object({
   middle: z.string().min(1, {
     message: "Apellido Paterno es requerido",
   }),
-  last: z.string().min(1, {
-    message: "Apellido Materno es requerido",
-  }),
+  // last: z.string().min(1, {
+  //   message: "Apellido Materno es requerido",
+  // }),
   institution: z.string().min(1, {
     message: "Institución es requerida",
   }),
   remissive: z.string().min(1, {
     message: "Cargo es requerido",
   }),
-  emailCorp: z
-    .string()
-    .email({
-      message: "Email Corporativo no es válido",
-    })
-    .min(1, {
-      message: "Email Corporativo es requerido",
-    }),
+
+  address: z.string().min(1, { message: "Dirección es requerida" }),
+  city: z.string().min(1, { message: "Ciudad es requerida" }),
+  state: z.string().min(1, { message: "Estado/Provincia es requerido" }),
+   professionalDesignation: z.string().min(1, { message: "Professional Designation es requerido" }),
+  // emailCorp: z
+  //   .string()
+  //   .email({
+  //     message: "Email Corporativo no es válido",
+  //   })
+  //   .min(1, {
+  //     message: "Email Corporativo es requerido",
+  //   }),
+  // email: z
+  //   .string()
+  //   .email({
+  //     message: "Email Personal no es válido",
+  //   })
+  //   .optional(),
   email: z
-    .string()
-    .email({
-      message: "Email Personal no es válido",
-    })
-    .optional(),
+  .string()
+  .min(1, { message: "Email es requerido" })
+  .email({ message: "Email Personal no es válido" }),
+
   cellphone: z.string().min(1, {
     message: "Celular es requerido",
   }),

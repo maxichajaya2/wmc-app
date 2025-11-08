@@ -107,7 +107,7 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
         )}
       />
       <FormField
-        name={`authors.${index}.institution`}
+        name={`authors.${index}.address`}
         control={form.control}
         render={({ field }) => (
           <FormItem>
@@ -161,7 +161,7 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
         )}
       />
       <FormField
-        name={`authors.${index}.institution`}
+        name={`authors.${index}.city`}
         control={form.control}
         render={({ field }) => (
           <FormItem>
@@ -176,7 +176,7 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
         )}
       />
       <FormField
-        name={`authors.${index}.institution`}
+        name={`authors.${index}.state`}
         control={form.control}
         render={({ field }) => (
           <FormItem>
@@ -206,7 +206,7 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
         )}
       />
       <FormField
-        name="designation"
+        name={`authors.${index}.professionalDesignation`}
         control={form.control}
         render={({ field }) => (
           <FormItem className="">
@@ -292,12 +292,12 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
           </FormItem>
         )}
       />
-      {/* <FormField
+      <FormField
         control={form.control}
         name={`authors.${index}.type`}
         render={({ field }) => (
           <FormItem className="">
-            <FormLabel>Tipo de Autor</FormLabel>
+            <FormLabel>Author Type</FormLabel>
             <Select
               disabled={loading || action === "view"}
               onValueChange={(value) => field.onChange(value)}
@@ -325,7 +325,7 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
             <FormMessage />
           </FormItem>
         )}
-      /> */}
+      />
       {index > 0 && (
         <Button
           disabled={loading || action === "view"}
@@ -333,7 +333,7 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
           variant="destructive"
           onClick={onRemove}
         >
-          Eliminar Co autor
+          Remove Co-author
         </Button>
       )}
     </div>

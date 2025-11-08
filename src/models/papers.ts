@@ -117,18 +117,27 @@ export const MapStatePaper: Record<StatePaper, string> = {
 };
 
 export const MapStatePaperForUser: Record<StatePaper, string> = {
-  [StatePaper.REGISTERED]: "Registrado",
-  [StatePaper.RECEIVED]: "Enviado",
-  [StatePaper.SENT]: "Enviado a Lider",
-  [StatePaper.ASSIGNED]: "Asignado",
-  [StatePaper.UNDER_REVIEW]: "En revisión",
-  [StatePaper.APPROVED]: "Aprobado",
-  [StatePaper.DISMISSED]: "Descartado",
+  // [StatePaper.REGISTERED]: "Registrado",
+  // [StatePaper.RECEIVED]: "Enviado",
+  // [StatePaper.SENT]: "Enviado a Lider",
+  // [StatePaper.ASSIGNED]: "Asignado",
+  // [StatePaper.UNDER_REVIEW]: "En revisión",
+  // [StatePaper.APPROVED]: "Aprobado",
+  // [StatePaper.DISMISSED]: "Descartado",
+  [StatePaper.REGISTERED]: "PENDING",
+  [StatePaper.RECEIVED]: "SUBMITTED",
+  [StatePaper.SENT]: "SENT TO LEADER",
+  [StatePaper.ASSIGNED]: "ASSIGNED",
+  [StatePaper.UNDER_REVIEW]: "UNDER REVIEW",
+  [StatePaper.APPROVED]: "APPROVED",
+  [StatePaper.DISMISSED]: "DISMISSED",
 };
 
 export const MapProcessPaper: Record<ProcessPaper, string> = {
-  [ProcessPaper.PRESELECCIONADO]: "FASE 1",
-  [ProcessPaper.SELECCIONADO]: "FASE 2",
+  // [ProcessPaper.PRESELECCIONADO]: "FASE 1",
+  // [ProcessPaper.SELECCIONADO]: "FASE 2",
+  [ProcessPaper.PRESELECCIONADO]: "PHASE 1",
+  [ProcessPaper.SELECCIONADO]: "PHASE 2",
 };
 
 export interface PayloadCreateComment {
