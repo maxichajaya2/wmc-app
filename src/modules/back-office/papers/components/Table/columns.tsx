@@ -23,8 +23,8 @@ import { ActionRoles, ModulesRoles } from "@/constants"
 const CorrelativeCell = React.memo(({ item }: { item: Entity }) => <div className="flex flex-col gap-1">{item.correlative || ''}</div>)
 const TopicCell = React.memo(({ item }: { item: Entity }) => (
     <div className="flex flex-col gap-1">
-        <div className="flex flex-col gap-1">{item.category?.name ?? "Sin asignar"}</div>
-        <div className="flex flex-col gap-1">{item.topic?.name ?? "Sin asignar"}</div>
+        <div className="flex flex-col gap-1">{item.category?.name ?? "Not assigned"}</div>
+        <div className="flex flex-col gap-1">{item.topic?.name ?? "Not assigned"}</div>
     </div>
 ))
 const TitleCell = React.memo(({ item }: { item: Entity }) => <div className="flex flex-col gap-1">{item.title || ''}</div>)
@@ -37,7 +37,7 @@ const NameAndLastNameUserCell = React.memo(({ item }: { item: Entity }) => (
                 {MapDocumentType[item.webUser.documentType]} {item.webUser.documentNumber}
             </>
         ) : (
-            "Sin asignar"
+            "Not assigned"
         )}
     </div>
 ))
@@ -54,7 +54,7 @@ const ReviewerAssignedCell = React.memo(({ item }: { item: Entity }) => (
                 </div>
             </>
         ) : (
-            "Sin asignar"
+            "Not assigned"
         )}
     </div>
 ))
@@ -65,7 +65,7 @@ const TypeAssignedCell = React.memo(({ item }: { item: Entity }) => (
                 {MapTypePaper[item.type]}
             </div>
         ) : (
-            "Sin asignar"
+            "Not assigned"
         )}
     </div>
 ))

@@ -31,7 +31,7 @@ import {
   Separator,
   Switch,
   toast,
-  Textarea,
+  // Textarea,
 } from "@/components";
 import { TypographyH4 } from "@/shared/typography";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -59,6 +59,7 @@ import { PaperService } from "../../services/papers.service";
 import { useUsersStore } from "@/modules/back-office/users/store/users.store";
 import { useCategoryStore } from "@/modules/back-office/category/store/category.store";
 import { useAuthIntranetStore } from "@/modules/intranet/auth/store";
+import { useAbstractStore } from "@/modules/intranet/technical-work-tray/store/abstract.store";
 import { Loader } from "@/shared";
 import { DateClass } from "@/lib";
 
@@ -76,7 +77,9 @@ function PapersDialog() {
   );
   const topics = useTopicStore((state) => state.data);
   const categories = useCategoryStore((state) => state.data);
-
+  const abstractRecords = useAbstractStore((state) => state.data);
+  const hasAbstracts = abstractRecords.length > 0;
+  // console.log("📌 ABSTRACT EN EL MODAL:", abstractRecords);
   const title = () => {
     switch (action) {
       case "view":
@@ -87,7 +90,8 @@ function PapersDialog() {
         return "Eliminar Trabajo Técnico";
       case "create":
         // return 'Crear Trabajo Técnico'
-        return "Create Technical Paper";
+        // return "Create Technical Paper";
+        return "Paper Submission";
       case "receive-paper":
         // return "Enviar Trabajo Técnico";
         return "Submit Technical Paper";
@@ -119,6 +123,7 @@ function PapersDialog() {
       resume: "",
 
       file: "",
+      copyrightForm: "",
       categoryId: undefined,
       topicId: undefined,
       webUserId: userWeb?.id,
@@ -127,11 +132,13 @@ function PapersDialog() {
       eventWhere: "",
       eventWhich: "",
       keywords: [],
-      language: "",
-      authorBiography: "",
-      abstractText: "",
-      proposalSignificance: "",
+      // language: "",
+      industry: "",
+      // authorBiography: "",
+      // abstractText: "",
+      // proposalSignificance: "",
       agreeTerms: false,
+
       authors: [
         {
           type: AuthorType.AUTOR,
@@ -291,6 +298,12 @@ function PapersDialog() {
     }
   };
 
+  const selectedAbstractId = useMemo(() => {
+    if (!selected?.correlative) return undefined;
+    const abs = abstractRecords.find((a) => a.codigo === selected.correlative);
+    return abs ? abs.id.toString() : undefined;
+  }, [selected, abstractRecords]);
+
   const handleSendCompleteArchive = async () => {
     if (fullFileUrl && selected) {
       uploadCompleteArchive(fullFileUrl);
@@ -401,9 +414,7 @@ function PapersDialog() {
             <p className="font-semibold">Important</p>
             <p className="mt-1">
               Once you submit, you will no longer be able to edit your abstract
-              or its details. A confirmation email will be sent to your
-              registered address confirming that your technical paper was
-              submitted successfully.
+              or its details. A confirmation email will be sent
             </p>
           </div>
         )}
@@ -465,13 +476,13 @@ function PapersDialog() {
               action === "edit" ||
               action === "view") && (
               <div className="space-y-6">
-                <FormField
+                {/* <FormField
                   name="title"
                   control={form.control}
                   render={({ field }) => (
                     <FormItem className="">
                       <FormLabel>
-                        Title of your abstract{" "}
+                        Title of Your Paper{" "}
                         <span className="text-red-500">*</span>
                       </FormLabel>
                       <FormControl>
@@ -486,25 +497,128 @@ function PapersDialog() {
                       <FormMessage />
                     </FormItem>
                   )}
-                />
+                /> */}
                 {/* <FormField
-                                    name="resume"
-                                    control={form.control}
-                                    render={({ field }) => (
-                                        <FormItem className="">
-                                            <FormLabel>Resumen</FormLabel>
-                                            <FormControl>
-                                                <Textarea
-                                                    {...field}
-                                                    readOnly={action === 'view'}
-                                                    placeholder="Resumen"
-                                                    className="w-full resize-y"
-                                                />
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                /> */}
+                  name="title"
+                  control={form.control}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        Title of Your Paper{" "}
+                        <span className="text-red-500">*</span>
+                      </FormLabel>
+
+                      {hasAbstracts ? (
+                        // 👉 Si HAY ABSTRACTS → mostrar SELECT
+                        <FormControl>
+                          <Select
+                            // onValueChange={(value) => {
+                            //   field.onChange(value);
+                            // }}
+                            // defaultValue={field.value}
+                            onValueChange={(value) => {
+                              const parsed = JSON.parse(value);
+                              form.setValue("title", parsed.title);
+                              form.setValue("codigo", parsed.codigo); // 👈 NUEVO
+                            }}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select an Abstract Title" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {abstractRecords.map((abs) => (
+                                // <SelectItem key={abs.id} value={abs.title}>
+                                //   {abs.title}
+                                // </SelectItem>
+                                <SelectItem
+                                  key={abs.id}
+                                  value={JSON.stringify({
+                                    title: abs.title,
+                                    codigo: abs.codigo,
+                                  })}
+                                >
+                                  {abs.title}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                      ) : (
+                        // 👉 Si NO HAY ABSTRACTS → mostrar INPUT normal
+                        <FormControl>
+                          <Input
+                            {...field}
+                            readOnly={action === "view"}
+                            type="text"
+                            placeholder="Title"
+                            className="w-full"
+                          />
+                        </FormControl>
+                      )}
+
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                /> */}
+
+                <FormField
+                  name="title"
+                  control={form.control}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        Title of Your Paper{" "}
+                        <span className="text-red-500">*</span>
+                      </FormLabel>
+
+                      {hasAbstracts ? (
+                        // 👉 Si HAY ABSTRACTS → mostrar SELECT
+                        <FormControl>
+                          <Select
+                            value={selectedAbstractId} // 👈 AQUÍ LA MAGIA
+                            onValueChange={(value) => {
+                              const found = abstractRecords.find(
+                                (a) => a.id === Number(value)
+                              );
+                              if (found) {
+                                form.setValue("title", found.title);
+                                form.setValue("codigo", found.codigo);
+                              }
+                            }}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select an Abstract Title" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {abstractRecords.map((abs) => (
+                                <SelectItem
+                                  key={abs.id}
+                                  value={abs.id.toString()}
+                                >
+                                  {abs.title}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </FormControl>
+                      ) : (
+                        // 👉 Si NO HAY ABSTRACTS → mostrar INPUT normal
+                        <FormControl>
+                          <Input
+                            {...field}
+                            readOnly={action === "view"}
+                            type="text"
+                            placeholder="Title"
+                            className="w-full"
+                          />
+                        </FormControl>
+                      )}
+
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
                 <FormField
                   name="file"
                   control={form.control}
@@ -512,15 +626,19 @@ function PapersDialog() {
                     <FormItem className="">
                       <FormLabel className="flex flex-col">
                         <p>
-                          Attach abstract <span className="text-red-500">*</span>
+                          Attach Paper <span className="text-red-500">*</span>
                         </p>
-                         <span className="text-xs text-gray-500 mt-1">
-                         If you encounter any issues uploading your abstract, please do not hesitate to contact us at wmc2026@iimp.org.pe for assistance.
+                        <span className="text-xs text-gray-500 mt-1">
+                          If you encounter any issues uploading your paper,
+                          please contact us at wmc2026@iimp.org.pe for
+                          assistance.
                         </span>
                         <span className="text-xs text-gray-500 mt-1">
                           (Only Word files are allowed (.doc and .docx))
                         </span>
-                         <span className="text-xs text-blue-500"> El tamaño máximo es de 10 MB.</span>
+                        <span className="text-xs text-blue-500">
+                          The maximum file size is 10 MB.
+                        </span>
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -538,7 +656,7 @@ function PapersDialog() {
                             size={24}
                             className="animate-spin text-blue-500"
                           />
-                          <span className="text-blue-500">Subiendo...</span>
+                          <span className="text-blue-500">Uploading...</span>
                         </div>
                       )}
                       {form.watch("file") && (
@@ -549,7 +667,7 @@ function PapersDialog() {
                             target="_blank"
                             className="text-blue-500 underline"
                           >
-                            Ver archivo
+                            View Uploaded Paper
                           </Link>
                         </div>
                       )}
@@ -569,6 +687,62 @@ function PapersDialog() {
                     </FormItem>
                   )}
                 />
+
+                <FormItem className="mt-2">
+                  <FormLabel className="flex flex-col">
+                    <p>
+                      Copyright Transfer Form
+                      <span className="text-red-500">*</span>
+                    </p>
+                    <span className="text-xs text-gray-500 mt-1">
+                      (Only Word files are allowed (.pdf))
+                    </span>
+                    <span className="text-xs text-blue-500">
+                      The maximum file size is 10 MB.
+                    </span>
+                  </FormLabel>
+
+                  <FormControl>
+                    <Input
+                      type="file"
+                      accept=".pdf"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const url = await CommonService.uploadFile(file);
+                          form.setValue("copyrightForm", url); // 👈 Nuevo campo
+                        }
+                        e.target.value = "";
+                      }}
+                      disabled={uploading}
+                      className="cursor-pointer block w-full text-sm text-gray-500 file:mr-4 
+                      file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm 
+                      file:font-semibold file:bg-blue-50 file:text-blue-700 
+                      hover:file:bg-blue-100 border-none py-0"
+                    />
+                  </FormControl>
+
+                  <div className="mt-2 text-xs">
+                    <a
+                      href="https://papers.wmc2026.org/formatos/instructivo-wmc-2026-2.pdf"
+                      target="_blank"
+                      className="text-blue-600 underline font-medium"
+                    >
+                      Download Format (Copyright Transfer Form)
+                    </a>
+                  </div>
+                  {form.watch("copyrightForm") && (
+                    <div className="flex items-center space-x-2 mt-2">
+                      <Link
+                        to={form.watch("copyrightForm") || ""}
+                        target="_blank"
+                        className="text-blue-500 underline"
+                      >
+                        View Uploaded Copyright Form
+                      </Link>
+                    </div>
+                  )}
+                </FormItem>
                 <FormField
                   name="categoryId"
                   control={form.control}
@@ -651,7 +825,72 @@ function PapersDialog() {
                     </FormItem>
                   )}
                 />
+
                 <FormField
+                  name="industry"
+                  control={form.control}
+                  render={({ field }) => (
+                    <FormItem className="">
+                      <FormLabel>
+                        Industry Type<span className="text-red-500">*</span>
+                      </FormLabel>
+                      <FormControl>
+                        <Select
+                          disabled={action === "view"}
+                          onValueChange={field.onChange}
+                          defaultValue={field.value?.toString()}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue
+                                placeholder={"Select Industry type"}
+                              />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="Mining Company">
+                              Mining Company
+                            </SelectItem>
+
+                            <SelectItem value="Exploration Company">
+                              Exploration Company
+                            </SelectItem>
+
+                            <SelectItem value="Engineering / Consulting Company">
+                              Engineering / Consulting Company
+                            </SelectItem>
+
+                            <SelectItem value="Construction / Infrastructure Company">
+                              Construction / Infrastructure Company
+                            </SelectItem>
+
+                            <SelectItem value="Equipment / Technology Supplier">
+                              Equipment / Technology Supplier
+                            </SelectItem>
+
+                            <SelectItem value="Government">
+                              Government
+                            </SelectItem>
+
+                            <SelectItem value="NGO">NGO</SelectItem>
+
+                            <SelectItem value="Academia / Research Institution">
+                              Academy / Research Institution
+                            </SelectItem>
+
+                            <SelectItem value="Financial Institution / Investor">
+                              Financial Institution / Investor
+                            </SelectItem>
+
+                            <SelectItem value="Other">Other</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                {/* <FormField
                   name="authorBiography"
                   control={form.control}
                   render={({ field }) => (
@@ -731,8 +970,8 @@ function PapersDialog() {
                       <FormMessage />
                     </FormItem>
                   )}
-                />
-                <FormField
+                /> */}
+                {/* <FormField
                   name="language"
                   control={form.control}
                   render={({ field }) => (
@@ -752,7 +991,6 @@ function PapersDialog() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {/* Español, Inglés */}
                             <SelectItem value="Español">Spanish</SelectItem>
                             <SelectItem value="Inglés">English</SelectItem>
                           </SelectContent>
@@ -761,7 +999,7 @@ function PapersDialog() {
                       <FormMessage />
                     </FormItem>
                   )}
-                />
+                /> */}
                 <FormField
                   name="keywords"
                   control={form.control}
@@ -1041,6 +1279,7 @@ function PapersDialog() {
                   {form.getValues("authors").length < 6 && (
                     <Button
                       disabled={loading || action === "view"}
+                      className="bg-gradient-to-r from-[#00b3dc] via-[#0124e0] to-[#00023f]"
                       type="button"
                       onClick={() =>
                         append({
@@ -1253,7 +1492,7 @@ function PapersDialog() {
                       size={24}
                       className="animate-spin text-blue-500"
                     />
-                    <span className="text-blue-500">Subiendo...</span>
+                    <span className="text-blue-500">Uploading...</span>
                   </div>
                 )}
                 {fullFileUrl && (
@@ -1264,7 +1503,7 @@ function PapersDialog() {
                       target="_blank"
                       className="text-blue-500 underline"
                     >
-                      Ver archivo
+                      View file
                     </Link>
                   </div>
                 )}
@@ -1293,7 +1532,7 @@ function PapersDialog() {
                 <Button
                   disabled={loading}
                   type="submit"
-                  className="font-bold py-2 px-4 rounded duration-300 text-white"
+                  className="font-bold py-2 px-4 rounded duration-300 text-white bg-green-600 hover:bg-green-700"
                 >
                   {loading ? (
                     <div className="flex items-center justify-center space-x-2">

@@ -1,4 +1,4 @@
-import type React from "react";
+// import type React from "react";
 import { CalendarIcon, Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -9,7 +9,7 @@ import {
   CommandItem,
   CommandList,
   Button,
-  Input,
+  // Input,
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -53,12 +53,12 @@ const processes: ProcessPaper[] = [
 
 function CustomerFilters() {
   const {
-    filterTerm,
+    // filterTerm,
     dateRange,
     selectedTopic,
     selectedCategory,
     // selectedState,
-    setFilterTerm,
+    // setFilterTerm,
     setDateRange,
     setSelectedTopic,
     setSelectedCategory,
@@ -71,10 +71,10 @@ function CustomerFilters() {
   const categories = useCategoryStore((state) => state.filtered);
   const topics = useTopicStore((state) => state.filtered);
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFilterTerm(e.target.value);
-    updateFiltered();
-  };
+  // const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   setFilterTerm(e.target.value);
+  //   updateFiltered();
+  // };
 
   const handleDateChange = (date: Date | undefined, type: "start" | "end") => {
     if (date) {

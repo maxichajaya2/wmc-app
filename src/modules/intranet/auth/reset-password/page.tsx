@@ -46,7 +46,7 @@ function ConfirRegisterPage() {
         }
     }, [token])
     return (
-        <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-[#004d58] to-[#003540] p-4">
+        <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-r from-[#00b3dc] via-[#0124e0] to-[#00023f] p-4">
             <div className="w-full max-w-md">
 
                 <Card className="border-none shadow-xl">
@@ -95,7 +95,7 @@ function ConfirRegisterPage() {
                                         />
                                     </div>
                                 </div>
-                                <Button type="submit" className="w-full bg-[#004d58] hover:bg-[#003540]" disabled={loading}>
+                                <Button type="submit" className="w-full bg-gradient-to-r from-[#00b3dc] via-[#0124e0] to-[#00023f]" disabled={loading}>
                                     {loading ? (
                                         <>
                                             <Loader2 className="mr-2 h-4 w-4 animate-spin" />

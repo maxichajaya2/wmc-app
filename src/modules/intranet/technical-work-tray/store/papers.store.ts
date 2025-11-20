@@ -43,6 +43,7 @@ export interface State extends HttpRequestState {
   loading: boolean;
   isOpenDialog: boolean;
   action: ActionsTypes;
+  abstractData: null;
 
   /* Filter States */
   dateRange: { start: string; end: string };
@@ -68,7 +69,7 @@ export interface State extends HttpRequestState {
   updateFiltered: () => void;
 
   setLoading: (loading: boolean) => void;
-
+  setAbstractData: (data: any) => void;
   /* Particular Actions */
   changeStatusPaper: (payload: PayloadChangeStatusPaper) => Promise<void>;
   uploadCompleteArchive: (fullFileUrl: string) => Promise<void>;
@@ -122,6 +123,8 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
   isOpenDialog: false,
   action: "none",
   error: null,
+  abstractData: null,
+
   httpRequest: () => {
     throw new Error("Not implemented yet");
   },
@@ -174,7 +177,7 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
               duration: 5000,
             });
           } else {
-            alert('Ocurrió un error inesperado.');
+            alert("Ocurrió un error inesperado.");
           }
         }
       }
@@ -237,6 +240,8 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
     get().updateFiltered();
   },
 
+  setAbstractData: (data) =>
+    set({ abstractData: data }, false, "setAbstractData"),
   setDateRange: (range) => set({ dateRange: range }, false, "rangeFilterTerm"),
   setSelectedTopic: (topic) =>
     set({ selectedTopic: topic }, false, "topicFilterTerm"),

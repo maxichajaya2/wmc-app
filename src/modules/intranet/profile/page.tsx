@@ -11,18 +11,18 @@ function ProfilePage() {
 
   const FormSchema = z.object({
     email: z.string().email().min(1, {
-      message: 'Campo requerido',
+      message: 'Required field',
     }),
     // password: z.string().optional(),
     name: z.string().min(1, {
-      message: 'Campo requerido',
+      message: 'Required field',
     }),
     lastName: z.string().min(1, {
-      message: 'Campo requerido',
+      message: 'Required field',
     }),
-    maternalLastName: z.string().min(1, {
-      message: 'Campo requerido',
-    }),
+    // maternalLastName: z.string().min(1, {
+    //   message: 'Required field',
+    // }),
     documentType: z.nativeEnum(DocumentType),
     documentNumber: z.string(),
   }).superRefine((val, ctx) => {
@@ -30,14 +30,14 @@ function ProfilePage() {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["documentNumber"],
-        message: 'Campo debe tener 8 dígitos',
+        message: 'Field must have 8 digits',
       });
     }
     if (val.documentType === DocumentType.CE && val.documentNumber.length < 1) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["documentNumber"],
-        message: 'Campo requerido',
+        message: 'Required field',
       });
     }
   }).transform((val) => {
@@ -45,7 +45,7 @@ function ProfilePage() {
       email: val.email,
       name: val.name,
       lastName: val.lastName,
-      maternalLastName: val.maternalLastName,
+      // maternalLastName: val.maternalLastName,
       documentNumber: val.documentNumber,
       documentType: val.documentType,
       // password: val.password || undefined,
@@ -108,9 +108,9 @@ function ProfilePage() {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{'Nombres'}</FormLabel>
+                  <FormLabel>{'First Name'}</FormLabel>
                   <FormControl>
-                    <Input placeholder={'Nombres'} {...field} />
+                    <Input placeholder={'First Name'} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -121,15 +121,15 @@ function ProfilePage() {
               name="lastName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{'Apellido Paterno'}</FormLabel>
+                  <FormLabel>{'Last Name'}</FormLabel>
                   <FormControl>
-                    <Input placeholder={'Apellido Paterno'} {...field} />
+                    <Input placeholder={'Last Name'} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <FormField
+            {/* <FormField
               control={form.control}
               name="maternalLastName"
               render={({ field }) => (
@@ -141,15 +141,15 @@ function ProfilePage() {
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
             <FormField
               control={form.control}
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{'Correo electrónico'}</FormLabel>
+                  <FormLabel>{'Email Address'}</FormLabel>
                   <FormControl>
-                    <Input readOnly placeholder={'Correo electrónico'} {...field} />
+                    <Input readOnly placeholder={'Email Address'} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -182,20 +182,20 @@ function ProfilePage() {
               name="documentType"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{'Tipo Documento'}</FormLabel>
+                  <FormLabel>{'Document Type'}</FormLabel>
                   <Select disabled onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder={'Tipo Documento'} />
+                        <SelectValue placeholder={'Document Type'} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
                       <SelectItem value={DocumentType.DNI}>DNI</SelectItem>
-                      <SelectItem value={DocumentType.CE}>CE</SelectItem>
-                      <SelectItem value={DocumentType.NO_DOMICILIADO}>No Domiciliado</SelectItem>
-                      <SelectItem value={DocumentType.PASSPORT}>Pasaporte</SelectItem>
-                      <SelectItem value={DocumentType.RUC}>RUC</SelectItem>
-                      <SelectItem value={DocumentType.CREDENCIAL_DIPLOMATICA}>Credencial Diplomática</SelectItem>
+                      {/* <SelectItem value={DocumentType.CE}>CE</SelectItem>
+                      <SelectItem value={DocumentType.NO_DOMICILIADO}>No Domiciliado</SelectItem> */}
+                      <SelectItem value={DocumentType.PASSPORT}>Passport</SelectItem>
+                      {/* <SelectItem value={DocumentType.RUC}>RUC</SelectItem>
+                      <SelectItem value={DocumentType.CREDENCIAL_DIPLOMATICA}>Credencial Diplomática</SelectItem> */}
                     </SelectContent>
                   </Select>
                   <FormMessage />
@@ -207,9 +207,9 @@ function ProfilePage() {
               name="documentNumber"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{'Nro Documento'}</FormLabel>
+                  <FormLabel>{'Document Number'}</FormLabel>
                   <FormControl>
-                    <Input readOnly placeholder={'Nro Documento'} {...field} />
+                    <Input readOnly placeholder={'Document Number'} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -217,14 +217,14 @@ function ProfilePage() {
             />
             <Button
               type='submit'
-              className='w-full mt-4'
+              className='w-full mt-4 bg-gradient-to-br from-[#00b3dc] via-[#0124e0] to-[#00023f] text-white'
               disabled={loading}
             >
               {loading ? (
                 <div className="flex items-center justify-center space-x-2">
                   <LoaderCircle size={24} className="animate-spin text-white" />
                 </div>
-              ) : 'Actualizar'}
+              ) : 'Update Profile'}
             </Button>
           </form>
         </Form>

@@ -21,7 +21,8 @@ import {
   StatePaper,
 } from "@/models";
 import type { ColumnDef } from "@tanstack/react-table";
-import { MoreHorizontal, MessageSquare } from "lucide-react";
+import { MessageSquare } from "lucide-react";
+
 import { usePaperStore } from "../../store/papers.store";
 import { formatDate } from "../../../../../utils/format-date";
 
@@ -42,8 +43,8 @@ const CorrelativeCell = React.memo(({ item }: { item: Entity }) => (
 ));
 // const TopicCell = React.memo(({ item }: { item: Entity }) => (
 //     <div className="flex flex-col gap-1">
-//         <div className="flex flex-col gap-1">{item.category?.name ?? "Sin asignar"}</div>
-//         <div className="flex flex-col gap-1">{item.topic?.name ?? "Sin asignar"}</div>
+//         <div className="flex flex-col gap-1">{item.category?.name ?? "Not assigned"}</div>
+//         <div className="flex flex-col gap-1">{item.topic?.name ?? "Not assigned"}</div>
 //     </div>
 // ))
 const TitleCell = React.memo(({ item }: { item: Entity }) => (
@@ -60,7 +61,7 @@ const NameAndLastNameUserCell = React.memo(({ item }: { item: Entity }) => {
           {author?.remissive} {author?.institution}
         </>
       ) : (
-        "Sin asignar"
+        "Not assigned"
       )}
     </div>
   );
@@ -75,7 +76,7 @@ const TypeAssignedCell = React.memo(({ item }: { item: Entity }) => (
     {item.type ? (
       <div className="flex flex-col gap-1">{MapTypePaper[item.type]}</div>
     ) : (
-      "Sin asignar"
+      "Not assigned"
     )}
   </div>
 ));
@@ -190,7 +191,7 @@ const StatusCell = React.memo(({ item }: { item: Entity }) => {
     tooltipContent = approvedDate;
   } else if (item.state === StatePaper.DISMISSED) {
     className = "bg-gray-600 text-white hover:bg-gray-600/80";
-    tooltipContent = dismissedDate
+    tooltipContent = dismissedDate;
   }
 
   const title = (item: Entity) => {
@@ -325,7 +326,7 @@ const ButtonViewComments = React.memo(({ item }: { item: Entity }) => {
   return (
     <DropdownMenuItem onClick={handleViewComments}>
       <MessageSquare className="mr-2 h-4 w-4" />
-      View Comments 
+      View Comments
     </DropdownMenuItem>
   );
 });
@@ -352,9 +353,25 @@ const ActionsCell = React.memo(({ item }: { item: Entity }) => {
 
   return (
     <DropdownMenu modal={false}>
+      {/* <DropdownMenuTrigger>
+        <div className="px-3 py-1 text-white rounded-full text-xs font-bold cursor-pointer hover:opacity-90 animate-glow">
+          ACTIONS
+        </div>
+      </DropdownMenuTrigger> */}
       <DropdownMenuTrigger>
-        <MoreHorizontal className="w-5 h-5" />
+        {item.state === StatePaper.RECEIVED ? (
+          // 👉 BOTÓN PLATEADO SI YA FUE ENVIADO
+          <div className="px-3 py-1 bg-gray-400 text-white rounded-full text-xs font-bold cursor-pointer">
+            ACTIONS
+          </div>
+        ) : (
+          // 👉 BOTÓN ANIMADO SI NO SE HA ENVIADO
+          <div className="px-3 py-1 text-white rounded-full text-xs font-bold cursor-pointer hover:opacity-90 animate-glow">
+            ACTIONS
+          </div>
+        )}
       </DropdownMenuTrigger>
+
       <DropdownMenuContent>
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
         <DropdownMenuSeparator />

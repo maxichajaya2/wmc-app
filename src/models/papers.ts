@@ -44,6 +44,7 @@ export interface Paper {
   categoryId?: number;
   language?: string;
   keywords?: string[];
+  industry?: string;
   flagEvent?: boolean;
   eventWhere?: string;
   eventWhich?: string;
@@ -68,6 +69,7 @@ export interface PayloadPaper {
   flagEvent?: boolean;
   eventWhere?: string;
   eventWhich?: string;
+  industry?: string;
   eventDate?: string;
   webUserId: number;
   type?: TypePaper;
@@ -181,8 +183,8 @@ export enum AuthorType {
 }
 
 export const MapAuthorType: Record<AuthorType, string> = {
-  [AuthorType.AUTOR]: "Autor",
-  [AuthorType.COAUTOR]: "Coautor",
+  [AuthorType.AUTOR]: "Author",
+  [AuthorType.COAUTOR]: "Co-author",
 };
 
 export interface Parameter {
