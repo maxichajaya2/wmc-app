@@ -48,7 +48,7 @@ export default function IntranetLayout() {
 
   const navItems = [
     {
-      name: "Technical Papers  ",
+      name: "Submissions",
       icon: <ClipboardList className="mr-2 h-5 w-5" />,
       href: ROUTES_PATHS.TECHNICAL_WORK_TRAY,
       id: ROUTES_PATHS.TECHNICAL_WORK_TRAY,
@@ -151,7 +151,7 @@ export default function IntranetLayout() {
       <div className="flex flex-1">
         {/* Sidebar - desktop only */}
         {/* <aside className="hidden w-64 flex-col border-r bg-[#004d58] text-white md:flex"> */}
-        <aside className="hidden w-64 flex-col border-r bg-[#0124e0]  text-white md:flex">
+   <aside className="hidden w-64 flex-col border-r bg-gradient-to-b from-[#00b3dc] via-[#0124e0] to-[#00023f] md:flex">
           <div className="flex flex-col gap-6 p-6">
             <nav className="flex flex-col gap-2">
               {navItems.map((item) => (
@@ -159,9 +159,9 @@ export default function IntranetLayout() {
                   key={item.id}
                   to={item.href}
                   className={cn(
-                    "flex items-center rounded-md px-3 py-2 text-sm transition-colors hover:bg-[#003540] hover:text-white",
+                    "flex items-center rounded-md px-3 py-2 text-sm transition-colors hover:bg-[#0124e0] hover:text-white",
                     activeItem === item.id
-                      ? "bg-[#003540] text-white"
+                      ? "bg-[#00023f] text-white"
                       : "text-gray-200"
                   )}
                   onClick={() => setActiveItem(item.id)}

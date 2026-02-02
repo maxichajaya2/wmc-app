@@ -162,11 +162,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isExpand, setIsExpand }) => {
                         )}
                         onClick={() => setIsExpand(!isExpand)}
                     >
-                        <span className="sr-only">Slope</span>
+                        <span className="sr-only">World Mining Congress 2026</span>
                         <TypographyLead className={cn(
                             "text-primary-dark transition-all duration-300 font-extrabold text-sm",
                             isExpand ? "block" : "hidden"
-                        )}>Slope</TypographyLead>
+                        )}>World Mining Congress 2026</TypographyLead>
                     </Link>
                     {isExpand && menuItemsSelected && (
                         <Menu group={menuItemsSelected} />

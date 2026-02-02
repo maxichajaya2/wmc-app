@@ -44,6 +44,7 @@ export interface Paper {
   categoryId?: number;
   language?: string;
   keywords?: string[];
+  industry?: string;
   flagEvent?: boolean;
   eventWhere?: string;
   eventWhich?: string;
@@ -68,6 +69,7 @@ export interface PayloadPaper {
   flagEvent?: boolean;
   eventWhere?: string;
   eventWhich?: string;
+  industry?: string;
   eventDate?: string;
   webUserId: number;
   type?: TypePaper;
@@ -81,15 +83,17 @@ export interface PayloadChangeStatusPaper {
 }
 
 export enum TypePaper {
-  ORAL = "O",
-  POSTER = "P",
-  PRESENTACION_INTERACTIVA = "PI",
+  // ORAL = "O",
+  // POSTER = "P",
+  // PRESENTACION_INTERACTIVA = "PI",
+  PRESENTACION_ORAL = "PO",
 }
 
 export const MapTypePaper: Record<TypePaper, string> = {
-  [TypePaper.ORAL]: "Oral",
-  [TypePaper.POSTER]: "Poster",
-  [TypePaper.PRESENTACION_INTERACTIVA]: "Presentación Interactiva",
+  // [TypePaper.ORAL]: "Oral",
+  // [TypePaper.POSTER]: "Poster",
+  // [TypePaper.PRESENTACION_INTERACTIVA]: "Presentación Interactiva",
+  [TypePaper.PRESENTACION_ORAL]: "Presentación Oral",
 };
 
 export enum StatePaper {
@@ -107,13 +111,20 @@ export enum ProcessPaper {
 }
 
 export const MapStatePaper: Record<StatePaper, string> = {
-  [StatePaper.REGISTERED]: "Registrado",
-  [StatePaper.RECEIVED]: "Recibido",
-  [StatePaper.SENT]: "Enviado",
-  [StatePaper.ASSIGNED]: "Asignado",
-  [StatePaper.UNDER_REVIEW]: "En revisión",
-  [StatePaper.APPROVED]: "Aprobado",
-  [StatePaper.DISMISSED]: "Descartado",
+  // [StatePaper.REGISTERED]: "Registrado",
+  // [StatePaper.RECEIVED]: "Recibido",
+  // [StatePaper.SENT]: "Enviado",
+  // [StatePaper.ASSIGNED]: "Asignado",
+  // [StatePaper.UNDER_REVIEW]: "En revisión",
+  // [StatePaper.APPROVED]: "Aprobado",
+  // [StatePaper.DISMISSED]: "Descartado",
+  [StatePaper.REGISTERED]: "REGISTERED",
+  [StatePaper.RECEIVED]: "RECEIVED",
+  [StatePaper.SENT]: "SENT",
+  [StatePaper.ASSIGNED]: "ASSIGNED",
+  [StatePaper.UNDER_REVIEW]: "UNDER REVIEW",
+  [StatePaper.APPROVED]: "APPROVED",
+  [StatePaper.DISMISSED]: "DISMISSED",
 };
 
 export const MapStatePaperForUser: Record<StatePaper, string> = {
@@ -181,8 +192,8 @@ export enum AuthorType {
 }
 
 export const MapAuthorType: Record<AuthorType, string> = {
-  [AuthorType.AUTOR]: "Autor",
-  [AuthorType.COAUTOR]: "Coautor",
+  [AuthorType.AUTOR]: "Author",
+  [AuthorType.COAUTOR]: "Co-author",
 };
 
 export interface Parameter {

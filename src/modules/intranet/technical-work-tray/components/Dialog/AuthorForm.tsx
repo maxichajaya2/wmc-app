@@ -265,10 +265,12 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel>
-              <p>Email  <span className="text-red-500">*</span></p>
+              <p>
+                Email <span className="text-red-500">*</span>
+              </p>
               <span className="text-xs text-gray-500 mt-1">
-               (will be used for all communications during the process):
-              </span>    
+                (will be used for all communications during the process):
+              </span>
             </FormLabel>
             <FormControl>
               <Input {...field} readOnly={action === "view"} type="email" />
@@ -308,7 +310,7 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
                   <SelectValue placeholder="Seleccione tipo" />
                 </SelectTrigger>
               </FormControl>
-              <SelectContent>
+              {/* <SelectContent>
                  <SelectItem value={AuthorType.AUTOR}>{MapAuthorType[AuthorType.AUTOR]}</SelectItem>
                                
                 {index === 0 ? (
@@ -319,6 +321,24 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
                   <SelectItem value={AuthorType.COAUTOR}>
                     {MapAuthorType[AuthorType.COAUTOR]}
                   </SelectItem>
+                )}
+              </SelectContent> */}
+              <SelectContent>
+                {index === 0 ? (
+                  // Solo una opción para el primer autor
+                  <SelectItem value={AuthorType.AUTOR}>
+                    {MapAuthorType[AuthorType.AUTOR]}
+                  </SelectItem>
+                ) : (
+                  // Para los demás autores sí mostramos ambas opciones
+                  <>
+                    <SelectItem value={AuthorType.AUTOR}>
+                      {MapAuthorType[AuthorType.AUTOR]}
+                    </SelectItem>
+                    <SelectItem value={AuthorType.COAUTOR}>
+                      {MapAuthorType[AuthorType.COAUTOR]}
+                    </SelectItem>
+                  </>
                 )}
               </SelectContent>
             </Select>

@@ -102,8 +102,8 @@ const storeApi: StateCreator<
         "loginSuccess"
       );
       toast({
-        title: `Bienvenido ${userData.user.name}`,
-        description: "Inicio de sesión exitoso",
+        title: `Welcome ${userData.user.name}`,
+        description: "Successful login",
       });
     } catch (err) {
       console.log(err);
@@ -112,10 +112,10 @@ const storeApi: StateCreator<
       console.log(axiosError);
       switch (axiosError.code) {
         case "PASSWORD_INVALID":
-          return set({ error: "Contraseña incorrecta" });
+          return set({ error: "Incorrect password" });
         case "USER_NOT_FOUND":
           return set({
-            error: "Usuario no encontrado",
+            error: "User not found",
           });
         default:
           return set({ error: "Error" });
@@ -154,8 +154,8 @@ const storeApi: StateCreator<
   logout: async () => {
     set({ user: undefined, isSended: false, status: "unauthorized", }, false, "logout");
     toast({
-      title: "Adiós!",
-      description: "Cierre de sesión exitoso",
+      title: "Goodbye!",
+      description: "Successful logout",
     });
   },
   registerUser: async (body) => {
@@ -171,13 +171,13 @@ const storeApi: StateCreator<
         "registerUser"
       );
       toast({
-        title: "Registro exitoso",
-        description: "Compruebe su correo electrónico para confirmar su cuenta",
+        title: "Successful registration",
+        description: "Check your email to confirm your account",
       });
     } catch (error) {
       toast({
         title: "Error",
-        description: "Error al registrar el usuario",
+        description: "Error registering the user",
       });
     } finally {
       set({ loading: false, isSended: true });
@@ -197,14 +197,14 @@ const storeApi: StateCreator<
           "confirmRegisterSuccess"
         );
         toast({
-          title: "Registro confirmado",
-          description: "Registro confirmado correctamente",
+          title: "Registration confirmed",
+          description: "Registration successfully confirmed",
         });
       }
     } catch (error) {
       toast({
         title: "Error",
-        description: "Error al confirmar el registro",
+        description: "Error confirming registration",
       });
     } finally {
       set({ loading: false, isSended: true });
@@ -222,13 +222,13 @@ const storeApi: StateCreator<
       );
       set({ user }, false, "updateDataUserSuccess");
       toast({
-        title: "Actualización exitosa",
-        description: "Datos actualizados correctamente",
+        title: "Update successful",
+        description: "Data updated successfully",
       });
     } catch (error) {
       toast({
         title: "Error",
-        description: "Error al actualizar los datos",
+        description: "Error updating data",
       });
     } finally {
       set({ loading: false, isSended: false });
@@ -247,13 +247,13 @@ const storeApi: StateCreator<
         "recoverPassword"
       );
       toast({
-        title: "Código enviado",
-        description: "Código de recuperación enviado correctamente",
+        title: "Code sent",
+        description: "Recovery code sent successfully",
       });
     } catch (error) {
       toast({
         title: "Error",
-        description: "Error al enviar el código de recuperación",
+        description: "Error sending recovery code",
       });
     } finally {
       set({ loading: false });
@@ -275,14 +275,14 @@ const storeApi: StateCreator<
           "resetPassword"
         );
         toast({
-          title: "Contraseña actualizada",
-          description: "Contraseña actualizada correctamente",
+          title: "Password updated",
+          description: "Password updated successfully",
         });
       }
     } catch (error) {
       toast({
         title: "Error",
-        description: "Error al actualizar la contraseña",
+        description: "Error updating the password",
       });
     } finally {
       set({ loading: false });

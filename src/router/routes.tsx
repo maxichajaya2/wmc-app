@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react";
 import { Navigate, RouteObject } from "react-router-dom";
 import { Loader } from "@/shared";
 import { ROUTES_PATHS } from "@/constants";
+// import { Abstract } from '../../../backend/src/domain/entities/abstract.entity';
 
 // LAZY LOAD LAYOUTS
 const AuthIntranetLayout = lazy(() => import("@/layouts/AuthIntranetLayout"));
@@ -34,6 +35,7 @@ const Roles = lazy(() => import("@/modules/back-office/roles/page"));
 const UsersWeb = lazy(() => import("@/modules/back-office/users-web/page"));
 const Categories = lazy(() => import("@/modules/back-office/category/page"));
 const Topics = lazy(() => import("@/modules/back-office/topics/page"));
+const Abstracts = lazy(() => import("@/modules/back-office/abstracts/page"));
 const TechnicalWorks = lazy(() => import("@/modules/back-office/papers/page"));
 const Reports = lazy(() =>
   import("@/modules/back-office/reports/page")
@@ -94,6 +96,7 @@ export const routes: RouteObject[] = [
       { path: ROUTES_PATHS.WEB_USERS, element: lazyLoad(UsersWeb) },
       { path: ROUTES_PATHS.CATEGORIES, element: lazyLoad(Categories) },
       { path: ROUTES_PATHS.TOPICS, element: lazyLoad(Topics) },
+      { path: ROUTES_PATHS.ABSTRACTS, element: lazyLoad(Abstracts) },
       { path: ROUTES_PATHS.TECHINICAL_WORKS, element: lazyLoad(TechnicalWorks) },
       { path: ROUTES_PATHS.REPORTS, element: lazyLoad(Reports) },
     ],

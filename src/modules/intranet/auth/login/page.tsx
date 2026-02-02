@@ -95,11 +95,11 @@ export default function Login() {
                                                         </FormControl>
                                                         <SelectContent>
                                                             <SelectItem value={DocumentType.DNI}>DNI</SelectItem>
-                                                            <SelectItem value={DocumentType.CE}>Foreign Meat</SelectItem>
-                                                            <SelectItem value={DocumentType.NO_DOMICILIADO}>Not Domiciled</SelectItem>
+                                                            {/* <SelectItem value={DocumentType.CE}>Foreign Meat</SelectItem>
+                                                            <SelectItem value={DocumentType.NO_DOMICILIADO}>Not Domiciled</SelectItem> */}
                                                             <SelectItem value={DocumentType.PASSPORT}>Passport</SelectItem>
-                                                            <SelectItem value={DocumentType.RUC}>RUC</SelectItem>
-                                                            <SelectItem value={DocumentType.CREDENCIAL_DIPLOMATICA}>Diplomatic Credential</SelectItem>
+                                                            {/* <SelectItem value={DocumentType.RUC}>RUC</SelectItem>
+                                                            <SelectItem value={DocumentType.CREDENCIAL_DIPLOMATICA}>Diplomatic Credential</SelectItem> */}
                                                         </SelectContent>
                                                     </Select>
                                                     <FormMessage />

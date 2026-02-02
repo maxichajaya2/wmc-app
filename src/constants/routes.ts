@@ -19,6 +19,7 @@ export const ROUTES_PATHS = {
   ROLES: `${BASE_PATH_ADMIN}/roles`,
   CATEGORIES: `${BASE_PATH_ADMIN}/categorias`,
   TOPICS: `${BASE_PATH_ADMIN}/temas`,
+  ABSTRACTS: `${BASE_PATH_ADMIN}/abstracts`,
   TECHINICAL_WORKS: `${BASE_PATH_ADMIN}/trabajos-tecnicos`,
   REPORTS: `${BASE_PATH_ADMIN}/reportes`,
   // ERROR

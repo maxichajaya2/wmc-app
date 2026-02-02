@@ -88,26 +88,27 @@ function PapersManagementPage() {
           >
             <FileSpreadsheet className="h-4 w-4" />
             <span className="sr-only sm:not-sr-only sm:whitespace-nowrap text-base">
-              Exportar
+              Export
             </span>
           </Button>
           {useCheckPermission(ModulesRoles.TECHINICAL_WORKS, ActionRoles.CREATE) && (
-            <Button size="sm" className="h-8 gap-1" onClick={handleCreate}>
-              <PlusCircle className="h-3.5 w-3.5 text-white" />
+            <Button size="sm" className="h-8 gap-1 bg-gradient-to-br from-[#00b3dc] via-[#0124e0] to-[#00023f]" onClick={handleCreate}>
+              <PlusCircle className="h-3.5 w-3.5 text-white " />
               <span className="sr-only sm:not-sr-only sm:whitespace-nowrap text-white">
-                Añadir Trabajo Técnico
+                Add New Paper
               </span>
             </Button>
           )}
         </div>
       </div>
+
       <CustomerFilters />
       <div className="overflow-auto">
         <Card x-chunk="dashboard-06-chunk-0">
           <CardHeader>
-            <CardTitle>Trabajos Técnicos</CardTitle>
+            <CardTitle>My Submissions</CardTitle>
             <CardDescription>
-              Lista de trabajos técnicos registrados.
+              List of your submitted works.
             </CardDescription>
           </CardHeader>
           <CardContent>

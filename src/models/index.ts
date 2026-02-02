@@ -32,5 +32,6 @@ export * from './stand';
 export * from './subsidiary';
 export * from './supplier';
 export * from './topic';
+export * from './abstract';
 export * from './unit';
 export * from './user';

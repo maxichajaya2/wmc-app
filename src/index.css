@@ -108,6 +108,17 @@ html {
     }
 }
 
+@keyframes glow {
+  0% { box-shadow: 0 0 5px rgba(0, 179, 220, 0.3); }
+  50% { box-shadow: 0 0 15px rgba(1, 36, 224, 0.7); }
+  100% { box-shadow: 0 0 5px rgba(0, 179, 220, 0.3); }
+}
+
+.animate-glow {
+  animation: glow 2s infinite ease-in-out;
+  background: linear-gradient(to right, #00b3dc, #0124e0, #00023f);
+}
+
 /* Modified React Select Stlyes */
 .react-select__control {
     border-radius: calc(var(--radius) - 2px) !important;

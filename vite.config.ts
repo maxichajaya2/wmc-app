@@ -15,6 +15,6 @@ export default defineConfig({
   },
   server: {
     port: 3001,
-    allowedHosts: ["forotis.perumin.com", "backend.forotis.perumin.com"],
+    allowedHosts: ["papers.wmc2026.org", "backend-papers.wmc2026.org"],
   }
 });

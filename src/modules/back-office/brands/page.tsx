@@ -63,7 +63,7 @@ function BrandsPage() {
           <Button size="sm" variant="outline" className="h-8 gap-1 hidden" disabled>
             <File className="h-3.5 w-3.5" />
             <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-              Exportar
+              Exporta
             </span>
           </Button>
           {useCheckPermission(ModulesRoles.DASHBOARD, ActionRoles.CREATE) && (

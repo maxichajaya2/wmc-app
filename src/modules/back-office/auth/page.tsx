@@ -38,7 +38,7 @@ function AuthPage() {
 
     return (
         // bg-[url(/img/mountain.svg)]
-        <div className="w-screen h-screen bg-primary bg-no-repeat bg-container bg-bottom flex items-center justify-center relative overflow-hidden">
+        <div className="w-screen h-screen bg-primary bg-no-repeat bg-container bg-bottom flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-[#00b3dc] via-[#0124e0] to-[#00023f]">
             <div className="flex flex-col items-center justify-center py-12 w-full max-w-[350px] md:max-w-[440px] h-auto bg-background-container rounded-2xl transition-all duration-300">
                 <img src="/logo-wmc.png" alt="Perumin" className="w-80" />
                 <TypographyH3>
@@ -92,7 +92,7 @@ function AuthPage() {
                                 </FormItem>
                             )}
                         />
-                        <Button type="submit" size={"lg"} disabled={loading} variant={"dark"} className="w-full relative">
+                        <Button type="submit" size={"lg"} disabled={loading} variant={"dark"} className="w-full relative bg-gradient-to-br from-[#00b3dc] via-[#0124e0] to-[#00023f]">
                             {loading ? <Spinner /> : "Ingresar"}
                             <AnimatePresence>
                                 {isExpanding && (

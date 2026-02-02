@@ -44,7 +44,8 @@ export const createRouteSlice: StateCreator<RouteSlice> = (_set, _get) => ({
           module: ModulesRoles.WEB_USERS,
         },
         {
-          name: "Trabajos Técnicos",
+          // name: "Trabajos Técnicos",
+          name: "Submissions",
           url: ROUTES_PATHS.TECHINICAL_WORKS,
           module: ModulesRoles.TECHINICAL_WORKS,
         },
@@ -62,6 +63,11 @@ export const createRouteSlice: StateCreator<RouteSlice> = (_set, _get) => ({
               name: "Temas",
               url: ROUTES_PATHS.TOPICS,
               module: ModulesRoles.TOPICS,
+            },
+            {
+              name: "Abstracts",
+              url: ROUTES_PATHS.ABSTRACTS,
+              module: ModulesRoles.ABSTRACTS,
             },
           ]
         }

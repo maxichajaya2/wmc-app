@@ -45,12 +45,12 @@ function CommentsDialog() {
           }}
         >
           <DialogHeader>
-            <DialogTitle>Comentarios</DialogTitle>
+            <DialogTitle>Comments</DialogTitle>
           </DialogHeader>
           <div className="mt-4 space-y-4">
             <form onSubmit={handleSubmit(onSubmit)}>
               <div className="flex flex-col gap-2 items-start space-x-2 rounded-md border p-4">
-                <Input {...register("comentary")} placeholder="Escribe un comentario..." className="flex-grow" />
+                <Input {...register("comentary")} placeholder="Write a comment…" className="flex-grow" />
                 <Input
                   type="file"
                   onChange={(e) => handleFileUpload(e)}
@@ -67,17 +67,17 @@ function CommentsDialog() {
                   // Visor de archivo
                   <div className="flex items-center space-x-2">
                     <Link to={watch('fileUrl') || ''} target="_blank" className="text-blue-500 underline">
-                      Ver archivo
+                      View uploaded file
                     </Link>
                   </div>
                 )}
-                <Button type="submit" disabled={loading}>
+                <Button type="submit" disabled={loading}  className="h-8 gap-1 bg-gradient-to-br from-[#00b3dc] via-[#0124e0] to-[#00023f]">
                   {loading ? (
                     <LoaderCircle className="h-4 w-4 animate-spin" />
                   ) : editingCommentId ? (
-                    "Actualizar"
+                    "Update"
                   ) : (
-                    "Enviar"
+                    "Send"
                   )}
                 </Button>
               </div>
@@ -96,7 +96,7 @@ function CommentsDialog() {
                         // Visor de archivo
                         <div className="flex items-center space-x-2">
                           <Link to={comment.fileUrl || ''} target="_blank" className="text-blue-500 underline">
-                            Ver archivo
+                            View file
                           </Link>
                         </div>
                       )}
@@ -122,7 +122,7 @@ function CommentsDialog() {
             </ScrollArea>
           </div>
           <DialogFooter>
-            <Button type="button" onClick={closeCommentsDialog}>Cerrar</Button>
+            <Button type="button" onClick={closeCommentsDialog}>Close</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

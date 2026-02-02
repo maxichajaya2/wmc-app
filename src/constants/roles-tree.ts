@@ -27,26 +27,46 @@ export enum ActionRoles {
 }
 
 export const MapActionRoles: Record<ActionRoles, string> = {
-  [ActionRoles.CREATE]: "Crear",
-  [ActionRoles.READ]: "Leer",
-  [ActionRoles.UPDATE]: "Actualizar",
-  [ActionRoles.DELETE]: "Eliminar",
-  [ActionRoles.INACTIVATE]: "Inactivar",
-  [ActionRoles.ASSIGN_PERMISSION]: "Asignar permisos",
-  [ActionRoles.UNASSIGN_PERMISSION]: "Desasignar permisos",
-  [ActionRoles.CHANGE_STATUS_CASHBOX]: "Cambiar estado de caja",
+  // [ActionRoles.CREATE]: "Crear",
+  // [ActionRoles.READ]: "Leer",
+  // [ActionRoles.UPDATE]: "Actualizar",
+  // [ActionRoles.DELETE]: "Eliminar",
+  // [ActionRoles.INACTIVATE]: "Inactivar",
+  // [ActionRoles.ASSIGN_PERMISSION]: "Asignar permisos",
+  // [ActionRoles.UNASSIGN_PERMISSION]: "Desasignar permisos",
+  // [ActionRoles.CHANGE_STATUS_CASHBOX]: "Cambiar estado de caja",
+  // // FEATURE TECHNICAL WORKS
+  // // --COMENTARIOS
+  // [ActionRoles.CREATE_COMMENT]: "Crear comentario",
+  // [ActionRoles.READ_COMMENT]: "Leer comentarios",
+  // [ActionRoles.UPDATE_COMMENT]: "Actualizar comentario",
+  // [ActionRoles.DELETE_COMMENT]: "Eliminar comentario",
+  // // -- ACCIONES
+  // [ActionRoles.SEND_TO_LEADER]: "Enviar a líder",
+  // [ActionRoles.SEND_TO_REVIEWER]: "Enviar a revisor",
+  // [ActionRoles.IN_REVIEW]: "En revisión",
+  // [ActionRoles.APPROVED]: "Aprobar",
+  // [ActionRoles.DISMISS]: "Desestimar",
+  [ActionRoles.CREATE]: "Create",
+  [ActionRoles.READ]: "Read",
+  [ActionRoles.UPDATE]: "Update",
+  [ActionRoles.DELETE]: "Delete",
+  [ActionRoles.INACTIVATE]: "Deactivate",
+  [ActionRoles.ASSIGN_PERMISSION]: "Assign permissions",
+  [ActionRoles.UNASSIGN_PERMISSION]: "Unassign permissions",
+  [ActionRoles.CHANGE_STATUS_CASHBOX]: "Change cashbox status",
   // FEATURE TECHNICAL WORKS
-  // --COMENTARIOS
-  [ActionRoles.CREATE_COMMENT]: "Crear comentario",
-  [ActionRoles.READ_COMMENT]: "Leer comentarios",
-  [ActionRoles.UPDATE_COMMENT]: "Actualizar comentario",
-  [ActionRoles.DELETE_COMMENT]: "Eliminar comentario",
-  // -- ACCIONES
-  [ActionRoles.SEND_TO_LEADER]: "Enviar a líder",
-  [ActionRoles.SEND_TO_REVIEWER]: "Enviar a revisor",
-  [ActionRoles.IN_REVIEW]: "En revisión",
-  [ActionRoles.APPROVED]: "Aprobar",
-  [ActionRoles.DISMISS]: "Desestimar",
+  // --COMMENTS
+  [ActionRoles.CREATE_COMMENT]: "Create comment",
+  [ActionRoles.READ_COMMENT]: "Read comments",
+  [ActionRoles.UPDATE_COMMENT]: "Update comment",
+  [ActionRoles.DELETE_COMMENT]: "Delete comment",
+  // -- ACTIONS
+  [ActionRoles.SEND_TO_LEADER]: "Send to leader",
+  [ActionRoles.SEND_TO_REVIEWER]: "Send to reviewer",
+  [ActionRoles.IN_REVIEW]: "In review",
+  [ActionRoles.APPROVED]: "Approve",
+  [ActionRoles.DISMISS]: "Dismiss",
 };
 
 export enum ModulesRoles {
@@ -58,6 +78,7 @@ export enum ModulesRoles {
   TOPICS = "topics", //temas
   CATEGORIES = "categories", //categorías
   REPORTS = "reports", //reportes
+  ABSTRACTS  = "abstracts", //abstracts
 }
 
 export const ROLES_TREE = [
@@ -197,6 +218,31 @@ export const ROLES_TREE = [
     ],
   },
   {
+    name: "Abstracts",
+    modules: [
+      {
+        id: undefined,
+        module: ModulesRoles.ABSTRACTS,
+        action: ActionRoles.CREATE,
+      },
+      {
+        id: undefined,
+        module: ModulesRoles.ABSTRACTS,
+        action: ActionRoles.READ,
+      },
+      {
+        id: undefined,
+        module: ModulesRoles.ABSTRACTS,
+        action: ActionRoles.UPDATE,
+      },
+      {
+        id: undefined,
+        module: ModulesRoles.ABSTRACTS,
+        action: ActionRoles.DELETE,
+      },
+    ],
+  },
+  {
     name: "Usuarios Web",
     modules: [
       {
@@ -222,7 +268,8 @@ export const ROLES_TREE = [
     ],
   },
   {
-    name: "Trabajos Técnicos",
+    // name: "Trabajos Técnicos",
+    name: "Submissions",
     modules: [
       {
         id: undefined,
