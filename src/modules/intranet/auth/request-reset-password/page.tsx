@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Loader2, EyeIcon, EyeOffIcon, AlertCircle } from "lucide-react";
+import { Loader2, AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ROUTES_PATHS } from "@/constants";
 import { useForm } from "react-hook-form";
@@ -39,7 +39,7 @@ export default function Login() {
       email: "",
     },
   });
-
+  const error = useAuthIntranetStore((state) => state.error);
   const loading = useAuthIntranetStore((state) => state.loading);
   const recoverPassword = useAuthIntranetStore(
     (state) => state.recoverPassword,
@@ -81,6 +81,12 @@ export default function Login() {
                 correctly.
               </p>
             </div>
+            {error && (
+              <div className="flex items-center gap-2 p-3 mb-4 mt-4 text-sm font-medium text-red-800 border border-red-200 rounded-md bg-red-50">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{error}</span>
+              </div>
+            )}
             <Form {...form}>
               <form onSubmit={onSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 gap-4">

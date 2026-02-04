@@ -9,7 +9,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Loader2, EyeIcon, EyeOffIcon, AlertTriangle } from "lucide-react";
+import {
+  Loader2,
+  EyeIcon,
+  EyeOffIcon,
+  AlertTriangle,
+  AlertCircle,
+} from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { ROUTES_PATHS } from "@/constants";
 import { PayloadPreRegister, useAuthIntranetStore } from "../store";
@@ -104,6 +110,7 @@ export default function Registro() {
   const router = useNavigate();
   const loading = useAuthIntranetStore((state) => state.loading);
   const isSended = useAuthIntranetStore((state) => state.isSended);
+  const error = useAuthIntranetStore((state) => state.error);
   // const sendVerificationCode = useAuthIntranetStore(state => state.sendVerificationCode)
   const registerUser = useAuthIntranetStore((state) => state.registerUser);
   const showPassword = useAuthIntranetStore((state) => state.showPassword);
@@ -111,7 +118,7 @@ export default function Registro() {
     (state) => state.setShowPassword,
   );
   const setError = useAuthIntranetStore((state) => state.setError);
-  const token = useAuthIntranetStore((state) => state.token);
+  // const token = useAuthIntranetStore((state) => state.token);
 
   useEffect(() => {
     setError("");
@@ -120,11 +127,25 @@ export default function Registro() {
     };
   }, []);
 
+  // async function onSubmit(data: PayloadPreRegister) {
+  //   await registerUser(data);
+  //   const nodeEnv = process.env.NODE_ENV || "development";
+  //   if (nodeEnv === "development") {
+  //     router(`${ROUTES_PATHS.CONFIRM_REGISTER}?token=${token}`);
+  //   }
+  // }
+
   async function onSubmit(data: PayloadPreRegister) {
     await registerUser(data);
-    const nodeEnv = process.env.NODE_ENV || "development";
-    if (nodeEnv === "development") {
-      router(`${ROUTES_PATHS.CONFIRM_REGISTER}?token=${token}`);
+
+    // Accedemos al estado actualizado después del await
+    const state = useAuthIntranetStore.getState();
+
+    if (!state.error && state.token) {
+      const nodeEnv = process.env.NODE_ENV || "development";
+      if (nodeEnv === "development") {
+        router(`${ROUTES_PATHS.CONFIRM_REGISTER}?token=${state.token}`);
+      }
     }
   }
 
@@ -158,6 +179,12 @@ export default function Registro() {
                 your approved papers to this account.
               </p>
             </div>
+            {error && (
+              <div className="flex items-center gap-2 p-3 mb-4 text-sm font-medium text-red-800 border border-red-200 rounded-md bg-red-50">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{error}</span>
+              </div>
+            )}
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
@@ -370,8 +397,7 @@ export default function Registro() {
       </div>
 
       <p className="mt-8 text-center text-sm text-gray-300">
-        © {new Date().getFullYear() + 1} World Mining Congress. All rights
-        reserved.
+        © {new Date().getFullYear()} World Mining Congress. All rights reserved.
       </p>
     </div>
   );

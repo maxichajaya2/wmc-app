@@ -88,6 +88,8 @@ const storeApi: StateCreator<
   setShowPassword: (showPassword: boolean) => {
     set({ showPassword }, false, "setShowPassword");
   },
+  //  LOGIN
+  // ==============================
   login: async (body: PayloadLogin) => {
     try {
       set({ loading: true, error: undefined });
@@ -99,7 +101,7 @@ const storeApi: StateCreator<
           token: userData.token,
         },
         false,
-        "loginSuccess"
+        "loginSuccess",
       );
       toast({
         title: `Welcome ${userData.user.name}`,
@@ -126,63 +128,65 @@ const storeApi: StateCreator<
   },
   getUserByToken: async () => {
     const token = get().token;
-    console.log({token});
+    console.log({ token });
     if (token) {
       try {
         const userByToken = await getUserByToken(token);
-        console.log({userByToken});
+        console.log({ userByToken });
         set(
           {
             user: userByToken,
             status: "authorized",
           },
           false,
-          "getUserByToken"
+          "getUserByToken",
         );
       } catch (error) {
-        set(
-          { status: "unauthorized", user: undefined },
-          false,
-          "Unauthorized"
-        );
+        set({ status: "unauthorized", user: undefined }, false, "Unauthorized");
         console.error(error);
       }
     } else {
       set({ status: "unauthorized" });
     }
   },
+  //  CERRAR SESION
+  // ==============================
   logout: async () => {
-    set({ user: undefined, isSended: false, status: "unauthorized", }, false, "logout");
+    set(
+      { user: undefined, isSended: false, status: "unauthorized" },
+      false,
+      "logout",
+    );
     toast({
       title: "Goodbye!",
       description: "Successful logout",
     });
   },
+  //  REGISTER
+  // ==============================
   registerUser: async (body) => {
     try {
-      set({ loading: true });
+      set({ loading: true, error: "" }); // Resetea error al empezar
       const { token } = await register(body);
-      console.log("registerUser", { token });
-      set(
-        {
-          token,
-        },
-        false,
-        "registerUser"
-      );
+
+      set({ token, isSended: true }, false, "registerUser");
+
       toast({
         title: "Successful registration",
         description: "Check your email to confirm your account",
       });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Error registering the user",
-      });
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message || "An unexpected error occurred";
+
+      set({ error: errorMessage, isSended: false });
     } finally {
-      set({ loading: false, isSended: true });
+      set({ loading: false });
     }
   },
+
+  //  CONFIRMAR REGISTER
+  // ==============================
   confirmRegister: async (tokenParam) => {
     try {
       set({ loading: true });
@@ -194,7 +198,7 @@ const storeApi: StateCreator<
             token: token,
           },
           false,
-          "confirmRegisterSuccess"
+          "confirmRegisterSuccess",
         );
         toast({
           title: "Registration confirmed",
@@ -210,6 +214,8 @@ const storeApi: StateCreator<
       set({ loading: false, isSended: true });
     }
   },
+  //  ACTUALIZAR USUARIO
+  // ==============================
   updateDataUser: async (body, id) => {
     try {
       set({ loading: true });
@@ -218,7 +224,7 @@ const storeApi: StateCreator<
           ...body,
           password: body.password === "" ? undefined : body.password,
         },
-        id
+        id,
       );
       set({ user }, false, "updateDataUserSuccess");
       toast({
@@ -234,32 +240,60 @@ const storeApi: StateCreator<
       set({ loading: false, isSended: false });
     }
   },
+
+  //  RECUPERAR CONTRASEÑA
+  // ==============================
+  // recoverPassword: async (body) => {
+  //   try {
+  //     set({ loading: true });
+  //     const { token } = await sendResetPasswordOTP(body);
+  //     set({isSendedToken: true,token}, false,"recoverPassword");
+  //     toast({
+  //       title: "Code sent",
+  //       description: "Recovery code sent successfully",
+  //     });
+  //   } catch (error) {
+  //     toast({
+  //       title: "Error",
+  //       description: "Error sending recovery code",
+  //     });
+  //   } finally {
+  //     set({ loading: false });
+  //   }
+  // },
+
   recoverPassword: async (body) => {
     try {
-      set({ loading: true });
-      const { token } = await sendResetPasswordOTP(body);
+      set({ loading: true, error: "" }); // Limpiamos errores previos
+      const response = await sendResetPasswordOTP(body);
+
       set(
-        {
-          isSendedToken: true,
-          token,
-        },
+        { isSendedToken: true, token: response.token },
         false,
-        "recoverPassword"
+        "recoverPassword",
       );
+
       toast({
         title: "Code sent",
         description: "Recovery code sent successfully",
       });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Error sending recovery code",
-      });
+    } catch (error: any) {
+      // Capturamos el mensaje del backend (ej: "The email address provided is not registered...")
+      const errorMessage =
+        error.response?.data?.message || "Error sending recovery code";
+      set({ error: errorMessage });
+
+      // toast({
+      //   title: "Error",
+      //   description: errorMessage,
+      //   variant: "destructive",
+      // });
     } finally {
       set({ loading: false });
     }
   },
-
+  //  RESETEAR CONTRASEÑA
+  // ==============================
   resetPassword: async (body) => {
     try {
       set({ loading: true });
@@ -272,7 +306,7 @@ const storeApi: StateCreator<
             isResetPassword: true,
           },
           false,
-          "resetPassword"
+          "resetPassword",
         );
         toast({
           title: "Password updated",
@@ -312,7 +346,7 @@ export const useAuthIntranetStore = create<SessionState>()(
 
               const value = localStorage?.getItem(name);
               resolve(value);
-            }, 100)
+            }, 100),
           ),
         setItem: (name, value) => localStorage?.setItem(name, value),
         removeItem: (name) => localStorage?.removeItem(name),
@@ -320,6 +354,6 @@ export const useAuthIntranetStore = create<SessionState>()(
       onRehydrateStorage: (state) => {
         return () => state.setHasHydrated(true);
       },
-    }
-  )
+    },
+  ),
 );

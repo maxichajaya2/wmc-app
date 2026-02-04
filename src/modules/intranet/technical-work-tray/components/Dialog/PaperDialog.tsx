@@ -73,7 +73,7 @@ function PapersDialog() {
   const update = usePaperStore((state) => state.update);
   const deletePaper = usePaperStore((state) => state.remove);
   const uploadCompleteArchive = usePaperStore(
-    (state) => state.uploadCompleteArchive
+    (state) => state.uploadCompleteArchive,
   );
   const topics = useTopicStore((state) => state.data);
   const categories = useCategoryStore((state) => state.data);
@@ -167,17 +167,17 @@ function PapersDialog() {
   const users = useUsersStore((state) => state.data);
 
   const leadersUsers = users.filter(
-    (user) => user.role.id === PrimaryRoles.LEADER
+    (user) => user.role.id === PrimaryRoles.LEADER,
   );
   const reviewersUsers = users.filter(
-    (user) => user.role.id === PrimaryRoles.REVIEWER
+    (user) => user.role.id === PrimaryRoles.REVIEWER,
   );
   const leaders = useMemo(() => {
     if (!selected) {
       return [];
     }
     return leadersUsers.filter(
-      (user) => user.categoryId === selected.categoryId
+      (user) => user.categoryId === selected.categoryId,
     );
   }, [selected, leadersUsers]);
   const reviewers = useMemo(() => {
@@ -185,7 +185,7 @@ function PapersDialog() {
       return [];
     }
     return reviewersUsers.filter(
-      (user) => user.categoryId === selected.categoryId
+      (user) => user.categoryId === selected.categoryId,
     );
   }, [selected, reviewersUsers]);
   const [selectedLeader, setSelectedLeader] = useState<User | null>(null);
@@ -198,10 +198,13 @@ function PapersDialog() {
     //   id: TypePaper.PRESENTACION_INTERACTIVA,
     //   name: MapTypePaper[TypePaper.PRESENTACION_INTERACTIVA],
     // },
-    { id: TypePaper.PRESENTACION_ORAL, name: MapTypePaper[TypePaper.PRESENTACION_ORAL] },
+    {
+      id: TypePaper.PRESENTACION_ORAL,
+      name: MapTypePaper[TypePaper.PRESENTACION_ORAL],
+    },
   ];
   const [selectedTypePaper, setSelectedTypePaper] = useState<TypePaper | null>(
-    null
+    null,
   );
   const handleChangeStatus = () => {
     let status: StatePaper = StatePaper.RECEIVED;
@@ -249,7 +252,7 @@ function PapersDialog() {
   const [uploading, setUploading] = useState(false);
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>,
-    index?: number
+    index?: number,
   ) => {
     const file = event.target.files?.[0];
     const allowedExtensions = ["doc", "docx"];
@@ -291,7 +294,7 @@ function PapersDialog() {
     useState(false);
   const [fullFileUrl, setCompleteArchive] = useState<string | null>(null);
   const handleFileUploadCompleteArchive = async (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -334,7 +337,7 @@ function PapersDialog() {
           eventDate: selected.eventDate
             ? DateClass.DateToFormat(
                 selected.eventDate,
-                DateClass.FORMAT_INPUT_SHORT
+                DateClass.FORMAT_INPUT_SHORT,
               )
             : undefined,
           eventWhere: selected.eventWhere ?? "",
@@ -372,7 +375,7 @@ function PapersDialog() {
       return [];
     }
     return topics.filter(
-      (topic) => topic.categoryId == form.watch("categoryId")
+      (topic) => topic.categoryId == form.watch("categoryId"),
     );
   }, [form.watch("categoryId"), topics, selected]);
 
@@ -446,7 +449,7 @@ function PapersDialog() {
                     // errors: form.formState.errors
                   },
                   null,
-                  4
+                  4,
                 )}
               </code>
             </pre>
@@ -487,99 +490,13 @@ function PapersDialog() {
               action === "edit" ||
               action === "view") && (
               <div className="space-y-6">
-                {/* <FormField
-                  name="title"
-                  control={form.control}
-                  render={({ field }) => (
-                    <FormItem className="">
-                      <FormLabel>
-                        Title of Your Paper{" "}
-                        <span className="text-red-500">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          {...field}
-                          readOnly={action === "view"}
-                          type="text"
-                          placeholder="Title"
-                          className="w-full"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                /> */}
-                {/* <FormField
-                  name="title"
-                  control={form.control}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>
-                        Title of Your Paper{" "}
-                        <span className="text-red-500">*</span>
-                      </FormLabel>
-
-                      {hasAbstracts ? (
-                        // 👉 Si HAY ABSTRACTS → mostrar SELECT
-                        <FormControl>
-                          <Select
-                            // onValueChange={(value) => {
-                            //   field.onChange(value);
-                            // }}
-                            // defaultValue={field.value}
-                            onValueChange={(value) => {
-                              const parsed = JSON.parse(value);
-                              form.setValue("title", parsed.title);
-                              form.setValue("codigo", parsed.codigo); // 👈 NUEVO
-                            }}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select an Abstract Title" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {abstractRecords.map((abs) => (
-                                // <SelectItem key={abs.id} value={abs.title}>
-                                //   {abs.title}
-                                // </SelectItem>
-                                <SelectItem
-                                  key={abs.id}
-                                  value={JSON.stringify({
-                                    title: abs.title,
-                                    codigo: abs.codigo,
-                                  })}
-                                >
-                                  {abs.title}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </FormControl>
-                      ) : (
-                        // 👉 Si NO HAY ABSTRACTS → mostrar INPUT normal
-                        <FormControl>
-                          <Input
-                            {...field}
-                            readOnly={action === "view"}
-                            type="text"
-                            placeholder="Title"
-                            className="w-full"
-                          />
-                        </FormControl>
-                      )}
-
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                /> */}
-
                 <FormField
                   name="title"
                   control={form.control}
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>
-                        Title{" "}
-                        <span className="text-red-500">*</span>
+                        Title <span className="text-red-500">*</span>
                       </FormLabel>
 
                       {hasAbstracts ? (
@@ -589,7 +506,7 @@ function PapersDialog() {
                             value={selectedAbstractId} // 👈 AQUÍ LA MAGIA
                             onValueChange={(value) => {
                               const found = abstractRecords.find(
-                                (a) => a.id === Number(value)
+                                (a) => a.id === Number(value),
                               );
                               if (found) {
                                 form.setValue("title", found.title);
@@ -700,7 +617,7 @@ function PapersDialog() {
                   )}
                 />
 
-                <FormItem className="mt-2">
+                {/* <FormItem className="mt-2">
                   <FormLabel className="flex flex-col">
                     <p>
                       Copyright Transfer Form
@@ -722,8 +639,10 @@ function PapersDialog() {
                         const file = e.target.files?.[0];
                         if (file) {
                           const url = await CommonService.uploadFile(file);
-                          form.setValue("copyrightForm", url); // 👈 Nuevo campo
+                          // form.setValue("copyrightForm", url); // 👈 Nuevo campo
+                           form.setValue("copyrightForm", url, { shouldValidate: true });
                         }
+                       
                         e.target.value = "";
                       }}
                       disabled={uploading}
@@ -735,6 +654,7 @@ function PapersDialog() {
                   </FormControl>
 
                   <div className="mt-2 text-xs">
+                    
                     <a
                       href="https://papers.wmc2026.org/formatos/copyright-wmc-2026.pdf"
                       target="_blank"
@@ -743,6 +663,7 @@ function PapersDialog() {
                       Download Format (Copyright Transfer Form)
                     </a>
                   </div>
+                  <FormMessage />
                   {form.watch("copyrightForm") && (
                     <div className="flex items-center space-x-2 mt-2">
                       <Link
@@ -754,7 +675,79 @@ function PapersDialog() {
                       </Link>
                     </div>
                   )}
-                </FormItem>
+                </FormItem> */}
+                <FormField
+                  name="copyrightForm"
+                  control={form.control}
+                  render={({ field }) => (
+                    <FormItem className="mt-2">
+                      <FormLabel className="flex flex-col">
+                        <p>
+                          Copyright Transfer Form
+                          <span className="text-red-500">*</span>
+                        </p>
+                        <span className="text-xs text-gray-500 mt-1">
+                          (Only PDF files are allowed (.pdf))
+                        </span>
+                        <span className="text-xs text-blue-500">
+                          The maximum file size is 10 MB.
+                        </span>
+                      </FormLabel>
+
+                      <FormControl>
+                        <Input
+                          type="file"
+                          accept=".pdf"
+                          onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              setUploading(true);
+                              try {
+                                const url =
+                                  await CommonService.uploadFile(file);
+                                // Usamos field.onChange para que Zod se entere del cambio
+                                field.onChange(url);
+                                // Opcional: form.setValue("copyrightForm", url, { shouldValidate: true });
+                              } catch (error) {
+                                console.error(error);
+                              } finally {
+                                setUploading(false);
+                              }
+                            }
+                            e.target.value = "";
+                          }}
+                          disabled={uploading || action === "view"}
+                          className="cursor-pointer block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 border-none py-0"
+                        />
+                      </FormControl>
+
+                      <div className="mt-2 text-xs">
+                        <a
+                          href="https://papers.wmc2026.org/formatos/copyright-wmc-2026.pdf"
+                          target="_blank"
+                          className="text-blue-600 underline font-medium"
+                        >
+                          Download Format (Copyright Transfer Form)
+                        </a>
+                      </div>
+
+                      {/* 👈 ESTE ES EL QUE MUESTRA LA ALERTA */}
+                      <FormMessage />
+
+                      {form.watch("copyrightForm") && (
+                        <div className="flex items-center space-x-2 mt-2">
+                          <Link
+                            to={form.watch("copyrightForm") || ""}
+                            target="_blank"
+                            className="text-blue-500 underline"
+                          >
+                            View Uploaded Copyright Form
+                          </Link>
+                        </div>
+                      )}
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   name="categoryId"
                   control={form.control}
@@ -902,116 +895,6 @@ function PapersDialog() {
                     </FormItem>
                   )}
                 />
-                {/* <FormField
-                  name="authorBiography"
-                  control={form.control}
-                  render={({ field }) => (
-                    <FormItem className="">
-                      <FormLabel>
-                        <p>
-                          Author Biography{" "}
-                          <span className="text-red-500">*</span>
-                        </p>
-                        <span className="text-xs text-gray-500 mt-1">
-                          Please share a brief bio (up to 100 words), what sets
-                          you apart?
-                        </span>
-                      </FormLabel>
-                      <FormControl>
-                        <Textarea
-                          {...field}
-                          readOnly={action === "view"}
-                          placeholder="Author Biography"
-                          className="w-full resize-y"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  name="abstractText"
-                  control={form.control}
-                  render={({ field }) => (
-                    <FormItem className="">
-                      <FormLabel>
-                        <p>
-                          Abstract Submission{" "}
-                          <span className="text-red-500">*</span>
-                        </p>
-                        <span className="text-xs text-gray-500 mt-1">
-                          Please submit your abstract (400 words max, optional
-                          up to 2 charts or visuals).
-                        </span>
-                      </FormLabel>
-                      <FormControl>
-                        <Textarea
-                          {...field}
-                          readOnly={action === "view"}
-                          placeholder=" Abstract Submission"
-                          className="w-full resize-y"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  name="proposalSignificance"
-                  control={form.control}
-                  render={({ field }) => (
-                    <FormItem className="">
-                      <FormLabel>
-                        <p>
-                          Proposal Significance{" "}
-                          <span className="text-red-500">*</span>
-                        </p>
-                        <span className="text-xs text-gray-500 mt-1">
-                          Why is this proposal important for the congress? (Up
-                          to 100 words)
-                        </span>
-                      </FormLabel>
-                      <FormControl>
-                        <Textarea
-                          {...field}
-                          readOnly={action === "view"}
-                          placeholder="Proposal Significance"
-                          className="w-full resize-y"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                /> */}
-                {/* <FormField
-                  name="language"
-                  control={form.control}
-                  render={({ field }) => (
-                    <FormItem className="">
-                      <FormLabel>
-                        Language <span className="text-red-500">*</span>
-                      </FormLabel>
-                      <FormControl>
-                        <Select
-                          disabled={action === "view"}
-                          onValueChange={field.onChange}
-                          defaultValue={field.value?.toString()}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder={"Select a Language"} />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="Español">Spanish</SelectItem>
-                            <SelectItem value="Inglés">English</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                /> */}
                 <FormField
                   name="keywords"
                   control={form.control}
@@ -1033,7 +916,7 @@ function PapersDialog() {
                           }
                           onChange={(options) => {
                             const map = options.map(
-                              (option: any) => option.value
+                              (option: any) => option.value,
                             );
                             form.setValue("keywords", map);
                           }}
@@ -1342,7 +1225,7 @@ function PapersDialog() {
                                   setSelectedLeader(
                                     selectedLeader?.id === leader.id
                                       ? null
-                                      : leader
+                                      : leader,
                                   );
                                 }}
                               >
@@ -1351,7 +1234,7 @@ function PapersDialog() {
                                     "mr-2 h-4 w-4",
                                     selectedLeader?.id === leader.id
                                       ? "opacity-100"
-                                      : "opacity-0"
+                                      : "opacity-0",
                                   )}
                                 />
                                 {`${leader.name}`}
@@ -1390,7 +1273,7 @@ function PapersDialog() {
                                   setSelectedReviewer(
                                     selectedReviewer?.id === reviewer.id
                                       ? null
-                                      : reviewer
+                                      : reviewer,
                                   );
                                 }}
                               >
@@ -1399,7 +1282,7 @@ function PapersDialog() {
                                     "mr-2 h-4 w-4",
                                     selectedReviewer?.id === reviewer.id
                                       ? "opacity-100"
-                                      : "opacity-0"
+                                      : "opacity-0",
                                   )}
                                 />
                                 {`${reviewer.name}`}
@@ -1422,7 +1305,7 @@ function PapersDialog() {
                         {selectedTypePaper
                           ? `${
                               paperTypes.find(
-                                (type) => type.id === selectedTypePaper
+                                (type) => type.id === selectedTypePaper,
                               )?.name
                             }`
                           : "Assign a paper type"}
@@ -1442,7 +1325,7 @@ function PapersDialog() {
                                   setSelectedTypePaper(
                                     selectedTypePaper === typePaper.id
                                       ? null
-                                      : typePaper.id
+                                      : typePaper.id,
                                   );
                                 }}
                               >
@@ -1451,7 +1334,7 @@ function PapersDialog() {
                                     "mr-2 h-4 w-4",
                                     selectedTypePaper === typePaper.id
                                       ? "opacity-100"
-                                      : "opacity-0"
+                                      : "opacity-0",
                                   )}
                                 />
                                 {`${typePaper.name}`}

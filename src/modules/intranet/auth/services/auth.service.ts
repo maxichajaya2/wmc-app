@@ -15,11 +15,16 @@ export async function login(body: PayloadLogin): Promise<Session> {
   return data;
 }
 
+ //  PREREGISTER
+// ==============================
 // {{url}}/api/auth/pre-register
 export async function register(body: PayloadPreRegister) {
   const { data } = await api.post<Session>(`/auth/pre-register`, body);
   return data;
 }
+
+ //  REGISTER
+// ===========================
 // {{url}}/api/auth/register
 export async function confirmRegister(token: string) {
   const { data } = await api.post<Session>(`/auth/register`, { token });
@@ -46,6 +51,9 @@ export async function updateUser(
   return data;
 }
 
+
+//  RECUPERAR CONTRASEÑA
+// ==========================
 // {{url}}/api/auth/send-reset-password-otp
 export async function sendResetPasswordOTP(body: PayloadRecoverAccount): Promise<{ token: string }> {
   const { data } = await api.post<{ token: string }>(
@@ -55,6 +63,8 @@ export async function sendResetPasswordOTP(body: PayloadRecoverAccount): Promise
   return data;
 }
 
+//  RESETEAR CONTRASEÑA
+// ==========================
 // {{url}}/api/auth/reset-password
 export async function resetPassword(body: PayloadResetPassword): Promise<Session> {
   const { data } = await api.post<Session>(`/auth/reset-password`, body);

@@ -11,9 +11,7 @@ export const abstractSchema = z.object({
     .min(3, { message: "The title must have at least 3 characters" }),
   resume: z.string().optional(),
   codigo: z.string().optional(),
-  copyrightForm: z.string().min(1, {
-    message: "The file is required",
-  }),
+  copyrightForm: z.string().min(1, "The Copyright Transfer Form is required"),
 
   // authorBiography: z
   //   .string()
@@ -134,6 +132,7 @@ export const paperSchema = abstractSchema
     eventWhere: data.flagEvent ? data.eventWhere : undefined,
     eventWhich: data.flagEvent ? data.eventWhich : undefined,
     resume: "default",
+    
     codigo: data.codigo, // 👈 NECESARIO
   }));
 

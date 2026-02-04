@@ -31,6 +31,9 @@ import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+import {
+  AlertCircle,
+} from "lucide-react";
 // Configurar los plugins de Day.js
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -41,10 +44,10 @@ function PapersManagementPage() {
   const loading = usePaperStore((state) => state.loading);
   const isOpenDialog = usePaperStore((state) => state.isOpenDialog);
   const isOpenCommentsDialog = usePaperStore(
-    (state) => state.isOpenCommentsDialog
+    (state) => state.isOpenCommentsDialog,
   );
   const isOpenConfirmDeleteComment = usePaperStore(
-    (state) => state.isOpenConfirmDeleteComment
+    (state) => state.isOpenConfirmDeleteComment,
   );
   const filtered = usePaperStore((state) => state.filtered);
   const filterTerm = usePaperStore((state) => state.filterTerm);
@@ -82,6 +85,7 @@ function PapersManagementPage() {
   const userPapersCount = filtered?.length ?? 0;
   // const reachedMaxPapers = userPapersCount >= abstractCount;
   const reachedMaxPapers = userPapersCount >= abstractCount;
+  const isAuthorizedAuthor = abstractRecords.length > 0;
 
   const currentDate = dayjs().startOf("day");
   const endDate = useMemo(() => {
@@ -157,6 +161,40 @@ function PapersManagementPage() {
           </AlertDescription>
         </Alert>
       )}
+      {/* Alerta de restricción para usuarios sin abstracts asociados */}
+      {!isAuthorizedAuthor && !loading && (
+        <Alert
+          variant="destructive"
+          className="mb-4 border-red-600 bg-red-50 text-red-900"
+        >
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle className="font-bold">Access Restricted</AlertTitle>
+          <AlertDescription className="space-y-2">
+            <p>
+              The <strong>Upload Submission</strong> button is disabled because
+              your current account email  is
+              not associated with any approved abstracts.
+            </p>
+            <ul className="list-disc ml-5 mt-2 space-y-1">
+              <li>
+                Please go to your <strong>Profile</strong> to verify or update
+                your email address to the one used during the abstract
+                submission.
+              </li>
+              <li>
+                If you do not remember the registered email or believe this is
+                an error, please contact us at
+                <a
+                  href="mailto:wmc2026@iimp.org.pe"
+                  className="underline font-bold ml-1"
+                >
+                 wmc2026authors@iimp.org.pe
+                </a>
+              </li>
+            </ul>
+          </AlertDescription>
+        </Alert>
+      )}
 
       <div className="flex items-center py-2 gap-2">
         <div className="ml-1 hidden">
@@ -206,41 +244,6 @@ function PapersManagementPage() {
               </span>
             </a>
           </Button>
-          
-          {/* <Button
-            size="sm"
-            variant="outline"
-            className="h-8 gap-1 text-blue-700 border-blue-700 hover:bg-blue-700 hover:text-white"
-            asChild
-          >
-            <a
-              href="https://papers.wmc2026.org/formatos/manual-uso-wmc-2026.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <File className="h-3.5 w-3.5" />
-              <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                User Manual
-              </span>
-            </a>
-          </Button> */}
-          {/* <Button
-            size="sm"
-            variant="outline"
-            className="h-8 gap-1 text-blue-700 border-blue-700 hover:bg-blue-700 hover:text-white"
-            asChild
-          >
-            <a
-              href="https://papers.wmc2026.org/formatos/instructivo-wmc-2026-2.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <File className="h-3.5 w-3.5" />
-              <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                Download Guidelines
-              </span>
-            </a>
-          </Button> */}
 
           <Button
             size="sm"
@@ -258,7 +261,7 @@ function PapersManagementPage() {
               size="sm"
               className="h-8 gap-1 bg-gradient-to-br from-[#00b3dc] via-[#0124e0] to-[#00023f] text-white"
               onClick={handleCreate}
-              disabled={reachedMaxPapers}
+              disabled={reachedMaxPapers || !isAuthorizedAuthor}
             >
               <PlusCircle className="h-3.5 w-3.5 text-white " />
               <span className="sr-only sm:not-sr-only sm:whitespace-nowrap text-white">
@@ -273,9 +276,7 @@ function PapersManagementPage() {
         <Card x-chunk="dashboard-06-chunk-0">
           <CardHeader>
             <CardTitle>My Submissions</CardTitle>
-            <CardDescription>
-              List of your submitted works.
-            </CardDescription>
+            <CardDescription>List of your submitted works.</CardDescription>
           </CardHeader>
           <CardContent>
             {loading ? (
