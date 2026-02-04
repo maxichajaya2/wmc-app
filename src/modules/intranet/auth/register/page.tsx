@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Loader2, EyeIcon, EyeOffIcon } from "lucide-react";
+import { Loader2, EyeIcon, EyeOffIcon, AlertTriangle } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { ROUTES_PATHS } from "@/constants";
 import { PayloadPreRegister, useAuthIntranetStore } from "../store";
@@ -34,25 +34,28 @@ import {
 export default function Registro() {
   const FormSchema = z
     .object({
-      email: z.string().email().min(1, {
-        message: "Campo requerido",
+      email: z.string().email("Invalid email address").min(1, {
+        message: "Required field",
       }),
       password: z.string().min(1, {
-        message: "Campo requerido",
+        message: "Required field",
       }),
       name: z.string().min(1, {
-        message: "Campo requerido",
+        message: "Required field",
       }),
       lastName: z.string().min(1, {
-        message: "Campo requerido",
+        message: "Required field",
       }),
       // maternalLastName: z.string().min(1, {
-      //   message: 'Campo requerido',
+      //   message: 'Required field',
       // }),
       documentType: z.nativeEnum(DocumentType),
-      documentNumber: z.string(),
+      documentNumber: z.string().min(1, {
+        message: "Required field",
+      }),
     })
     .superRefine((val, ctx) => {
+      // Validation for DNI (specific to 8 digits)
       if (
         val.documentType === DocumentType.DNI &&
         val.documentNumber.length !== 8
@@ -60,9 +63,11 @@ export default function Registro() {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["documentNumber"],
-          message: "Campo debe tener 8 dígitos",
+          message: "DNI must be exactly 8 digits",
         });
       }
+
+      // Validation for Foreign Card (CE)
       if (
         val.documentType === DocumentType.CE &&
         val.documentNumber.length < 1
@@ -70,10 +75,11 @@ export default function Registro() {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ["documentNumber"],
-          message: "Campo requerido",
+          message: "Required field",
         });
       }
-      // mostrar mensaje para la contraseña tenga al menos 8 digitos
+
+      // Password length validation
       if (val.password.length < 8) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
@@ -82,6 +88,7 @@ export default function Registro() {
         });
       }
     });
+
   const form = useForm<PayloadPreRegister>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -101,7 +108,7 @@ export default function Registro() {
   const registerUser = useAuthIntranetStore((state) => state.registerUser);
   const showPassword = useAuthIntranetStore((state) => state.showPassword);
   const setShowPassword = useAuthIntranetStore(
-    (state) => state.setShowPassword
+    (state) => state.setShowPassword,
   );
   const setError = useAuthIntranetStore((state) => state.setError);
   const token = useAuthIntranetStore((state) => state.token);
@@ -142,6 +149,15 @@ export default function Registro() {
             </CardDescription>
           </CardHeader>
           <CardContent>
+            <div className="flex gap-2 items-start p-3 mt-2 mb-2 rounded-md border border-cyan-200 bg-cyan-50/50 text-cyan-800">
+              <AlertTriangle className="h-5 w-5 shrink-0 text-cyan-600" />
+              <p className="text-[12px] leading-tight">
+                <strong className="block mb-0.5">Attention Authors:</strong>
+                Please use the <b>exact same email </b>address you used to
+                submit your abstract. This is required to automatically link
+                your approved papers to this account.
+              </p>
+            </div>
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
@@ -207,6 +223,7 @@ export default function Registro() {
                           <Input placeholder={"Email address"} {...field} />
                         </FormControl>
                         <FormMessage />
+                        {/* MENSAJE DE ADVERTENCIA PARA AUTORES */}
                       </FormItem>
                     )}
                   />
