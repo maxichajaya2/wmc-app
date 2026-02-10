@@ -196,7 +196,7 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel>
-              Job Tittle <span className="text-red-500">*</span>
+              Job Title <span className="text-red-500">*</span>
             </FormLabel>
             <FormControl>
               <Input {...field} readOnly={action === "view"} />
@@ -239,6 +239,7 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
                   <SelectItem value="Bachiller">Graduate</SelectItem>
                   <SelectItem value="Egresado">Pending Degree</SelectItem>
                   <SelectItem value="Tecnico">Technical Degree</SelectItem>
+                  <SelectItem value="Otro">Other</SelectItem>
                 </SelectContent>
               </Select>
             </FormControl>
