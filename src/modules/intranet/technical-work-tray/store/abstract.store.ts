@@ -42,8 +42,8 @@ export const abstractStoreApi: StateCreator<
       get(),
       async () => {
         const res = await fetch(
-          `http://localhost:4000/api/web-users/${userId}/abstract`
-        //  `https://papers.wmc2026.org/api/web-users/${userId}/abstract`
+          // `http://localhost:4000/api/web-users/${userId}/abstract`
+         `https://papers.wmc2026.org/api/web-users/${userId}/abstract`
         );
         return await res.json();
       },
