@@ -42,9 +42,24 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
   const selectedValue =
     form.watch(`authors.${index}.countryCode`) &&
     countries.find(
-      (c) => c.code === form.watch(`authors.${index}.countryCode`)
+      (c) => c.code === form.watch(`authors.${index}.countryCode`),
     );
-  // END LOGIC COUNTRIES
+
+  // 1. Lista de opciones fijas
+  const fixedOptions = [
+    "Doctorado",
+    "Maestria",
+    "Licenciatura",
+    "Bachiller",
+    "Egresado",
+    "Tecnico",
+  ];
+
+  // 2. Observamos el valor del Select
+  const selectedDesignation = form.watch(
+    `authors.${index}.professionalDesignation`,
+  );
+
   return (
     <div className="space-y-4 border p-4 rounded-md mb-4">
       <FormField
@@ -73,19 +88,6 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
           </FormItem>
         )}
       />
-      {/* <FormField
-                control={form.control}
-                name={`authors.${index}.last`}
-                render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Apellido Materno</FormLabel>
-                        <FormControl>
-                            <Input {...field} readOnly={action === 'view'} />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                )}
-            /> */}
       <FormField
         control={form.control}
         name={`authors.${index}.institution`}
@@ -114,33 +116,6 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
           </FormItem>
         )}
       />
-      {/* <FormField
-        control={form.control}
-        name={`authors.${index}.remissive`}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Cargo</FormLabel>
-            <FormControl>
-              <Input {...field} readOnly={action === "view"} />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      /> */}
-
-      {/* <FormField
-                control={form.control}
-                name={`authors.${index}.countryCode`}
-                render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>País</FormLabel>
-                        <FormControl>
-                            <Input {...field} readOnly={action === 'view'} />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                )}
-            /> */}
       <FormField
         name={`authors.${index}.countryCode`}
         control={form.control}
@@ -177,19 +152,7 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
           </FormItem>
         )}
       />
-      {/* <FormField
-        control={form.control}
-        name={`authors.${index}.emailCorp`}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Email Corporativo</FormLabel>
-            <FormControl>
-              <Input {...field} readOnly={action === "view"} type="emailCorp" />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      /> */}
+
       <FormField
         name={`authors.${index}.city`}
         control={form.control}
@@ -211,7 +174,7 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
         render={({ field }) => (
           <FormItem>
             <FormLabel>
-              State  <span className="text-red-500">*</span>
+              State <span className="text-red-500">*</span>
             </FormLabel>
             <FormControl>
               <Input {...field} readOnly={action === "view"} />
@@ -239,44 +202,64 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
         name={`authors.${index}.professionalDesignation`}
         control={form.control}
         render={({ field }) => (
-          <FormItem className="">
-            <FormLabel>
-              <p>
-                Professional Designation <span className="text-red-500">*</span>
-              </p>
-              <span className="text-xs text-gray-500 mt-1">
-                (e.g., PhD, MSc, P.Eng, Ing, MBA)
-              </span>
-            </FormLabel>
-            <FormControl>
-              <Select
-                disabled={action === "view"}
-                onValueChange={field.onChange}
-                defaultValue={field.value?.toString()}
-              >
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue
-                      placeholder={"Select a professional designation"}
-                    />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {/* Professional Designation*/}
-                  <SelectItem value="Doctorado">Doctorate</SelectItem>
-                  <SelectItem value="Maestria">Master</SelectItem>
-                  <SelectItem value="Licenciatura">Bachelor</SelectItem>
-                  <SelectItem value="Bachiller">Graduate</SelectItem>
-                  <SelectItem value="Egresado">Pending Degree</SelectItem>
-                  <SelectItem value="Tecnico">Technical Degree</SelectItem>
-                  <SelectItem value="Otro">Other</SelectItem>
-                </SelectContent>
-              </Select>
-            </FormControl>
+          <FormItem>
+            <FormLabel>Professional Designation *</FormLabel>
+            <Select
+              disabled={action === "view"}
+              onValueChange={(val) => {
+                field.onChange(val);
+                // Si cambia a algo que no es "Otro", limpiamos el campo manual
+                if (val !== "Otro") {
+                  form.setValue(
+                    `authors.${index}.other`,
+                    null,
+                  );
+                }
+              }}
+              value={field.value}
+            >
+              <FormControl>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select..." />
+                </SelectTrigger>
+              </FormControl>
+              <SelectContent>
+                <SelectItem value="Doctorado">Doctorate</SelectItem>
+                <SelectItem value="Maestria">Master</SelectItem>
+                <SelectItem value="Licenciatura">Bachelor</SelectItem>
+                <SelectItem value="Bachiller">Graduate</SelectItem>
+                <SelectItem value="Egresado">Pending Degree</SelectItem>
+                <SelectItem value="Tecnico">Technical Degree</SelectItem>
+                <SelectItem value="Otro">Other</SelectItem>
+              </SelectContent>
+            </Select>
             <FormMessage />
           </FormItem>
         )}
       />
+
+      {/* CLAVE 2: Mostramos el input si el valor es "Otro" O si el valor actual no está en la lista fija */}
+      {/* CAMPO NUEVO Y SIMPLE: Solo aparece si el Select es "Otro" */}
+      {selectedDesignation === "Otro" && (
+        <FormField
+          name={`authors.${index}.other`}
+          control={form.control}
+          render={({ field }) => (
+            <FormItem className="animate-in fade-in slide-in-from-top-1">
+              <FormLabel>Specify Other Designation</FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  value={field.value ?? ""} // Si es null, muestra vacío
+                  placeholder="Ej: PhD, Post-Doc..."
+                  readOnly={action === "view"}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      )}
       <FormField
         control={form.control}
         name={`authors.${index}.email`}
@@ -342,7 +325,7 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
           variant="destructive"
           onClick={onRemove}
         >
-           Remove Co-author
+          Remove Co-author
         </Button>
       )}
     </div>

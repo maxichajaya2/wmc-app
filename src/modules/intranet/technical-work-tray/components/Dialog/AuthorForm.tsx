@@ -31,6 +31,9 @@ interface AuthorFormProps {
 export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
   // LOGIC COUNTRIES
   const countries = useSpeakerStore((state) => state.countries);
+  const selectedDesignation = form.watch(
+    `authors.${index}.professionalDesignation`,
+  );
   const countryOptions = countries.map((country) => ({
     value: country.code,
     label: country.name, // Usamos el nombre del país como label
@@ -42,9 +45,31 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
   const selectedValue =
     form.watch(`authors.${index}.countryCode`) &&
     countries.find(
-      (c) => c.code === form.watch(`authors.${index}.countryCode`)
+      (c) => c.code === form.watch(`authors.${index}.countryCode`),
     );
   // END LOGIC COUNTRIES
+
+  // 1. Buscamos el valor actual del campo para saber si mostrar el input manual
+  const currentDesignation = form.watch(
+    `authors.${index}.professionalDesignation`,
+  );
+
+  // 2. Definimos una lista de las opciones fijas
+  const fixedDesignations = [
+    "Doctorado",
+    "Maestria",
+    "Licenciatura",
+    "Bachiller",
+    "Egresado",
+    "Tecnico",
+  ];
+
+  // 3. Determinamos si el valor actual es uno "Personalizado"
+  const isCustom =
+    currentDesignation &&
+    !fixedDesignations.includes(currentDesignation) &&
+    currentDesignation !== "Otro";
+
   return (
     <div className="space-y-4 border p-4 rounded-md mb-4">
       <FormField
@@ -77,19 +102,6 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
           </FormItem>
         )}
       />
-      {/* <FormField
-                name={`authors.${index}.last`}
-                control={form.control}
-                render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Apellido Materno</FormLabel>
-                        <FormControl>
-                            <Input {...field} readOnly={action === 'view'} />
-                        </FormControl>
-                        <FormMessage />
-                    </FormItem>
-                )}
-            /> */}
 
       <FormField
         name={`authors.${index}.institution`}
@@ -232,7 +244,7 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {/* Professional Designation*/}
+           
                   <SelectItem value="Doctorado">Doctorate</SelectItem>
                   <SelectItem value="Maestria">Master</SelectItem>
                   <SelectItem value="Licenciatura">Bachelor</SelectItem>
@@ -247,19 +259,27 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
           </FormItem>
         )}
       />
-      {/* <FormField
-        name={`authors.${index}.emailCorp`}
-        control={form.control}
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Email Corporativo</FormLabel>
-            <FormControl>
-              <Input {...field} readOnly={action === "view"} type="emailCorp" />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        )}
-      /> */}
+      {selectedDesignation === "Otro" && (
+        <FormField
+          name={`authors.${index}.customDesignation`} // Usamos un campo temporal o el mismo
+          control={form.control}
+          render={({ field }) => (
+            <FormItem className="animate-in fade-in slide-in-from-top-1">
+              <FormLabel>Specify Designation</FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  placeholder="Ej: Post-Doc, Architect, etc."
+                  readOnly={action === "view"}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      )}
+
+    
       <FormField
         name={`authors.${index}.email`}
         control={form.control}
