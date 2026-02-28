@@ -74,7 +74,6 @@ function PapersDialog() {
   const topics = useTopicStore((state) => state.data);
   const categories = useCategoryStore((state) => state.data);
   const webUsers = useUserWebStore((state) => state.data);
-
   const title = useMemo(() => {
     switch (action) {
       case "view":
@@ -206,17 +205,17 @@ function PapersDialog() {
   const users = useUsersStore((state) => state.data);
 
   const leadersUsers = users.filter(
-    (user) => user.role.id === PrimaryRoles.LEADER
+    (user) => user.role.id === PrimaryRoles.LEADER,
   );
   const reviewersUsers = users.filter(
-    (user) => user.role.id === PrimaryRoles.REVIEWER
+    (user) => user.role.id === PrimaryRoles.REVIEWER,
   );
   const leaders = useMemo(() => {
     if (!selected) {
       return [];
     }
     return leadersUsers.filter(
-      (user) => user.categoryId === selected.categoryId
+      (user) => user.categoryId === selected.categoryId,
     );
   }, [selected, leadersUsers]);
   const reviewers = useMemo(() => {
@@ -224,7 +223,7 @@ function PapersDialog() {
       return [];
     }
     return reviewersUsers.filter(
-      (user) => user.categoryId === selected.categoryId
+      (user) => user.categoryId === selected.categoryId,
     );
   }, [selected, reviewersUsers]);
   const [selectedLeader, setSelectedLeader] = useState<User | null>(null);
@@ -243,7 +242,7 @@ function PapersDialog() {
     },
   ];
   const [selectedTypePaper, setSelectedTypePaper] = useState<TypePaper | null>(
-    null
+    null,
   );
   const handleChangeStatus = () => {
     let status: StatePaper = StatePaper.RECEIVED;
@@ -291,7 +290,7 @@ function PapersDialog() {
   const [uploading, setUploading] = useState(false);
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>,
-    index?: number
+    index?: number,
   ) => {
     const file = event.target.files?.[0];
     const allowedExtensions = ["doc", "docx"];
@@ -348,7 +347,7 @@ function PapersDialog() {
           eventDate: selected.eventDate
             ? DateClass.DateToFormat(
                 selected.eventDate,
-                DateClass.FORMAT_INPUT_SHORT
+                DateClass.FORMAT_INPUT_SHORT,
               )
             : undefined,
           eventWhere: selected.eventWhere ?? "",
@@ -389,7 +388,7 @@ function PapersDialog() {
       return [];
     }
     return topics.filter(
-      (topic) => topic.categoryId == form.watch("categoryId")
+      (topic) => topic.categoryId == form.watch("categoryId"),
     );
   }, [form.watch("categoryId"), topics, selected]);
 
@@ -450,7 +449,7 @@ function PapersDialog() {
                     // errors: form.formState.errors
                   },
                   null,
-                  4
+                  4,
                 )}
               </code>
             </pre>
@@ -871,7 +870,7 @@ function PapersDialog() {
                           }
                           onChange={(options) => {
                             const map = options.map(
-                              (option: any) => option.value
+                              (option: any) => option.value,
                             );
                             form.setValue("keywords", map);
                           }}
@@ -1183,7 +1182,7 @@ function PapersDialog() {
                                   setSelectedLeader(
                                     selectedLeader?.id === leader.id
                                       ? null
-                                      : leader
+                                      : leader,
                                   );
                                 }}
                               >
@@ -1192,7 +1191,7 @@ function PapersDialog() {
                                     "mr-2 h-4 w-4",
                                     selectedLeader?.id === leader.id
                                       ? "opacity-100"
-                                      : "opacity-0"
+                                      : "opacity-0",
                                   )}
                                 />
                                 {`${leader.name}`}
@@ -1231,7 +1230,7 @@ function PapersDialog() {
                                   setSelectedReviewer(
                                     selectedReviewer?.id === reviewer.id
                                       ? null
-                                      : reviewer
+                                      : reviewer,
                                   );
                                 }}
                               >
@@ -1240,7 +1239,7 @@ function PapersDialog() {
                                     "mr-2 h-4 w-4",
                                     selectedReviewer?.id === reviewer.id
                                       ? "opacity-100"
-                                      : "opacity-0"
+                                      : "opacity-0",
                                   )}
                                 />
                                 {`${reviewer.name}`}
@@ -1264,7 +1263,7 @@ function PapersDialog() {
                           {selectedTypePaper
                             ? `${
                                 paperTypes.find(
-                                  (type) => type.id === selectedTypePaper
+                                  (type) => type.id === selectedTypePaper,
                                 )?.name
                               }`
                             : "Assign a paper type"}
@@ -1284,7 +1283,7 @@ function PapersDialog() {
                                     setSelectedTypePaper(
                                       selectedTypePaper === typePaper.id
                                         ? null
-                                        : typePaper.id
+                                        : typePaper.id,
                                     );
                                   }}
                                 >
@@ -1293,7 +1292,7 @@ function PapersDialog() {
                                       "mr-2 h-4 w-4",
                                       selectedTypePaper === typePaper.id
                                         ? "opacity-100"
-                                        : "opacity-0"
+                                        : "opacity-0",
                                     )}
                                   />
                                   {`${typePaper.name}`}
@@ -1406,7 +1405,7 @@ function PapersDialog() {
                             Number(rating.score2) +
                             Number(rating.score3)) /
                           3
-                        ).toFixed(2)
+                        ).toFixed(2),
                       )}`
                     )}
                   </Button>

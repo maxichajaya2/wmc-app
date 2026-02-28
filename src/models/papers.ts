@@ -154,6 +154,7 @@ export const MapProcessPaper: Record<ProcessPaper, string> = {
 export interface PayloadCreateComment {
   comentary: string;
   fileUrl?: string;
+  blockId?: number;
   // userId: number;
 }
 
@@ -161,6 +162,7 @@ export interface Commentary {
   id: number;
   comentary: string;
   fileUrl?: string;
+  blockId?: number;
   userId?: number;
   user?: User;
   paperId: number;
