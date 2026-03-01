@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { usePaperStore } from "../../store/papers.store";
 import { useSessionBoundStore } from "@/modules/back-office/auth/store";
 import { useForm } from "react-hook-form";
@@ -11,6 +11,7 @@ import { CommonService } from "@/shared/services";
 const commentSchema = z.object({
   comentary: z.string().min(1, "El comentario no puede estar vacío"),
   fileUrl: z.string().optional(),
+  blockId: z.number().optional(),
 });
 
 type CommentFormData = z.infer<typeof commentSchema>;
@@ -23,17 +24,19 @@ export const useCommentPapers = () => {
   const setComments = usePaperStore((state) => state.setComments);
   const selected = usePaperStore((state) => state.selected);
   const isOpenCommentsDialog = usePaperStore(
-    (state) => state.isOpenCommentsDialog
+    (state) => state.isOpenCommentsDialog,
   );
   const closeCommentsDialog = usePaperStore(
-    (state) => state.closeCommentsDialog
+    (state) => state.closeCommentsDialog,
   );
   const currentUser = useSessionBoundStore((state) => state.session?.user);
 
   const deletingCommentId = usePaperStore((state) => state.deletingCommentId);
   const setDeletingCommentId = usePaperStore(
-    (state) => state.setDeletingCommentId
+    (state) => state.setDeletingCommentId,
   );
+
+  const [selectedBlockId, setSelectedBlockId] = useState<number | null>(null);
 
   const {
     register,
@@ -47,33 +50,38 @@ export const useCommentPapers = () => {
     defaultValues: {
       comentary: "",
       fileUrl: "",
+      blockId: selectedBlockId || undefined,
     },
   });
 
   useEffect(() => {
-    if (selected && isOpenCommentsDialog) {
-      fetchComments();
-    }
-  }, [selected, isOpenCommentsDialog]);
+    setValue("blockId", selectedBlockId || undefined);
+  }, [selectedBlockId, setValue]);
 
-  const fetchComments = async () => {
+  const fetchComments = useCallback(async () => {
     if (!selected) return;
-    setLoading(true);
     try {
-      const fetchedComments = await PaperService.findAllComments(selected.id);
-      setComments(fetchedComments);
+      setLoading(true);
+      const data = await PaperService.findAllComments(selected.id);
+      setComments(data);
     } catch (error) {
       console.error("Error fetching comments:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [selected, setLoading, setComments]);
+
+  useEffect(() => {
+    if (selected && isOpenCommentsDialog) {
+      fetchComments();
+    }
+  }, [selected, isOpenCommentsDialog, fetchComments]);
 
   /* START LOGIC FILE UPLOAD */
   const [uploading, setUploading] = useState(false);
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>,
-    index?: number
+    index?: number,
   ) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -110,22 +118,25 @@ export const useCommentPapers = () => {
           {
             comentary: data.comentary,
             fileUrl: data.fileUrl || undefined,
-          }
+            blockId: data.blockId,
+          },
         );
         setComments(
           comments.map((comment) =>
-            comment.id === updatedComment.id ? updatedComment : comment
-          )
+            comment.id === updatedComment.id ? updatedComment : comment,
+          ),
         );
         setEditingCommentId(null);
       } else {
         const newComment = await PaperService.createComment(selected.id, {
           comentary: data.comentary,
           fileUrl: data.fileUrl || undefined,
+          blockId: data.blockId,
         });
         setComments([...comments, newComment]);
       }
       reset();
+      setSelectedBlockId(null); // Clear selected block after submission
     } catch (error) {
       console.error("Error creating/updating comment:", error);
     } finally {
@@ -134,8 +145,13 @@ export const useCommentPapers = () => {
   };
 
   const handleEdit = (comment: Commentary) => {
+    reset({
+      comentary: comment.comentary,
+      fileUrl: comment.fileUrl || "",
+      blockId: comment.blockId || undefined,
+    });
     setEditingCommentId(comment.id);
-    setValue("comentary", comment.comentary);
+    setSelectedBlockId(comment.blockId || null);
   };
 
   const handleDelete = async () => {
@@ -145,7 +161,7 @@ export const useCommentPapers = () => {
     try {
       await PaperService.removeComment(selected.id, deletingCommentId);
       setComments(
-        comments.filter((comment) => comment.id !== deletingCommentId)
+        comments.filter((comment) => comment.id !== deletingCommentId),
       );
       setDeletingCommentId(null);
     } catch (error) {
@@ -171,5 +187,7 @@ export const useCommentPapers = () => {
     handleEdit,
     setDeletingCommentId,
     handleDelete,
+    selectedBlockId,
+    setSelectedBlockId,
   };
 };
