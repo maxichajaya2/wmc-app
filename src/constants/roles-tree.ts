@@ -24,7 +24,20 @@ export enum ActionRoles {
   APPROVED = "approved",
   // DESESTIMAR
   DISMISS = "dismiss",
+  // OBSERVADO
+  OBSERVED = "observed",
+  // RECIBIDO
+  RECEIVED = "received",
+  // ENVIADO
+  SENT = "sent",
+  //SUBSANADO
+  SUBSANATED = "subsanated",
+  //ASIGNAR REVISOR
+  ASSIGN_REVIEWER = "assign_reviewer",
+  //DESASIGNAR REVISOR
+  UNASSIGN_REVIEWER = "unassign_reviewer",
 }
+
 
 export const MapActionRoles: Record<ActionRoles, string> = {
   // [ActionRoles.CREATE]: "Crear",
@@ -67,6 +80,12 @@ export const MapActionRoles: Record<ActionRoles, string> = {
   [ActionRoles.IN_REVIEW]: "In review",
   [ActionRoles.APPROVED]: "Approve",
   [ActionRoles.DISMISS]: "Dismiss",
+  [ActionRoles.OBSERVED]: "Observed",
+  [ActionRoles.RECEIVED]: "Received",
+  [ActionRoles.SENT]: "Sent",
+  [ActionRoles.SUBSANATED]: "Subsanated",
+  [ActionRoles.ASSIGN_REVIEWER]: "Assign reviewer",
+  [ActionRoles.UNASSIGN_REVIEWER]: "Unassign reviewer",
 };
 
 export enum ModulesRoles {
@@ -335,6 +354,36 @@ export const ROLES_TREE = [
         id: undefined,
         module: ModulesRoles.TECHINICAL_WORKS,
         action: ActionRoles.DELETE_COMMENT,
+      },
+      {
+        id: undefined,
+        module: ModulesRoles.TECHINICAL_WORKS,
+        action: ActionRoles.OBSERVED,
+      },
+      {
+        id: undefined,
+        module: ModulesRoles.TECHINICAL_WORKS,
+        action: ActionRoles.RECEIVED,
+      },
+      {
+        id: undefined,
+        module: ModulesRoles.TECHINICAL_WORKS,
+        action: ActionRoles.SENT,
+      },
+      {
+        id: undefined,
+        module: ModulesRoles.TECHINICAL_WORKS,
+        action: ActionRoles.SUBSANATED,
+      },
+      {
+        id: undefined,
+        module: ModulesRoles.TECHINICAL_WORKS,
+        action: ActionRoles.ASSIGN_REVIEWER,
+      },
+      {
+        id: undefined,
+        module: ModulesRoles.TECHINICAL_WORKS,
+        action: ActionRoles.UNASSIGN_REVIEWER,
       },
     ],
   },

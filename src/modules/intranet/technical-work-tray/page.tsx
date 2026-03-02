@@ -129,6 +129,10 @@ function PapersManagementPage() {
     return filtered?.some((paper) => paper.state === StatePaper.APPROVED);
   }, [filtered]);
 
+  const hasSentPaper = useMemo(() => {
+    return filtered?.some((paper) => paper.state === StatePaper.SENT);
+  }, [filtered]);
+
   return (
     <main className="grid flex-1 items-start p-2 overflow-auto">
       {abstractRecords.length > 0 && (
@@ -260,7 +264,7 @@ function PapersManagementPage() {
           >
             <File className="h-3.5 w-3.5" />
             <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-              Exporta
+              Exportar
             </span>
           </Button>
           {isValidDate && (
@@ -269,7 +273,7 @@ function PapersManagementPage() {
               className="h-8 gap-1 bg-gradient-to-br from-[#00b3dc] via-[#0124e0] to-[#00023f] text-white"
               onClick={handleCreate}
               disabled={
-                reachedMaxPapers || !isAuthorizedAuthor || hasObservedPaper || hasAprovedPaper
+                reachedMaxPapers || !isAuthorizedAuthor || hasObservedPaper || hasAprovedPaper || hasSentPaper
               }
             >
               <PlusCircle className="h-3.5 w-3.5 text-white " />

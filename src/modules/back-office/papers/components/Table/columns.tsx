@@ -365,25 +365,6 @@ const ButtonSendToReviewer = React.memo(({ item }: { item: Entity }) => {
 
   return <DropdownMenuItem onClick={handleAssign}>Assign</DropdownMenuItem>;
 });
-// const ButtonSendToReviewer = React.memo(({ item }: { item: Entity }) => {
-//   const canSendToReviewer = useCheckPermission(
-//     ModulesRoles.TECHINICAL_WORKS,
-//     ActionRoles.SEND_TO_REVIEWER,
-//   );
-//   const { openActionModal } = usePaperStore((state) => ({
-//     openActionModal: state.openActionModal,
-//   }));
-
-//   const handleAssign = useCallback(() => {
-//     // Usamos 'assign-paper' que es el trigger para el modal de asignación
-//     openActionModal(item.id, "assign-paper");
-//   }, [item.id, openActionModal]);
-
-//   // Se muestra si está en estado SENT (enviado por el autor/leader) y no tiene revisor aún
-//   if (!canSendToReviewer || item.state !== StatePaper.SENT) return null;
-
-//   return <DropdownMenuItem onClick={handleAssign}>Assign Reviewers Team</DropdownMenuItem>;
-// });
 
 const ButtonReview = React.memo(({ item }: { item: Entity }) => {
   const canReview = useCheckPermission(
@@ -402,29 +383,7 @@ const ButtonReview = React.memo(({ item }: { item: Entity }) => {
   return <DropdownMenuItem onClick={handleReview}>In review</DropdownMenuItem>;
 });
 
-// const ButtonRate = React.memo(({ item }: { item: Entity }) => {
-//   const canReview = useCheckPermission(
-//     ModulesRoles.TECHINICAL_WORKS,
-//     ActionRoles.IN_REVIEW
-//   );
-//   const { openActionModal } = usePaperStore((state) => ({
-//     openActionModal: state.openActionModal,
-//   }));
-//   const handleReview = useCallback(() => {
-//     openActionModal(item.id, "rate-paper");
-//   }, [item, openActionModal]);
 
-//   if (
-//     !canReview ||
-//     item.state !== StatePaper.UNDER_REVIEW
-//     // || Comentamos esto para que puedan seguir calificando
-//     // (item.process === ProcessPaper.PRESELECCIONADO && item.phase1Score) ||
-//     // (item.process === ProcessPaper.SELECCIONADO && item.phase2Score)
-//   )
-//     return null;
-
-//   return <DropdownMenuItem onClick={handleReview}>Score</DropdownMenuItem>;
-// });
 
 const ButtonRate = React.memo(({ item }: { item: Entity }) => {
   const canReview = useCheckPermission(
@@ -452,32 +411,6 @@ const ButtonRate = React.memo(({ item }: { item: Entity }) => {
 
   return <DropdownMenuItem onClick={handleReview}>Score</DropdownMenuItem>;
 });
-// const ButtonApprove = React.memo(({ item }: { item: Entity }) => {
-//   const canApprove = useCheckPermission(
-//     ModulesRoles.TECHINICAL_WORKS,
-//     ActionRoles.APPROVED,
-//   );
-//   const { openActionModal } = usePaperStore((state) => ({
-//     openActionModal: state.openActionModal,
-//   }));
-//   const handleApprove = useCallback(() => {
-//     openActionModal(item.id, "approve-paper");
-//   }, [item, openActionModal]);
-
-//   if (
-//     !canApprove ||
-//     item.state !== StatePaper.UNDER_REVIEW ||
-//     (item.process === ProcessPaper.PRESELECCIONADO && !item.phase1Score) ||
-//     (item.process === ProcessPaper.SELECCIONADO && !item.phase2Score)
-//   )
-//     return null;
-
-//   return (
-//     <DropdownMenuItem onClick={handleApprove}>
-//       {item.process === ProcessPaper.PRESELECCIONADO ? "Preselect" : "Approve"}
-//     </DropdownMenuItem>
-//   );
-// });
 
 const ButtonApprove = React.memo(({ item }: { item: Entity }) => {
   const canApprove = useCheckPermission(
@@ -521,6 +454,20 @@ const ButtonViewComments = React.memo(({ item }: { item: Entity }) => {
     setSelected(item);
   }, [item, openCommentsDialog]);
 
+
+  if (
+    // Si el estado NO es ninguno de estos tres, se oculta (return null)
+    (item.state !== StatePaper.UNDER_REVIEW &&
+      item.state !== StatePaper.OBSERVED &&
+      item.state !== StatePaper.SUBSANATED) ||
+    // O si falta el score según el proceso
+    (item.process === ProcessPaper.PRESELECCIONADO && !item.phase1Score) ||
+    (item.process === ProcessPaper.SELECCIONADO && !item.phase2Score)
+  ) {
+    return null;
+  }
+
+
   return (
     <DropdownMenuItem onClick={handleViewComments}>
       <MessageSquare className="mr-2 h-4 w-4" />
@@ -551,28 +498,6 @@ const ButtonDismiss = React.memo(({ item }: { item: Entity }) => {
   return <DropdownMenuItem onClick={handleDismiss}>Dismiss</DropdownMenuItem>;
 });
 
-// const ButtonObserve = React.memo(({ item }: { item: Entity }) => {
-//   const canObserve = useCheckPermission(
-//     ModulesRoles.TECHINICAL_WORKS,
-//     ActionRoles.IN_REVIEW, // Usamos el permiso de revisión o uno específico si lo tienes
-//   );
-//   const { openActionModal } = usePaperStore((state) => ({
-//     openActionModal: state.openActionModal,
-//   }));
-//   const handleObserve = useCallback(() => {
-//     openActionModal(item.id, "observe-paper");
-//   }, [item, openActionModal]);
-
-//   // Se puede observar si está en revisión o asignado, y no ha sido aprobado/desestimado aún
-//   if (
-//     !canObserve ||
-//     (item.state !== StatePaper.APPROVED && item.state === StatePaper.DISMISSED)
-//   )
-//     return null;
-
-//   return <DropdownMenuItem onClick={handleObserve}>Observe</DropdownMenuItem>;
-// });
-
 const ButtonObserve = React.memo(({ item }: { item: Entity }) => {
   const canObserve = useCheckPermission(
     ModulesRoles.TECHINICAL_WORKS,
@@ -591,7 +516,11 @@ const ButtonObserve = React.memo(({ item }: { item: Entity }) => {
   if (
     !canObserve ||
     item.state === StatePaper.APPROVED ||
-    item.state === StatePaper.DISMISSED
+    item.state === StatePaper.DISMISSED ||
+    item.state === StatePaper.OBSERVED || // <-- AGREGADO: Si ya está observado, no mostramos "Observe" (porque ya lo está)
+    item.state === StatePaper.RECEIVED ||
+    item.state === StatePaper.SENT
+ 
   ) {
     return null;
   }
@@ -628,35 +557,6 @@ const ButtonReassign = React.memo(({ item }: { item: Entity }) => {
   );
 });
 
-// const ButtonReassign = React.memo(({ item }: { item: Entity }) => {
-//   const canReassign = useCheckPermission(
-//     ModulesRoles.TECHINICAL_WORKS,
-//     ActionRoles.SEND_TO_REVIEWER,
-//   );
-
-//   const { openActionModal } = usePaperStore((state) => ({
-//     openActionModal: state.openActionModal,
-//   }));
-
-//   const handleReassign = useCallback(() => {
-//     // Mantenemos la coherencia con el modal de asignación
-//     openActionModal(item.id, "assign-paper");
-//   }, [item.id, openActionModal]);
-
-//   // Se permite reasignar si ya está ASSIGNED o incluso en UNDER_REVIEW 
-//   // para corregir el equipo si fuera necesario
-//   const validStates = [StatePaper.ASSIGNED, StatePaper.UNDER_REVIEW];
-  
-//   if (!canReassign || !validStates.includes(item.state as any)) {
-//     return null;
-//   }
-
-//   return (
-//     <DropdownMenuItem onClick={handleReassign}>
-//       Manage Reviewers Team
-//     </DropdownMenuItem>
-//   );
-// });
 
 const ActionsCell = React.memo(({ item }: { item: Entity }) => {
   return (
