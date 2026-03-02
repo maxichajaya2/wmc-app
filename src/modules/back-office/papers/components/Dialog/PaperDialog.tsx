@@ -205,13 +205,28 @@ function PapersDialog() {
     }
   };
   /* END   LOGIC RATE PAPER */
-
   useEffect(() => {
     if (isOpenDialog && selected) {
-      setMainReviewer(selected.reviewerUserId?.toString() || "");
-      setSupport1(selected.reviewerSupport1Id?.toString() || "");
-      setSupport2(selected.reviewerSupport2Id?.toString() || "");
-      setSupport3(selected.reviewerSupport3Id?.toString() || "");
+      setMainReviewer(
+        selected.reviewerUserId?.toString() ||
+          selected.reviewerUser?.id?.toString() ||
+          "",
+      );
+      setSupport1(
+        selected.reviewerSupport1Id?.toString() ||
+          selected.reviewerSupport1?.id?.toString() ||
+          "none",
+      );
+      setSupport2(
+        selected.reviewerSupport2Id?.toString() ||
+          selected.reviewerSupport2?.id?.toString() ||
+          "none",
+      );
+      setSupport3(
+        selected.reviewerSupport3Id?.toString() ||
+          selected.reviewerSupport3?.id?.toString() ||
+          "none",
+      );
 
       if (action === "rate-paper") {
         setRating({
@@ -248,22 +263,53 @@ function PapersDialog() {
   const reviewersUsers = users.filter(
     (user) => user.role.id === PrimaryRoles.REVIEWER,
   );
+
+  const categoryUsers = useMemo(() => {
+    if (!selected || !selected.categoryId) {
+      return [];
+    }
+    return users.filter(
+      (user) =>
+        user.isActive &&
+        Number(user.categoryId) === Number(selected.categoryId),
+    );
+  }, [selected, users]);
+
+  const categoryReviewers = useMemo(() => {
+    return categoryUsers.filter(
+      (user) => user.role.id === PrimaryRoles.REVIEWER,
+    );
+  }, [categoryUsers]);
+
   const leaders = useMemo(() => {
-    if (!selected) {
+    if (!selected || !selected.categoryId) {
       return [];
     }
     return leadersUsers.filter(
-      (user) => user.categoryId === selected.categoryId,
+      (user) =>
+        user.isActive &&
+        Number(user.categoryId) === Number(selected.categoryId),
     );
   }, [selected, leadersUsers]);
   const reviewers = useMemo(() => {
-    if (!selected) {
+    if (!selected || !selected.categoryId) {
       return [];
     }
     return reviewersUsers.filter(
-      (user) => user.categoryId === selected.categoryId,
+      (user) =>
+        user.isActive &&
+        Number(user.categoryId) === Number(selected.categoryId),
     );
   }, [selected, reviewersUsers]);
+
+  // Log for debugging (remove in production)
+  useEffect(() => {
+    if (isOpenDialog && selected) {
+      console.log("SCOPED DATA FOR CATEGORY:", selected.categoryId);
+      console.log("LEADERS (Role 3):", leaders);
+      console.log("REVIEWERS (Role 2):", reviewers);
+    }
+  }, [isOpenDialog, selected, leaders, reviewers]);
   const [selectedLeader, setSelectedLeader] = useState<User | null>(null);
 
   const paperTypes = [
@@ -322,19 +368,27 @@ function PapersDialog() {
         reviewerUserId:
           status === StatePaper.ASSIGNED && mainReviewer
             ? Number(mainReviewer)
-            : undefined,
+            : status === StatePaper.ASSIGNED
+              ? null // Force null if it's assignment but no reviewer (shouldn't happen with UI guards)
+              : undefined,
         reviewerSupport1Id:
           status === StatePaper.ASSIGNED && support1 && support1 !== "none"
             ? Number(support1)
-            : undefined,
+            : status === StatePaper.ASSIGNED
+              ? null // Force null for "none" or empty during assignment
+              : undefined,
         reviewerSupport2Id:
           status === StatePaper.ASSIGNED && support2 && support2 !== "none"
             ? Number(support2)
-            : undefined,
+            : status === StatePaper.ASSIGNED
+              ? null
+              : undefined,
         reviewerSupport3Id:
           status === StatePaper.ASSIGNED && support3 && support3 !== "none"
             ? Number(support3)
-            : undefined,
+            : status === StatePaper.ASSIGNED
+              ? null
+              : undefined,
         type:
           status === StatePaper.APPROVED && selectedTypePaper
             ? selectedTypePaper
@@ -433,7 +487,8 @@ function PapersDialog() {
             ...form.watch(),
             authors: authors,
           });
-        } catch (error) {
+        } catch (err) {
+          console.error("Error fetching authors:", err);
           form.reset({
             ...form.watch(),
             authors: [{}],
@@ -441,7 +496,8 @@ function PapersDialog() {
         }
       }
     })();
-  }, [selected]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selected, form, action]);
   // END LOGIC AUTHORS
 
   // LOGIC CATEGORIES
@@ -452,13 +508,13 @@ function PapersDialog() {
     return topics.filter(
       (topic) => topic.categoryId == form.watch("categoryId"),
     );
-  }, [form.watch("categoryId"), topics, selected]);
+  }, [form, topics]);
 
   // Efecto que resetea el campo de temas cuando se cambia la categoría
   useEffect(() => {
     if (action === "delete") return;
     form.setValue("topicId", undefined as unknown as number);
-  }, [form.watch("categoryId")]);
+  }, [form, action]);
   // END LOGIC CATEGORIES
 
   // Reset form when dialog is closed
@@ -466,7 +522,7 @@ function PapersDialog() {
     return () => {
       form.reset();
     };
-  }, []);
+  }, [form]);
 
   // BUSCA ESTE BLOQUE:
   // changeStatusPaper({
@@ -487,6 +543,7 @@ function PapersDialog() {
     }
   }
 
+  // console.log("reviewers", reviewers);
   return (
     <Dialog
       open={isOpenDialog}
@@ -638,7 +695,7 @@ function PapersDialog() {
                 <FormField
                   name="file"
                   control={form.control}
-                  render={(_) => (
+                  render={() => (
                     <FormItem className="">
                       <FormLabel className="flex flex-col">
                         <p>
@@ -935,15 +992,17 @@ function PapersDialog() {
                           placeholder="Palabras clave"
                           className="w-full"
                           value={
-                            (form.watch("keywords") as any) &&
-                            form
-                              .watch("keywords")
-                              ?.map((tag) => ({ value: tag, label: tag }))
+                            (
+                              form.watch("keywords") as string[] | undefined
+                            )?.map((tag) => ({ value: tag, label: tag })) || []
                           }
-                          onChange={(options) => {
-                            const map = options.map(
-                              (option: any) => option.value,
-                            );
+                          onChange={(
+                            options: readonly {
+                              value: string;
+                              label: string;
+                            }[],
+                          ) => {
+                            const map = options.map((option) => option.value);
                             form.setValue("keywords", map);
                           }}
                         />
@@ -1254,7 +1313,7 @@ function PapersDialog() {
                         <CommandList>
                           <CommandEmpty>Leader not found.</CommandEmpty>
                           <CommandGroup>
-                            {leaders.map((leader) => (
+                            {categoryUsers.map((leader) => (
                               <CommandItem
                                 key={leader.id}
                                 onSelect={() =>
@@ -1344,130 +1403,110 @@ function PapersDialog() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* REVISOR PRINCIPAL */}
-                      {reviewers.length >= 1 && (
-                        <div className="flex flex-col gap-2">
-                          <Label>Main Reviewer (Responsible)</Label>
-                          <Select
-                            value={mainReviewer}
-                            onValueChange={setMainReviewer}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select Main Reviewer" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {reviewers
-                                .filter(
-                                  (u) =>
-                                    u.id.toString() === mainReviewer ||
-                                    (u.id.toString() !== support1 &&
-                                      u.id.toString() !== support2 &&
-                                      u.id.toString() !== support3),
-                                )
-                                .map((u) => (
-                                  <SelectItem
-                                    key={u.id}
-                                    value={u.id.toString()}
-                                  >
-                                    {u.name}
-                                  </SelectItem>
-                                ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      )}
+                      <div className="flex flex-col gap-2">
+                        <Label>Main Reviewer (Responsible)</Label>
+                        <Select
+                          value={mainReviewer}
+                          onValueChange={setMainReviewer}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select Main Reviewer" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {categoryReviewers
+                              .filter(
+                                (u) =>
+                                  u.id.toString() === mainReviewer ||
+                                  (u.id.toString() !== support1 &&
+                                    u.id.toString() !== support2 &&
+                                    u.id.toString() !== support3),
+                              )
+                              .map((u) => (
+                                <SelectItem key={u.id} value={u.id.toString()}>
+                                  {u.name}
+                                </SelectItem>
+                              ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
 
                       {/* APOYO 1 */}
-                      {reviewers.length >= 2 && (
-                        <div className="flex flex-col gap-2">
-                          <Label>Support Reviewer 1</Label>
-                          <Select value={support1} onValueChange={setSupport1}>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Optional support" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="none">None</SelectItem>
-                              {reviewers
-                                .filter(
-                                  (u) =>
-                                    u.id.toString() === support1 ||
-                                    (u.id.toString() !== mainReviewer &&
-                                      u.id.toString() !== support2 &&
-                                      u.id.toString() !== support3),
-                                )
-                                .map((u) => (
-                                  <SelectItem
-                                    key={u.id}
-                                    value={u.id.toString()}
-                                  >
-                                    {u.name}
-                                  </SelectItem>
-                                ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      )}
+                      <div className="flex flex-col gap-2">
+                        <Label>Support Reviewer 1</Label>
+                        <Select value={support1} onValueChange={setSupport1}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Optional support" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="none">None</SelectItem>
+                            {categoryReviewers
+                              .filter(
+                                (u) =>
+                                  u.id.toString() === support1 ||
+                                  (u.id.toString() !== mainReviewer &&
+                                    u.id.toString() !== support2 &&
+                                    u.id.toString() !== support3),
+                              )
+                              .map((u) => (
+                                <SelectItem key={u.id} value={u.id.toString()}>
+                                  {u.name}
+                                </SelectItem>
+                              ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
 
                       {/* APOYO 2 */}
-                      {reviewers.length >= 3 && (
-                        <div className="flex flex-col gap-2">
-                          <Label>Support Reviewer 2</Label>
-                          <Select value={support2} onValueChange={setSupport2}>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Optional support" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="none">None</SelectItem>
-                              {reviewers
-                                .filter(
-                                  (u) =>
-                                    u.id.toString() === support2 ||
-                                    (u.id.toString() !== mainReviewer &&
-                                      u.id.toString() !== support1 &&
-                                      u.id.toString() !== support3),
-                                )
-                                .map((u) => (
-                                  <SelectItem
-                                    key={u.id}
-                                    value={u.id.toString()}
-                                  >
-                                    {u.name}
-                                  </SelectItem>
-                                ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      )}
+                      <div className="flex flex-col gap-2">
+                        <Label>Support Reviewer 2</Label>
+                        <Select value={support2} onValueChange={setSupport2}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Optional support" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="none">None</SelectItem>
+                            {categoryReviewers
+                              .filter(
+                                (u) =>
+                                  u.id.toString() === support2 ||
+                                  (u.id.toString() !== mainReviewer &&
+                                    u.id.toString() !== support1 &&
+                                    u.id.toString() !== support3),
+                              )
+                              .map((u) => (
+                                <SelectItem key={u.id} value={u.id.toString()}>
+                                  {u.name}
+                                </SelectItem>
+                              ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
 
                       {/* APOYO 3 */}
-                      {reviewers.length >= 4 && (
-                        <div className="flex flex-col gap-2">
-                          <Label>Support Reviewer 3</Label>
-                          <Select value={support3} onValueChange={setSupport3}>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Optional support" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="none">None</SelectItem>
-                              {reviewers
-                                .filter(
-                                  (u) =>
-                                    u.id.toString() === support3 ||
-                                    (u.id.toString() !== mainReviewer &&
-                                      u.id.toString() !== support1 &&
-                                      u.id.toString() !== support2),
-                                )
-                                .map((u) => (
-                                  <SelectItem
-                                    key={u.id}
-                                    value={u.id.toString()}
-                                  >
-                                    {u.name}
-                                  </SelectItem>
-                                ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      )}
+                      <div className="flex flex-col gap-2">
+                        <Label>Support Reviewer 3</Label>
+                        <Select value={support3} onValueChange={setSupport3}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Optional support" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="none">None</SelectItem>
+                            {categoryReviewers
+                              .filter(
+                                (u) =>
+                                  u.id.toString() === support3 ||
+                                  (u.id.toString() !== mainReviewer &&
+                                    u.id.toString() !== support1 &&
+                                    u.id.toString() !== support2),
+                              )
+                              .map((u) => (
+                                <SelectItem key={u.id} value={u.id.toString()}>
+                                  {u.name}
+                                </SelectItem>
+                              ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
 
                     <Button
@@ -1477,19 +1516,22 @@ function PapersDialog() {
                         if (selected) {
                           changeStatusPaper({
                             state: StatePaper.ASSIGNED,
-                            reviewerUserId: Number(mainReviewer),
+                            reviewerUserId:
+                              mainReviewer && mainReviewer !== ""
+                                ? Number(mainReviewer)
+                                : null,
                             reviewerSupport1Id:
                               support1 && support1 !== "none"
                                 ? Number(support1)
-                                : undefined,
+                                : null,
                             reviewerSupport2Id:
                               support2 && support2 !== "none"
                                 ? Number(support2)
-                                : undefined,
+                                : null,
                             reviewerSupport3Id:
                               support3 && support3 !== "none"
                                 ? Number(support3)
-                                : undefined,
+                                : null,
                           });
                         }
                       }}
@@ -1556,39 +1598,38 @@ function PapersDialog() {
                   )}
 
                 {/* BOTÓN FINAL DE ACCIÓN */}
-                <Button
-                  disabled={
-                    loading ||
-                    ((action === "assign-paper" ||
-                      action === "reassign-paper") &&
-                      !mainReviewer) ||
-                    (action === "send-paper" && !selectedLeader) ||
-                    (selected?.process === ProcessPaper.SELECCIONADO &&
-                      action === "approve-paper" &&
-                      !selectedTypePaper)
-                  }
-                  type="button"
-                  onClick={handleChangeStatus}
-                  className={cn(
-                    "font-bold py-2 px-4 rounded duration-300 text-white",
-                    action === "observe-paper"
-                      ? "bg-orange-500 hover:bg-orange-600"
-                      : "bg-primary",
-                  )}
-                >
-                  {loading ? (
-                    <div className="flex items-center justify-center space-x-2">
-                      <LoaderCircle
-                        size={24}
-                        className="animate-spin text-white"
-                      />
-                    </div>
-                  ) : action === "observe-paper" ? (
-                    "Confirm Observation"
-                  ) : (
-                    "Change status"
-                  )}
-                </Button>
+                {action !== "assign-paper" && action !== "reassign-paper" && (
+                  <Button
+                    disabled={
+                      loading ||
+                      (action === "send-paper" && !selectedLeader) ||
+                      (selected?.process === ProcessPaper.SELECCIONADO &&
+                        action === "approve-paper" &&
+                        !selectedTypePaper)
+                    }
+                    type="button"
+                    onClick={handleChangeStatus}
+                    className={cn(
+                      "font-bold py-2 px-4 rounded duration-300 text-white",
+                      action === "observe-paper"
+                        ? "bg-orange-500 hover:bg-orange-600"
+                        : "bg-primary",
+                    )}
+                  >
+                    {loading ? (
+                      <div className="flex items-center justify-center space-x-2">
+                        <LoaderCircle
+                          size={24}
+                          className="animate-spin text-white"
+                        />
+                      </div>
+                    ) : action === "observe-paper" ? (
+                      "Confirm Observation"
+                    ) : (
+                      "Change status"
+                    )}
+                  </Button>
+                )}
               </div>
             )}
 
