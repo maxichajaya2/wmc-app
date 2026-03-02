@@ -265,7 +265,6 @@ function PapersDialog() {
     );
   }, [selected, reviewersUsers]);
   const [selectedLeader, setSelectedLeader] = useState<User | null>(null);
-  const [selectedReviewer, setSelectedReviewer] = useState<User | null>(null);
 
   const paperTypes = [
     // { id: TypePaper.ORAL, name: MapTypePaper[TypePaper.ORAL] },
@@ -321,8 +320,20 @@ function PapersDialog() {
             ? selectedLeader.id
             : undefined,
         reviewerUserId:
-          status === StatePaper.ASSIGNED && selectedReviewer
-            ? selectedReviewer.id
+          status === StatePaper.ASSIGNED && mainReviewer
+            ? Number(mainReviewer)
+            : undefined,
+        reviewerSupport1Id:
+          status === StatePaper.ASSIGNED && support1 && support1 !== "none"
+            ? Number(support1)
+            : undefined,
+        reviewerSupport2Id:
+          status === StatePaper.ASSIGNED && support2 && support2 !== "none"
+            ? Number(support2)
+            : undefined,
+        reviewerSupport3Id:
+          status === StatePaper.ASSIGNED && support3 && support3 !== "none"
+            ? Number(support3)
             : undefined,
         type:
           status === StatePaper.APPROVED && selectedTypePaper
@@ -456,31 +467,6 @@ function PapersDialog() {
       form.reset();
     };
   }, []);
-
-  useEffect(() => {
-    if (
-      selected &&
-      (action === "assign-paper" || action === "reassign-paper")
-    ) {
-      setMainReviewer(selected.reviewerUserId?.toString() || "");
-      // Si tu modelo tiene supportReviewers, cárgalos aquí
-    }
-  }, [selected, action]);
-
-  useEffect(() => {
-    if (selected) {
-      // Si ya tiene un revisor principal asignado, lo ponemos en el estado
-      if (selected.reviewerUserId) {
-        setMainReviewer(selected.reviewerUserId.toString());
-        setSelectedReviewer(
-          reviewersUsers.find((u) => u.id === selected.reviewerUserId) || null,
-        );
-      }
-
-      // Si manejas apoyos, podrías cargarlos aquí también desde el modelo si existen
-      // setSupport1(selected.support1Id?.toString() || "");
-    }
-  }, [selected, action]);
 
   // BUSCA ESTE BLOQUE:
   // changeStatusPaper({
@@ -1348,83 +1334,140 @@ function PapersDialog() {
                 )} */}
 
                 {/* --- BLOQUE DE ASIGNACIÓN DE REVISORES (PRINCIPAL Y APOYO) --- */}
-                {action === "assign-paper" && (
-                  <div className="flex flex-col gap-4 p-4 border rounded-lg bg-slate-50 dark:bg-slate-900">
+                {(action === "assign-paper" || action === "reassign-paper") && (
+                  <div className="flex flex-col gap-4 p-4 border rounded-lg bg-slate-50 dark:bg-slate-900 w-full">
                     <TypographyH4 className="text-sm font-bold uppercase text-slate-500">
-                      Assign Review Team
+                      {action === "assign-paper"
+                        ? "Assign Review Team"
+                        : "Reassign Review Team"}
                     </TypographyH4>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* REVISOR PRINCIPAL */}
-                      <div className="flex flex-col gap-2">
-                        <Label>Main Reviewer (Responsible)</Label>
-                        <Select
-                          value={mainReviewer}
-                          onValueChange={setMainReviewer}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select Main Reviewer" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {reviewers.map((u) => (
-                              <SelectItem key={u.id} value={u.id.toString()}>
-                                {u.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
+                      {reviewers.length >= 1 && (
+                        <div className="flex flex-col gap-2">
+                          <Label>Main Reviewer (Responsible)</Label>
+                          <Select
+                            value={mainReviewer}
+                            onValueChange={setMainReviewer}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select Main Reviewer" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {reviewers
+                                .filter(
+                                  (u) =>
+                                    u.id.toString() === mainReviewer ||
+                                    (u.id.toString() !== support1 &&
+                                      u.id.toString() !== support2 &&
+                                      u.id.toString() !== support3),
+                                )
+                                .map((u) => (
+                                  <SelectItem
+                                    key={u.id}
+                                    value={u.id.toString()}
+                                  >
+                                    {u.name}
+                                  </SelectItem>
+                                ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
 
                       {/* APOYO 1 */}
-                      <div className="flex flex-col gap-2">
-                        <Label>Support Reviewer 1</Label>
-                        <Select value={support1} onValueChange={setSupport1}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Optional support" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {reviewers.map((u) => (
-                              <SelectItem key={u.id} value={u.id.toString()}>
-                                {u.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
+                      {reviewers.length >= 2 && (
+                        <div className="flex flex-col gap-2">
+                          <Label>Support Reviewer 1</Label>
+                          <Select value={support1} onValueChange={setSupport1}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Optional support" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="none">None</SelectItem>
+                              {reviewers
+                                .filter(
+                                  (u) =>
+                                    u.id.toString() === support1 ||
+                                    (u.id.toString() !== mainReviewer &&
+                                      u.id.toString() !== support2 &&
+                                      u.id.toString() !== support3),
+                                )
+                                .map((u) => (
+                                  <SelectItem
+                                    key={u.id}
+                                    value={u.id.toString()}
+                                  >
+                                    {u.name}
+                                  </SelectItem>
+                                ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
 
                       {/* APOYO 2 */}
-                      <div className="flex flex-col gap-2">
-                        <Label>Support Reviewer 2</Label>
-                        <Select value={support2} onValueChange={setSupport2}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Optional support" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {reviewers.map((u) => (
-                              <SelectItem key={u.id} value={u.id.toString()}>
-                                {u.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
+                      {reviewers.length >= 3 && (
+                        <div className="flex flex-col gap-2">
+                          <Label>Support Reviewer 2</Label>
+                          <Select value={support2} onValueChange={setSupport2}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Optional support" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="none">None</SelectItem>
+                              {reviewers
+                                .filter(
+                                  (u) =>
+                                    u.id.toString() === support2 ||
+                                    (u.id.toString() !== mainReviewer &&
+                                      u.id.toString() !== support1 &&
+                                      u.id.toString() !== support3),
+                                )
+                                .map((u) => (
+                                  <SelectItem
+                                    key={u.id}
+                                    value={u.id.toString()}
+                                  >
+                                    {u.name}
+                                  </SelectItem>
+                                ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
 
                       {/* APOYO 3 */}
-                      <div className="flex flex-col gap-2">
-                        <Label>Support Reviewer 3</Label>
-                        <Select value={support3} onValueChange={setSupport3}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Optional support" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {reviewers.map((u) => (
-                              <SelectItem key={u.id} value={u.id.toString()}>
-                                {u.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
+                      {reviewers.length >= 4 && (
+                        <div className="flex flex-col gap-2">
+                          <Label>Support Reviewer 3</Label>
+                          <Select value={support3} onValueChange={setSupport3}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Optional support" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="none">None</SelectItem>
+                              {reviewers
+                                .filter(
+                                  (u) =>
+                                    u.id.toString() === support3 ||
+                                    (u.id.toString() !== mainReviewer &&
+                                      u.id.toString() !== support1 &&
+                                      u.id.toString() !== support2),
+                                )
+                                .map((u) => (
+                                  <SelectItem
+                                    key={u.id}
+                                    value={u.id.toString()}
+                                  >
+                                    {u.name}
+                                  </SelectItem>
+                                ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
                     </div>
 
                     <Button
@@ -1432,19 +1475,21 @@ function PapersDialog() {
                       type="button"
                       onClick={() => {
                         if (selected) {
-                          // Busca este bloque dentro del JSX de asignación:
                           changeStatusPaper({
                             state: StatePaper.ASSIGNED,
                             reviewerUserId: Number(mainReviewer),
-                            reviewerSupport1Id: support1
-                              ? Number(support1)
-                              : undefined,
-                            reviewerSupport2Id: support2
-                              ? Number(support2)
-                              : undefined,
-                            reviewerSupport3Id: support3
-                              ? Number(support3)
-                              : undefined,
+                            reviewerSupport1Id:
+                              support1 && support1 !== "none"
+                                ? Number(support1)
+                                : undefined,
+                            reviewerSupport2Id:
+                              support2 && support2 !== "none"
+                                ? Number(support2)
+                                : undefined,
+                            reviewerSupport3Id:
+                              support3 && support3 !== "none"
+                                ? Number(support3)
+                                : undefined,
                           });
                         }
                       }}
@@ -1457,57 +1502,6 @@ function PapersDialog() {
                       )}
                     </Button>
                   </div>
-                )}
-
-                {/* Si es para REASIGNAR a un Revisor */}
-                {action === "reassign-paper" && (
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        role="combobox"
-                        className="w-[200px] justify-between"
-                      >
-                        {selectedReviewer
-                          ? `${selectedReviewer.name}`
-                          : "Select a reviewer"}
-                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[200px] p-0">
-                      <Command>
-                        <CommandInput placeholder="Search reviewer..." />
-                        <CommandList>
-                          <CommandEmpty>Reviewer not found.</CommandEmpty>
-                          <CommandGroup>
-                            {/* CORRECCIÓN: Solo 'reviewers' */}
-                            {reviewers.map((reviewer) => (
-                              <CommandItem
-                                key={reviewer.id}
-                                onSelect={() =>
-                                  setSelectedReviewer(
-                                    selectedReviewer?.id === reviewer.id
-                                      ? null
-                                      : reviewer,
-                                  )
-                                }
-                              >
-                                <Check
-                                  className={cn(
-                                    "mr-2 h-4 w-4",
-                                    selectedReviewer?.id === reviewer.id
-                                      ? "opacity-100"
-                                      : "opacity-0",
-                                  )}
-                                />
-                                {`${reviewer.name}`}
-                              </CommandItem>
-                            ))}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
                 )}
 
                 {/* Si es para aprobar y asignar tipo (Oral/Poster) */}
@@ -1565,8 +1559,9 @@ function PapersDialog() {
                 <Button
                   disabled={
                     loading ||
-                    (action === "assign-paper" && !selectedReviewer) ||
-                    (action === "reassign-paper" && !selectedReviewer) ||
+                    ((action === "assign-paper" ||
+                      action === "reassign-paper") &&
+                      !mainReviewer) ||
                     (action === "send-paper" && !selectedLeader) ||
                     (selected?.process === ProcessPaper.SELECCIONADO &&
                       action === "approve-paper" &&
