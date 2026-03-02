@@ -206,6 +206,38 @@ function PapersDialog() {
   };
   /* END   LOGIC RATE PAPER */
 
+  useEffect(() => {
+    if (isOpenDialog && selected) {
+      setMainReviewer(selected.reviewerUserId?.toString() || "");
+      setSupport1(selected.reviewerSupport1Id?.toString() || "");
+      setSupport2(selected.reviewerSupport2Id?.toString() || "");
+      setSupport3(selected.reviewerSupport3Id?.toString() || "");
+
+      if (action === "rate-paper") {
+        setRating({
+          score1:
+            Number(
+              selected.process === ProcessPaper.PRESELECCIONADO
+                ? selected.phase1Score1
+                : selected.phase2Score1,
+            ) || 0,
+          score2:
+            Number(
+              selected.process === ProcessPaper.PRESELECCIONADO
+                ? selected.phase1Score2
+                : selected.phase2Score2,
+            ) || 0,
+          score3:
+            Number(
+              selected.process === ProcessPaper.PRESELECCIONADO
+                ? selected.phase1Score3
+                : selected.phase2Score3,
+            ) || 0,
+        });
+      }
+    }
+  }, [isOpenDialog, selected, action]);
+
   /* START LOGIC CHANGE STATUS */
   const changeStatusPaper = usePaperStore((state) => state.changeStatusPaper);
   const users = useUsersStore((state) => state.data);
@@ -374,7 +406,6 @@ function PapersDialog() {
           // reviewerSupport1: selected.reviewerSupport1Id ?? undefined,
           // reviewerSupport2: selected.reviewerSupport2Id ?? undefined,
           // reviewerSupport3: selected.reviewerSupport3Id ?? undefined,
-          
         });
         try {
           const authors = await PaperService.findAuthorsByPaper(selected.id);
@@ -1405,7 +1436,6 @@ function PapersDialog() {
                           changeStatusPaper({
                             state: StatePaper.ASSIGNED,
                             reviewerUserId: Number(mainReviewer),
-                            // CAMBIA 'null' POR 'undefined' EN ESTOS TRES CAMPOS:
                             reviewerSupport1Id: support1
                               ? Number(support1)
                               : undefined,
