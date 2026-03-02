@@ -34,16 +34,16 @@ export interface Paper {
   selectedDismissedDate?: string;
   webUserId?: number;
   webUser: UserWeb;
-  reviewerUserId?: number;
-  reviewerUser?: User;
-  reviewerSupport1Id?: number;
-  reviewerSupport1?: User;
-  reviewerSupport2Id?: number;
-  reviewerSupport2?: User;
-  reviewerSupport3Id?: number;
-  reviewerSupport3?: User;
-  leaderId?: number;
-  leader?: User;
+  reviewerUserId?: number | null;
+  reviewerUser?: User | null;
+  reviewerSupport1Id?: number | null;
+  reviewerSupport1?: User | null;
+  reviewerSupport2Id?: number | null;
+  reviewerSupport2?: User | null;
+  reviewerSupport3Id?: number | null;
+  reviewerSupport3?: User | null;
+  leaderId?: number | null;
+  leader?: User | null;
   topicId: number;
   topic?: Topic;
   category: Category;
@@ -83,12 +83,12 @@ export interface PayloadPaper {
 
 export interface PayloadChangeStatusPaper {
   state: StatePaper;
-  leaderId?: number;
-  reviewerUserId?: number;
+  leaderId?: number | null;
+  reviewerUserId?: number | null;
   type?: TypePaper;
-  reviewerSupport1Id?: number;
-  reviewerSupport2Id?: number;
-  reviewerSupport3Id?: number;
+  reviewerSupport1Id?: number | null;
+  reviewerSupport2Id?: number | null;
+  reviewerSupport3Id?: number | null;
 }
 
 export enum TypePaper {
@@ -114,7 +114,7 @@ export enum StatePaper {
   APPROVED = 5,
   DISMISSED = 6,
   OBSERVED = 7,
-  SUBSANATED= 8,
+  SUBSANATED = 8,
 }
 export enum ProcessPaper {
   PRESELECCIONADO = "P",
