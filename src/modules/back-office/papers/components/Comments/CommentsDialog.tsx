@@ -11,12 +11,18 @@ import {
   ScrollArea,
 } from "@/components";
 import { formatDate } from "@/utils/format-date";
-import { LoaderCircle, Pencil, Trash2 } from "lucide-react";
+import {
+  LoaderCircle,
+  Pencil,
+  Trash2,
+  ExternalLink,
+  Paperclip,
+} from "lucide-react";
 import mammoth from "mammoth";
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState, useRef } from "react";
 import { usePaperStore } from "../../store/papers.store";
 import { useCommentPapers } from "./useCommentPapers";
+import ConfirmDeleteComment from "./ConfirmDeleteComment";
 
 function CommentsDialog() {
   const {
@@ -35,38 +41,52 @@ function CommentsDialog() {
     selectedBlockId,
     setSelectedBlockId,
     editingCommentId,
+    openConfirmDeleteComment,
   } = useCommentPapers();
-
-  const setDeletingCommentId = usePaperStore(
-    (state) => state.setDeletingCommentId,
-  );
 
   const selected = usePaperStore((state) => state.selected);
   const [htmlContent, setHtmlContent] = useState<string>("");
   const [converting, setConverting] = useState(false);
+  const docContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (isOpenCommentsDialog && selected?.fullFileUrl) {
-      loadDocument(selected.fullFileUrl);
+    if (isOpenCommentsDialog) {
+      if (selected?.fullFileUrl) {
+        loadDocument(selected.fullFileUrl);
+      } else if (selected?.file) {
+        loadDocument(selected.file);
+      }
     } else {
       setHtmlContent("");
       setSelectedBlockId(null);
     }
   }, [isOpenCommentsDialog, selected, setSelectedBlockId]);
 
+  // Effect to handle paragraph highlighting
+  useEffect(() => {
+    if (!docContainerRef.current) return;
+
+    // Remove previous highlighting
+    const prev = docContainerRef.current.querySelector(".selected-paragraph");
+    if (prev) prev.classList.remove("selected-paragraph");
+
+    // Add new highlighting
+    if (selectedBlockId) {
+      const current = docContainerRef.current.querySelector(
+        `[data-block="${selectedBlockId}"]`,
+      );
+      if (current) {
+        current.classList.add("selected-paragraph");
+      }
+    }
+  }, [selectedBlockId, htmlContent]);
+
   const loadDocument = async (url: string) => {
     setConverting(true);
     try {
       const response = await fetch(url);
       const arrayBuffer = await response.arrayBuffer();
-      const result = await mammoth.convertToHtml(
-        { arrayBuffer },
-        {
-          transformDocument: (element: any) => {
-            return element;
-          },
-        },
-      );
+      const result = await mammoth.convertToHtml({ arrayBuffer });
 
       // Post-process to add data-block IDs
       const parser = new DOMParser();
@@ -104,7 +124,9 @@ function CommentsDialog() {
 
   const scrollToBlock = (blockId?: number) => {
     if (!blockId) return;
-    const element = document.querySelector(`[data-block="${blockId}"]`);
+    const element = docContainerRef.current?.querySelector(
+      `[data-block="${blockId}"]`,
+    );
     if (element) {
       element.scrollIntoView({ behavior: "smooth", block: "center" });
       setSelectedBlockId(blockId);
@@ -117,7 +139,8 @@ function CommentsDialog() {
         .selected-paragraph {
           background-color: #fff3b0 !important;
           transition: background 0.2s ease;
-          border: 1px solid #eab308;
+          border-left: 4px solid #eab308 !important;
+          padding-left: 8px !important;
         }
         .document-viewer .doc-p:hover {
           background-color: #f3f4f6;
@@ -136,8 +159,12 @@ function CommentsDialog() {
           }}
         >
           <DialogHeader>
-            <DialogTitle>
-              Comments - {selected?.title || "Document View"}
+            <DialogTitle className="flex items-center gap-2">
+              <span className="text-blue-600">Comments</span>
+              <span className="text-gray-400 font-normal">|</span>
+              <span className="truncate max-w-[50vw]">
+                {selected?.title || "Document View"}
+              </span>
             </DialogTitle>
           </DialogHeader>
           <div className="flex flex-col md:flex-row gap-4 flex-grow overflow-hidden pt-4">
@@ -154,19 +181,10 @@ function CommentsDialog() {
                 </div>
               ) : htmlContent ? (
                 <div
+                  ref={docContainerRef}
                   className="prose prose-sm max-w-none"
                   dangerouslySetInnerHTML={{ __html: htmlContent }}
                   onClick={handleParagraphClick}
-                  ref={(el) => {
-                    if (el && selectedBlockId) {
-                      const prev = el.querySelector(".selected-paragraph");
-                      if (prev) prev.classList.remove("selected-paragraph");
-                      const current = el.querySelector(
-                        `[data-block="${selectedBlockId}"]`,
-                      );
-                      if (current) current.classList.add("selected-paragraph");
-                    }
-                  }}
                 />
               ) : (
                 <div className="flex items-center justify-center h-full text-gray-400">
@@ -174,15 +192,16 @@ function CommentsDialog() {
                 </div>
               )}
             </div>
-            <div className="md:w-1/3 xl:w-[450px] flex flex-col gap-4 overflow-hidden border rounded-md bg-gray-50/50 p-1">
+            <div className="md:w-1/3 xl:w-[450px] flex flex-col gap-4 overflow-hidden border rounded-md bg-gray-100/30 p-1">
               <form
                 onSubmit={handleSubmit(onSubmit)}
-                className="p-3 bg-white border-b shrink-0"
+                className="p-4 bg-white border-b shrink-0 shadow-sm"
               >
                 <div className="flex flex-col gap-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-bold text-gray-700">
-                      Add Comment
+                    <span className="text-sm font-bold text-gray-700 flex items-center gap-2">
+                      <Pencil size={14} className="text-blue-500" />
+                      {editingCommentId ? "Edit Comment" : "Add Comment"}
                     </span>
                     {selectedBlockId && (
                       <span className="text-[10px] uppercase font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
@@ -198,7 +217,7 @@ function CommentsDialog() {
                         ? `Comment on paragraph ${selectedBlockId}...`
                         : "Write a general comment..."
                     }
-                    className="bg-white"
+                    className="bg-gray-50/50 border-gray-200 focus:bg-white transition-all"
                   />
 
                   <input
@@ -208,19 +227,27 @@ function CommentsDialog() {
 
                   <div className="flex flex-col gap-2">
                     <div className="flex items-center gap-2">
-                      <Input
-                        type="file"
-                        onChange={(e) => handleFileUpload(e)}
-                        disabled={uploading}
-                        className="cursor-pointer text-xs file:bg-blue-50 file:text-blue-700 border-none p-0 h-auto"
-                      />
+                      <div className="relative flex-1 group">
+                        <Input
+                          type="file"
+                          onChange={(e) => handleFileUpload(e)}
+                          disabled={uploading}
+                          className="opacity-0 absolute inset-0 w-full h-full cursor-pointer z-10"
+                        />
+                        <div className="flex items-center gap-2 text-[10px] text-gray-500 border border-dashed border-gray-300 rounded px-2 py-1 bg-gray-50 group-hover:bg-gray-100 transition-colors">
+                          <Paperclip size={12} />
+                          <span>
+                            {watch("fileUrl") ? "Change file" : "Attach file"}
+                          </span>
+                        </div>
+                      </div>
                       {selectedBlockId && (
                         <Button
                           type="button"
                           variant="ghost"
                           size="sm"
                           onClick={() => setSelectedBlockId(null)}
-                          className="h-7 text-[10px] text-gray-500"
+                          className="h-7 text-[10px] text-gray-400 hover:text-red-500"
                         >
                           Clear Selection
                         </Button>
@@ -238,17 +265,19 @@ function CommentsDialog() {
                     )}
 
                     {watch("fileUrl") && (
-                      <div className="text-xs bg-blue-50 p-2 rounded border border-blue-100 flex items-center justify-between">
-                        <span className="text-blue-700 truncate max-w-[200px]">
-                          File attached
-                        </span>
-                        <Link
-                          to={watch("fileUrl") || ""}
+                      <div className="text-[10px] bg-blue-50 p-2 rounded border border-blue-100 flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-blue-700 truncate mr-2">
+                          <Paperclip size={10} />
+                          <span className="truncate">File attached</span>
+                        </div>
+                        <a
+                          href={watch("fileUrl") || "#"}
                           target="_blank"
-                          className="text-blue-600 font-bold hover:underline"
+                          rel="noreferrer"
+                          className="text-blue-600 font-bold hover:underline flex items-center gap-1 shrink-0"
                         >
-                          View
-                        </Link>
+                          View <ExternalLink size={10} />
+                        </a>
                       </div>
                     )}
                   </div>
@@ -256,7 +285,7 @@ function CommentsDialog() {
                   <Button
                     type="submit"
                     disabled={loading || uploading}
-                    className="w-full h-9 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 shadow-sm"
+                    className="w-full h-9 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 shadow-sm transition-all"
                   >
                     {loading ? (
                       <LoaderCircle className="h-4 w-4 animate-spin" />
@@ -268,35 +297,35 @@ function CommentsDialog() {
                   </Button>
                 </div>
                 {errors.comentary && (
-                  <p className="text-xs text-red-500 mt-2 italic">
+                  <p className="text-[10px] text-red-500 mt-2 italic">
                     {errors.comentary.message}
                   </p>
                 )}
               </form>
 
-              <ScrollArea className="flex-grow p-4">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="font-bold text-gray-800 text-sm">
+              <ScrollArea className="flex-grow p-3">
+                <div className="flex items-center justify-between mb-4 px-1">
+                  <h3 className="font-bold text-gray-800 text-xs uppercase tracking-wider">
                     Discussion
                   </h3>
-                  <span className="text-[10px] bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full font-bold">
+                  <span className="text-[10px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full font-bold">
                     {comments.length}
                   </span>
                 </div>
 
                 {comments.length === 0 ? (
                   <div className="flex flex-col items-center justify-center py-12 text-gray-400">
-                    <p className="text-xs">No comments found for this paper.</p>
+                    <p className="text-xs">No comments yet</p>
                   </div>
                 ) : (
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     {comments.map((comment) => (
                       <div
                         key={comment.id}
                         className={`group p-3 rounded-lg border transition-all duration-200 cursor-pointer ${
                           comment.blockId === selectedBlockId
-                            ? "bg-amber-50/50 border-amber-200 ring-1 ring-amber-100 shadow-sm"
-                            : "bg-white border-gray-100 hover:border-blue-200 hover:shadow-sm"
+                            ? "bg-amber-50/70 border-amber-200 shadow-sm"
+                            : "bg-white border-gray-100 hover:border-blue-200 hover:shadow-xs"
                         }`}
                         onClick={() => scrollToBlock(comment.blockId)}
                       >
@@ -322,7 +351,7 @@ function CommentsDialog() {
                               variant="ghost"
                               type="button"
                               size="icon"
-                              className="h-7 w-7 text-gray-400 hover:text-blue-600"
+                              className="h-7 w-7 text-gray-400 hover:text-blue-600 hover:bg-blue-50"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handleEdit(comment);
@@ -335,10 +364,10 @@ function CommentsDialog() {
                               variant="ghost"
                               size="icon"
                               type="button"
-                              className="h-7 w-7 text-gray-400 hover:text-red-600"
+                              className="h-7 w-7 text-gray-400 hover:text-red-500 hover:bg-red-50"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                setDeletingCommentId(comment.id);
+                                openConfirmDeleteComment(comment.id);
                               }}
                               disabled={loading}
                             >
@@ -352,27 +381,17 @@ function CommentsDialog() {
                         </p>
 
                         {comment.fileUrl && (
-                          <div className="mt-3 pt-2 border-t border-gray-50">
-                            <Link
-                              to={comment.fileUrl || ""}
+                          <div className="mt-3 pt-2 border-t border-gray-50 flex justify-end">
+                            <a
+                              href={comment.fileUrl || "#"}
                               target="_blank"
+                              rel="noreferrer"
                               className="inline-flex items-center gap-1.5 text-[10px] font-bold text-blue-600 hover:text-blue-800 transition-colors"
+                              onClick={(e) => e.stopPropagation()}
                             >
                               <span>View attachment</span>
-                              <svg
-                                className="w-2.5 h-2.5"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                                />
-                              </svg>
-                            </Link>
+                              <ExternalLink size={10} />
+                            </a>
                           </div>
                         )}
                       </div>
@@ -387,12 +406,14 @@ function CommentsDialog() {
               type="button"
               variant="outline"
               onClick={closeCommentsDialog}
+              className="px-8"
             >
               Close
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <ConfirmDeleteComment />
     </>
   );
 }

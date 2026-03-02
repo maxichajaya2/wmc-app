@@ -35,6 +35,15 @@ export const useCommentPapers = () => {
   const setDeletingCommentId = usePaperStore(
     (state) => state.setDeletingCommentId,
   );
+  const {
+    openConfirmDeleteComment,
+    closeConfirmDeleteComment,
+    isOpenConfirmDeleteComment,
+  } = usePaperStore((state) => ({
+    isOpenConfirmDeleteComment: state.isOpenConfirmDeleteComment,
+    openConfirmDeleteComment: state.openConfirmDeleteComment,
+    closeConfirmDeleteComment: state.closeConfirmDeleteComment,
+  }));
 
   const [selectedBlockId, setSelectedBlockId] = useState<number | null>(null);
 
@@ -81,21 +90,13 @@ export const useCommentPapers = () => {
   const [uploading, setUploading] = useState(false);
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>,
-    index?: number,
   ) => {
     const file = event.target.files?.[0];
     if (file) {
       setUploading(true);
       try {
         const fileUrl = await CommonService.uploadFile(file);
-
-        if (index !== undefined) {
-          // Reemplazar el file existente
-          setValue("fileUrl", fileUrl);
-        } else {
-          // Agregar una nueva imagen
-          setValue("fileUrl", fileUrl);
-        }
+        setValue("fileUrl", fileUrl);
       } catch (error) {
         console.error("Error al subir el archivo:", error);
       } finally {
@@ -107,7 +108,6 @@ export const useCommentPapers = () => {
   /* END LOGIC FILE UPLOAD */
 
   const onSubmit = async (data: CommentFormData) => {
-    console.log({ data });
     if (!selected || !currentUser) return;
     setLoading(true);
     try {
@@ -135,7 +135,11 @@ export const useCommentPapers = () => {
         });
         setComments([...comments, newComment]);
       }
-      reset();
+      reset({
+        comentary: "",
+        fileUrl: "",
+        blockId: undefined,
+      });
       setSelectedBlockId(null); // Clear selected block after submission
     } catch (error) {
       console.error("Error creating/updating comment:", error);
@@ -155,7 +159,6 @@ export const useCommentPapers = () => {
   };
 
   const handleDelete = async () => {
-    console.log({ selected, deletingCommentId });
     if (!selected || !deletingCommentId) return;
     setLoading(true);
     try {
@@ -163,7 +166,7 @@ export const useCommentPapers = () => {
       setComments(
         comments.filter((comment) => comment.id !== deletingCommentId),
       );
-      setDeletingCommentId(null);
+      closeConfirmDeleteComment();
     } catch (error) {
       console.error("Error deleting comment:", error);
     } finally {
@@ -189,5 +192,8 @@ export const useCommentPapers = () => {
     handleDelete,
     selectedBlockId,
     setSelectedBlockId,
+    openConfirmDeleteComment,
+    isOpenConfirmDeleteComment,
+    closeConfirmDeleteComment,
   };
 };

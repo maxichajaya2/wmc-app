@@ -1,24 +1,39 @@
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components'
-import { useCommentPapers } from './useCommentPapers'
-import { usePaperStore } from '../../store/papers.store'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components";
+import { useCommentPapers } from "./useCommentPapers";
 
 function ConfirmDeleteComment() {
   const {
-    handleDelete
-  } = useCommentPapers()
+    handleDelete,
+    isOpenConfirmDeleteComment,
+    closeConfirmDeleteComment,
+  } = useCommentPapers();
 
-  const isOpenConfirmDeleteComment = usePaperStore((state) => state.isOpenConfirmDeleteComment)
-  const closeConfirmDeleteComment = usePaperStore((state) => state.closeConfirmDeleteComment)
   return (
     <AlertDialog
-      open={isOpenConfirmDeleteComment} onOpenChange={closeConfirmDeleteComment}>
+      open={isOpenConfirmDeleteComment}
+      onOpenChange={closeConfirmDeleteComment}
+    >
       <AlertDialogContent
         onPointerDown={(e) => {
-          e.preventDefault()
-        }}>
+          e.preventDefault();
+        }}
+      >
         <AlertDialogHeader>
-          <AlertDialogTitle>¿Estás seguro de que quieres eliminar este comentario?</AlertDialogTitle>
-          <AlertDialogDescription>Esta acción no se puede deshacer.</AlertDialogDescription>
+          <AlertDialogTitle>
+            ¿Estás seguro de que quieres eliminar este comentario?
+          </AlertDialogTitle>
+          <AlertDialogDescription>
+            Esta acción no se puede deshacer.
+          </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel type="button">Cancelar</AlertDialogCancel>
@@ -28,7 +43,7 @@ function ConfirmDeleteComment() {
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  )
+  );
 }
 
-export default ConfirmDeleteComment
+export default ConfirmDeleteComment;
