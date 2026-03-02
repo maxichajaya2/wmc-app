@@ -21,7 +21,7 @@ import {
   StatePaper,
 } from "@/models";
 import type { ColumnDef } from "@tanstack/react-table";
-import { MessageSquare } from 'lucide-react';
+import { MessageSquare } from "lucide-react";
 
 import { usePaperStore } from "../../store/papers.store";
 import { formatDate } from "../../../../../utils/format-date";
@@ -118,40 +118,40 @@ const StatusCell = React.memo(({ item }: { item: Entity }) => {
         ? formatDate(item.receivedDate)
         : "Sin fecha"
       : item.selectedReceivedDate
-      ? formatDate(item.selectedReceivedDate)
-      : "Sin fecha";
+        ? formatDate(item.selectedReceivedDate)
+        : "Sin fecha";
   const assignedDate =
     item.process === ProcessPaper.PRESELECCIONADO
       ? item.assignedDate
         ? formatDate(item.assignedDate)
         : "Sin fecha"
       : item.selectedAssignedDate
-      ? formatDate(item.selectedAssignedDate)
-      : "Sin fecha";
+        ? formatDate(item.selectedAssignedDate)
+        : "Sin fecha";
   const reviewedDate =
     item.process === ProcessPaper.PRESELECCIONADO
       ? item.reviewedDate
         ? formatDate(item.reviewedDate)
         : "Sin fecha"
       : item.selectedReviewedDate
-      ? formatDate(item.selectedReviewedDate)
-      : "Sin fecha";
+        ? formatDate(item.selectedReviewedDate)
+        : "Sin fecha";
   const approvedDate =
     item.process === ProcessPaper.PRESELECCIONADO
       ? item.approvedDate
         ? formatDate(item.approvedDate)
         : "Sin fecha"
       : item.selectedApprovedDate
-      ? formatDate(item.selectedApprovedDate)
-      : "Sin fecha";
+        ? formatDate(item.selectedApprovedDate)
+        : "Sin fecha";
   const dismissedDate =
     item.process === ProcessPaper.PRESELECCIONADO
       ? item.dismissedDate
         ? formatDate(item.dismissedDate)
         : "Sin fecha"
       : item.selectedDismissedDate
-      ? formatDate(item.selectedDismissedDate)
-      : "Sin fecha";
+        ? formatDate(item.selectedDismissedDate)
+        : "Sin fecha";
   let tooltipContent = item.receivedDate
     ? formatDate(item.receivedDate)
     : "Sin fecha";
@@ -192,17 +192,27 @@ const StatusCell = React.memo(({ item }: { item: Entity }) => {
   } else if (item.state === StatePaper.DISMISSED) {
     className = "bg-gray-600 text-white hover:bg-gray-600/80";
     tooltipContent = dismissedDate;
+  } else if (item.state === StatePaper.OBSERVED) {
+    className = "bg-red-600 text-white hover:bg-red-600/80";
+    tooltipContent =
+      "Observed on " +
+      (item.reviewedDate ? formatDate(item.reviewedDate) : "Sin fecha");
+  } else if (item.state === StatePaper.SUBSANATED) {
+    className = "bg-blue-600 text-white hover:bg-blue-600/80";
+    tooltipContent =
+      "Subsanated on " +
+      (item.reviewedDate ? formatDate(item.reviewedDate) : "Sin fecha");
   }
 
   const title = (item: Entity) => {
     if (item.state === StatePaper.APPROVED) {
       if (item.process === ProcessPaper.PRESELECCIONADO) {
         // return "Preseleccionado";
-         return "PRESELECTED"
+        return "PRESELECTED";
       }
       if (item.process === ProcessPaper.SELECCIONADO) {
         // return "Seleccionado";
-          return "SELECTED"
+        return "SELECTED";
       }
     } else {
       return MapStatePaperForUser[item.state];
@@ -267,9 +277,13 @@ const ButtonEdit = React.memo(({ item }: { item: Entity }) => {
     openActionModal(item.id, "edit");
   }, [item, openActionModal]);
 
-  if (item.state !== StatePaper.REGISTERED) return null;
-
-  return <DropdownMenuItem onClick={handleEdit}>Edit</DropdownMenuItem>;
+  // if (item.state !== StatePaper.REGISTERED) return null;
+  if (
+    item.state !== StatePaper.REGISTERED &&
+    item.state !== StatePaper.RECEIVED &&
+    item.state == StatePaper.OBSERVED // <--- AGREGAR ESTO
+  )
+    return <DropdownMenuItem onClick={handleEdit}>Edit</DropdownMenuItem>;
 });
 
 const ButtonSend = React.memo(({ item }: { item: Entity }) => {

@@ -46,14 +46,14 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
     );
 
   // 1. Lista de opciones fijas
-  const fixedOptions = [
-    "Doctorado",
-    "Maestria",
-    "Licenciatura",
-    "Bachiller",
-    "Egresado",
-    "Tecnico",
-  ];
+  // const fixedOptions = [
+  //   "Doctorado",
+  //   "Maestria",
+  //   "Licenciatura",
+  //   "Bachiller",
+  //   "Egresado",
+  //   "Tecnico",
+  // ];
 
   // 2. Observamos el valor del Select
   const selectedDesignation = form.watch(

@@ -46,9 +46,9 @@ export interface State extends HttpRequestState {
 
   /* Filter States */
   dateRange: { start: string; end: string };
-  selectedTopic: Topic | null;
+  selectedTopic: Topic[] | null; // <-- CAMBIADO A ARREGLO
   selectedReviewer: User | null;
-  selectedCategory: Category | null;
+  selectedCategory: Category[] | null; // <-- CAMBIADO A ARREGLO
   selectedLeader: User | null;
   selectedState: StatePaper | null;
   selectedProcess: string | null;
@@ -74,10 +74,10 @@ export interface State extends HttpRequestState {
 
   /* Particular Filter Actions */
   setDateRange: (range: { start: string; end: string }) => void;
-  setSelectedTopic: (topic: Topic | null) => void;
+  setSelectedTopic: (topic: Topic[] | null) => void; // <-- CAMBIADO A ARREGLO
   setSelectedReviewer: (reviewer: User | null) => void;
   setSelectedState: (state: StatePaper | null) => void;
-  setSelectedCategory: (category: Category | null) => void;
+  setSelectedCategory: (category: Category[] | null) => void; // <-- CAMBIADO A ARREGLO
   setSelectedProcess: (process: string | null) => void;
   setSelectedLeader: (category: User | null) => void;
 
@@ -104,7 +104,7 @@ export interface State extends HttpRequestState {
 
 export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
   set,
-  get
+  get,
 ) => ({
   data: [],
   filtered: [],
@@ -135,11 +135,11 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
             filtered: sortPapers(data),
           },
           false,
-          "getPaperSuccess"
+          "getPaperSuccess",
         );
         get().clearFilters();
       },
-      (error) => console.error(error)
+      (error) => console.error(error),
     );
   },
 
@@ -156,7 +156,7 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
             isOpenDialog: false,
           },
           false,
-          "createPaperSuccess"
+          "createPaperSuccess",
         );
         get().clearFilters();
         useUsersStore.getState().clearPersonFound();
@@ -174,7 +174,7 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
             alert("Ocurrió un error inesperado.");
           }
         }
-      }
+      },
     );
   },
 
@@ -186,7 +186,7 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
       () => ApiService.update(selected.id, payload),
       (updatedItem) => {
         const data = get().data.map((item) =>
-          item.id === updatedItem.id ? updatedItem : item
+          item.id === updatedItem.id ? updatedItem : item,
         );
         set(
           {
@@ -196,12 +196,12 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
             selected: undefined,
           },
           false,
-          "updatePaperSsuccess"
+          "updatePaperSsuccess",
         );
         get().clearFilters();
         useUsersStore.getState().clearPersonFound();
       },
-      (error) => console.error(error)
+      (error) => console.error(error),
     );
   },
 
@@ -221,11 +221,11 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
             selected: undefined,
           },
           false,
-          "deletePaperSuccess"
+          "deletePaperSuccess",
         );
         get().clearFilters();
       },
-      (error) => console.error(error)
+      (error) => console.error(error),
     );
   },
 
@@ -302,9 +302,18 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
         ReportService.getPapersReport({
           state: selectedState ?? undefined,
           reviewerUserId: selectedReviewer?.id,
+         // Asumiendo que el filtro de revisor también aplica para support3
+       
           leaderId: selectedLeader?.id,
-          topicId: selectedTopic?.id,
-          categoryId: selectedCategory?.id,
+          // Tomamos el primer ID seleccionado para el reporte si hay múltiples
+          topicId:
+            selectedTopic && selectedTopic.length > 0
+              ? selectedTopic[0].id
+              : undefined,
+          categoryId:
+            selectedCategory && selectedCategory.length > 0
+              ? selectedCategory[0].id
+              : undefined,
           process: selectedProcess ?? undefined,
           startDate: dateRange.start || undefined,
           endDate: dateRange.end || undefined,
@@ -322,7 +331,7 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
             variant: "destructive",
           });
         }
-      }
+      },
     );
   },
 
@@ -338,6 +347,7 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
       selectedLeader,
       selectedProcess,
     } = get();
+
     const filtered = data.filter((item) => {
       const matchesTerm =
         item.webUser.name.toLowerCase().includes(filterTerm.toLowerCase()) ||
@@ -352,12 +362,23 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
         (!dateRange.end ||
           dayjs(item.createdAt).isSameOrBefore(dayjs(dateRange.end)));
 
-      const matchesTopic = !selectedTopic || item.topicId === selectedTopic.id;
+      // -------------------------------------------------------------
+      // LÓGICA CORREGIDA PARA FILTRO MÚLTIPLE (ARRAY)
+      // -------------------------------------------------------------
+      const matchesTopic =
+        !selectedTopic || selectedTopic.length === 0
+          ? true
+          : selectedTopic.some((t) => t.id === item.topicId);
+
+      const matchesCategory =
+        !selectedCategory || selectedCategory.length === 0
+          ? true
+          : selectedCategory.some((c) => c.id === item.categoryId);
+      // -------------------------------------------------------------
+
       const matchesReviewer =
         !selectedReviewer || item.reviewerUserId === selectedReviewer.id;
       const matchesState = !selectedState || item.state === selectedState;
-      const matchesCategory =
-        !selectedCategory || item.categoryId === selectedCategory.id;
       const matchesLeader =
         !selectedLeader || item.leaderId === selectedLeader.id;
       const matchesProcess =
@@ -386,7 +407,7 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
       () => ApiService.changeState(selected.id, payload),
       (updatedItem) => {
         const data = get().data.map((item) =>
-          item.id === updatedItem.id ? updatedItem : item
+          item.id === updatedItem.id ? updatedItem : item,
         );
         set(
           {
@@ -396,12 +417,12 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
             selected: undefined,
           },
           false,
-          "changeStatusPaperSuccess"
+          "changeStatusPaperSuccess",
         );
         get().clearFilters();
         get().closeActionModal();
       },
-      (error) => console.error(error)
+      (error) => console.error(error),
     );
   },
 
@@ -413,7 +434,7 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
     set(
       { isOpenCommentsDialog: true, selected: item },
       false,
-      "openCommentsDialog"
+      "openCommentsDialog",
     );
   },
   closeCommentsDialog: () => {
@@ -445,14 +466,15 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
     if (!selected) return;
     handleRequestStore(
       get(),
-      () => ApiService.rate(selected.id, {
-        score1: Number(rating.score1),
-        score2: Number(rating.score2),
-        score3: Number(rating.score3),
-      }),
+      () =>
+        ApiService.rate(selected.id, {
+          score1: Number(rating.score1),
+          score2: Number(rating.score2),
+          score3: Number(rating.score3),
+        }),
       (updatedItem) => {
         const data = get().data.map((item) =>
-          item.id === updatedItem.id ? updatedItem : item
+          item.id === updatedItem.id ? updatedItem : item,
         );
         set(
           {
@@ -462,12 +484,12 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
             selected: undefined,
           },
           false,
-          "ratingPaperSuccess"
+          "ratingPaperSuccess",
         );
         get().clearFilters();
         get().closeActionModal();
       },
-      (error) => console.error(error)
+      (error) => console.error(error),
     );
   },
 });
@@ -475,7 +497,7 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
 export const usePaperStore = create<State>()(
   devtools(withHttpRequest(storeApi), {
     name: "Papers Store",
-  })
+  }),
 );
 
 function sortPapers(data: Entity[]): Entity[] {

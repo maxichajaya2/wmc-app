@@ -50,25 +50,25 @@ export function AuthorForm({ form, index, onRemove }: AuthorFormProps) {
   // END LOGIC COUNTRIES
 
   // 1. Buscamos el valor actual del campo para saber si mostrar el input manual
-  const currentDesignation = form.watch(
-    `authors.${index}.professionalDesignation`,
-  );
+  // const currentDesignation = form.watch(
+  //   `authors.${index}.professionalDesignation`,
+  // );
 
-  // 2. Definimos una lista de las opciones fijas
-  const fixedDesignations = [
-    "Doctorado",
-    "Maestria",
-    "Licenciatura",
-    "Bachiller",
-    "Egresado",
-    "Tecnico",
-  ];
+  // // 2. Definimos una lista de las opciones fijas
+  // const fixedDesignations = [
+  //   "Doctorado",
+  //   "Maestria",
+  //   "Licenciatura",
+  //   "Bachiller",
+  //   "Egresado",
+  //   "Tecnico",
+  // ];
 
   // 3. Determinamos si el valor actual es uno "Personalizado"
-  const isCustom =
-    currentDesignation &&
-    !fixedDesignations.includes(currentDesignation) &&
-    currentDesignation !== "Otro";
+  // const isCustom =
+  //   currentDesignation &&
+  //   !fixedDesignations.includes(currentDesignation) &&
+  //   currentDesignation !== "Otro";
 
   return (
     <div className="space-y-4 border p-4 rounded-md mb-4">

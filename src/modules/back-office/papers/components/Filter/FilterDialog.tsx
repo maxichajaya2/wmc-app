@@ -29,7 +29,6 @@ import { useCategoryStore } from "@/modules/back-office/category/store/category.
 
 // DAYJS
 import dayjs from "dayjs";
-// import utc from 'dayjs-plugin-utc';
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
@@ -37,7 +36,7 @@ import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
 import { DateClass } from "@/lib";
 import { useSessionBoundStore } from "@/modules/back-office/auth/store";
 import { useEffect } from "react";
-// import { formatDate } from '../../../../../utils/format-date';
+
 // Configurar los plugins de Day.js
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -45,7 +44,6 @@ dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
 
 const states: StatePaper[] = [
-  // StatePaper.REGISTERED,
   StatePaper.RECEIVED,
   StatePaper.SENT,
   StatePaper.ASSIGNED,
@@ -56,7 +54,6 @@ const states: StatePaper[] = [
 const processes: ProcessPaper[] = [
   ProcessPaper.PRESELECCIONADO,
   ProcessPaper.SELECCIONADO,
-  // ProcessPaper.ASIGNADO,
 ];
 
 function CustomerFilters() {
@@ -87,6 +84,7 @@ function CustomerFilters() {
   const topics = useTopicStore((state) => state.filtered);
   const filteredUsers = useUsersStore((state) => state.filtered);
   const loadingUsers = useUsersStore((state) => state.loading);
+
   const reviewers = filteredUsers.filter(
     (user) => user.role.id === PrimaryRoles.REVIEWER
   );
@@ -94,31 +92,23 @@ function CustomerFilters() {
     (user) => user.role.id === PrimaryRoles.LEADER
   );
 
-  // Efecto, si el usuario es un líder, entonces selecciona el líder por defecto, si es un revisor, selecciona el revisor por defecto
+  // 1. FILTRAR DUPLICADOS por NOMBRE (para ignorar IDs diferentes con el mismo texto)
+  const uniqueCategories = categories.filter((v, i, a) => a.findIndex(t => t.name.trim() === v.name.trim()) === i);
+  const uniqueTopics = topics.filter((v, i, a) => a.findIndex(t => t.name.trim() === v.name.trim()) === i);
+
   useEffect(() => {
-    if (!user || !leaders || !reviewers) return; // Si ya hay un líder o revisor seleccionado, no hacer nada
-    if (selectedLeader || selectedReviewer) return; // Si ya hay un líder o revisor seleccionado, no hacer nada
+    if (!user || !leaders || !reviewers) return;
+    if (selectedLeader || selectedReviewer) return;
     if (loadingUsers || loading) return;
+    
     if (user.role.id === PrimaryRoles.LEADER) {
       const leader = leaders.find((leader) => leader.id === user.id);
-      if (leader) {
-        setSelectedLeader(leader);
-      }
+      if (leader) setSelectedLeader(leader);
     } else if (user.role.id === PrimaryRoles.REVIEWER) {
       const reviewer = reviewers.find((reviewer) => reviewer.id === user.id);
-      if (reviewer) {
-        setSelectedReviewer(reviewer);
-      }
+      if (reviewer) setSelectedReviewer(reviewer);
     }
-  }, [
-    user,
-    leaders,
-    reviewers,
-    selectedLeader,
-    selectedReviewer,
-    setSelectedLeader,
-    setSelectedReviewer,
-  ]);
+  }, [user, leaders, reviewers, selectedLeader, selectedReviewer, setSelectedLeader, setSelectedReviewer]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFilterTerm(e.target.value);
@@ -127,36 +117,70 @@ function CustomerFilters() {
 
   const handleDateChange = (date: Date | undefined, type: "start" | "end") => {
     if (date) {
-      const dateToFormat = dayjs(date)
-        .tz("America/Bogota")
-        .format(DateClass.FORMAT_INPUT_SHORT);
+      const dateToFormat = dayjs(date).tz("America/Bogota").format(DateClass.FORMAT_INPUT_SHORT);
       setDateRange({
         ...dateRange,
-        [type]: DateClass.DateToFormat(
-          dateToFormat,
-          DateClass.FORMAT_INPUT_SHORT
-        ),
+        [type]: DateClass.DateToFormat(dateToFormat, DateClass.FORMAT_INPUT_SHORT),
       });
       updateFiltered();
     }
   };
 
-  // funcion para resetear el filtro de fecha
   const resetDateRange = () => {
     setDateRange({ start: "", end: "" });
     updateFiltered();
   };
 
   const formatDate = (date: string) => {
-    return dayjs(date)
-      .tz("America/Bogota")
-      .format(DateClass.FORMAT_INPUT_SHORT);
+    return dayjs(date).tz("America/Bogota").format(DateClass.FORMAT_INPUT_SHORT);
   };
 
-  // view all reviewers
   const viewAllReviewers = () => {
     findAll({ viewAll: true });
     updateFiltered();
+  };
+
+  // --- LÓGICA DE SELECCIÓN MÚLTIPLE ---
+  
+  // Helpers para convertir el estado actual en array (por si en el store aún es un objeto único)
+  const currentCategories = Array.isArray(selectedCategory) ? selectedCategory : (selectedCategory ? [selectedCategory] : []);
+  const currentTopics = Array.isArray(selectedTopic) ? selectedTopic : (selectedTopic ? [selectedTopic] : []);
+
+  const handleCategorySelect = (category: any) => {
+    // Validar por nombre en lugar de id
+    const exists = currentCategories.find(c => c.name === category.name);
+    const newSelection = exists 
+      ? currentCategories.filter(c => c.name !== category.name) 
+      : [...currentCategories, category];
+      
+    // Usamos "as any" para evitar el error de TypeScript al guardar un array en un campo de objeto único
+    setSelectedCategory(newSelection as any);
+    updateFiltered();
+  };
+
+  const handleTopicSelect = (topic: any) => {
+    // Validar por nombre en lugar de id
+    const exists = currentTopics.find(t => t.name === topic.name);
+    const newSelection = exists 
+      ? currentTopics.filter(t => t.name !== topic.name) 
+      : [...currentTopics, topic];
+      
+    // Usamos "as any" para evitar el error de TypeScript al guardar un array en un campo de objeto único
+    setSelectedTopic(newSelection as any);
+    updateFiltered();
+  };
+
+  // Renderizadores de texto para los botones múltiples
+  const renderCategoryText = () => {
+    if (currentCategories.length === 0) return "Choose a category";
+    if (currentCategories.length > 2) return `${currentCategories.length} categories selected`;
+    return currentCategories.map(c => c.name).join(", ");
+  };
+
+  const renderTopicText = () => {
+    if (currentTopics.length === 0) return "Choose a topic";
+    if (currentTopics.length > 2) return `${currentTopics.length} topics selected`;
+    return currentTopics.map(t => t.name).join(", ");
   };
 
   return (
@@ -168,18 +192,14 @@ function CustomerFilters() {
         className="w-64"
       />
 
+      {/* Rango de Fechas */}
       <Popover>
         <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            className="w-[280px] justify-start text-left font-normal"
-          >
+          <Button variant="outline" className="w-[280px] justify-start text-left font-normal">
             <CalendarIcon className="mr-2 h-4 w-4" />
             {dateRange.start ? (
               dateRange.end ? (
-                <>
-                  {formatDate(dateRange.start)} | {formatDate(dateRange.end)}
-                </>
+                <>{formatDate(dateRange.start)} | {formatDate(dateRange.end)}</>
               ) : (
                 <>{formatDate(dateRange.start)}</>
               )
@@ -192,13 +212,9 @@ function CustomerFilters() {
           <Calendar
             initialFocus
             mode="range"
-            defaultMonth={
-              dateRange.start ? dayjs(dateRange.start).toDate() : undefined
-            }
+            defaultMonth={dateRange.start ? dayjs(dateRange.start).toDate() : undefined}
             selected={{
-              from: dateRange.start
-                ? dayjs(dateRange.start).toDate()
-                : undefined,
+              from: dateRange.start ? dayjs(dateRange.start).toDate() : undefined,
               to: dateRange.end ? dayjs(dateRange.end).toDate() : undefined,
             }}
             onSelect={(range) => {
@@ -208,27 +224,18 @@ function CustomerFilters() {
             numberOfMonths={2}
           />
           <div className="flex items-center justify-between p-2">
-            <Button
-              variant="destructive"
-              className="w-full"
-              onClick={() => {
-                resetDateRange();
-              }}
-            >
+            <Button variant="destructive" className="w-full" onClick={resetDateRange}>
               Clear
             </Button>
           </div>
         </PopoverContent>
       </Popover>
 
+      {/* Categories Popover (Múltiple) */}
       <Popover>
         <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            role="combobox"
-            className="w-[200px] justify-between"
-          >
-            {selectedCategory ? selectedCategory.name : "Choose a category"}
+          <Button variant="outline" role="combobox" className="w-[200px] justify-between">
+            <span className="truncate">{renderCategoryText()}</span>
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -238,41 +245,35 @@ function CustomerFilters() {
             <CommandList>
               <CommandEmpty>Category not found</CommandEmpty>
               <CommandGroup>
-                {categories.map((category) => (
-                  <CommandItem
-                    key={category.id}
-                    onSelect={() => {
-                      setSelectedCategory(
-                        selectedCategory?.id === category.id ? null : category
-                      );
-                      updateFiltered();
-                    }}
-                  >
-                    <Check
-                      className={cn(
-                        "mr-2 h-4 w-4",
-                        selectedTopic?.id === category.id
-                          ? "opacity-100"
-                          : "opacity-0"
-                      )}
-                    />
-                    {category.name}
-                  </CommandItem>
-                ))}
+                {uniqueCategories.map((category) => {
+                  // Validación por nombre
+                  const isSelected = currentCategories.some(c => c.name === category.name);
+                  return (
+                    <CommandItem
+                      key={category.id}
+                      onSelect={() => handleCategorySelect(category)}
+                    >
+                      <Check
+                        className={cn(
+                          "mr-2 h-4 w-4",
+                          isSelected ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+                      {category.name}
+                    </CommandItem>
+                  );
+                })}
               </CommandGroup>
             </CommandList>
           </Command>
         </PopoverContent>
       </Popover>
 
+      {/* Topics Popover (Múltiple) */}
       <Popover>
         <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            role="combobox"
-            className="w-[200px] justify-between"
-          >
-            {selectedTopic ? selectedTopic.name : "Choose a topic"}
+          <Button variant="outline" role="combobox" className="w-[200px] justify-between">
+            <span className="truncate">{renderTopicText()}</span>
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -282,133 +283,34 @@ function CustomerFilters() {
             <CommandList>
               <CommandEmpty>Topic not found</CommandEmpty>
               <CommandGroup>
-                {topics.map((topic) => (
-                  <CommandItem
-                    key={topic.id}
-                    onSelect={() => {
-                      setSelectedTopic(
-                        selectedTopic?.id === topic.id ? null : topic
-                      );
-                      updateFiltered();
-                    }}
-                  >
-                    <Check
-                      className={cn(
-                        "mr-2 h-4 w-4",
-                        selectedTopic?.id === topic.id
-                          ? "opacity-100"
-                          : "opacity-0"
-                      )}
-                    />
-                    {topic.name}
-                  </CommandItem>
-                ))}
+                {uniqueTopics.map((topic) => {
+                  // Validación por nombre
+                  const isSelected = currentTopics.some(t => t.name === topic.name);
+                  return (
+                    <CommandItem
+                      key={topic.id}
+                      onSelect={() => handleTopicSelect(topic)}
+                    >
+                      <Check
+                        className={cn(
+                          "mr-2 h-4 w-4",
+                          isSelected ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+                      {topic.name}
+                    </CommandItem>
+                  );
+                })}
               </CommandGroup>
             </CommandList>
           </Command>
         </PopoverContent>
       </Popover>
 
-      {/* <Popover>
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            role="combobox"
-            className="w-[200px] justify-between"
-          >
-            {selectedLeader ? `${selectedLeader.name}` : "Select a leader"}
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-[200px] p-0">
-          <Command>
-            <CommandInput placeholder="Search for a leader..." />
-            <CommandList>
-              <CommandEmpty>Leader not found</CommandEmpty>
-              <CommandGroup>
-                {leaders.map((leader) => (
-                  <CommandItem
-                    key={leader.id}
-                    onSelect={() => {
-                      setSelectedLeader(
-                        selectedLeader?.id === leader.id ? null : leader
-                      );
-                      updateFiltered();
-                    }}
-                  >
-                    <Check
-                      className={cn(
-                        "mr-2 h-4 w-4",
-                        selectedLeader?.id === leader.id
-                          ? "opacity-100"
-                          : "opacity-0"
-                      )}
-                    />
-                    {`${leader.name}`}
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </CommandList>
-          </Command>
-        </PopoverContent>
-      </Popover> */}
-
-      {/* <Popover>
-        <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            role="combobox"
-            className="w-[200px] justify-between"
-            disabled={false}
-          >
-            {selectedReviewer
-              ? `${selectedReviewer.name}`
-              : "Select a reviewer"}
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-[200px] p-0">
-          <Command>
-            <CommandInput placeholder="Search for a reviewer..." />
-            <CommandList>
-              <CommandEmpty>Reviewer not found</CommandEmpty>
-              <CommandGroup>
-                {reviewers.map((reviewer) => (
-                  <CommandItem
-                    key={reviewer.id}
-                    onSelect={() => {
-                      setSelectedReviewer(
-                        selectedReviewer?.id === reviewer.id ? null : reviewer
-                      );
-                      updateFiltered();
-                    }}
-                  >
-                    <Check
-                      className={cn(
-                        "mr-2 h-4 w-4",
-                        selectedReviewer?.id === reviewer.id
-                          ? "opacity-100"
-                          : "opacity-0"
-                      )}
-                    />
-                    {`${reviewer.name}`}
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </CommandList>
-          </Command>
-        </PopoverContent>
-      </Popover> */}
-
-      {/* Ver todos los revisores */}
-      
+      {/* States Popover */}
       <Popover>
         <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            role="combobox"
-            className="w-[200px] justify-between"
-          >
+          <Button variant="outline" role="combobox" className="w-[200px] justify-between">
             {selectedState ? MapStatePaper[selectedState] : "Select a status"}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
@@ -423,7 +325,6 @@ function CustomerFilters() {
                   <CommandItem
                     key={state}
                     onSelect={() => {
-                      console.log({ state });
                       setSelectedState(selectedState === state ? null : state);
                       updateFiltered();
                     }}
@@ -443,16 +344,11 @@ function CustomerFilters() {
         </PopoverContent>
       </Popover>
 
+      {/* Processes Popover */}
       <Popover>
         <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            role="combobox"
-            className="w-[200px] justify-between"
-          >
-            {selectedProcess
-              ? MapProcessPaper[selectedProcess as ProcessPaper]
-              : "Choose a process"}
+          <Button variant="outline" role="combobox" className="w-[200px] justify-between">
+            {selectedProcess ? MapProcessPaper[selectedProcess as ProcessPaper] : "Choose a process"}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -466,10 +362,7 @@ function CustomerFilters() {
                   <CommandItem
                     key={state}
                     onSelect={() => {
-                      console.log({ state });
-                      setSelectedProcess(
-                        selectedProcess === state ? null : state
-                      );
+                      setSelectedProcess(selectedProcess === state ? null : state);
                       updateFiltered();
                     }}
                   >
@@ -487,11 +380,8 @@ function CustomerFilters() {
           </Command>
         </PopoverContent>
       </Popover>
-      <Button
-        variant="secondary"
-        onClick={viewAllReviewers}
-        className="w-[200px]"
-      >
+
+      <Button variant="secondary" onClick={viewAllReviewers} className="w-[200px]">
         View all
       </Button>
     </div>

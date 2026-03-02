@@ -35,13 +35,13 @@ export const abstractSchema = z.object({
     (val) => Number(val || ""),
     z.number().min(1, {
       message: "Category is required",
-    })
+    }),
   ),
   topicId: z.preprocess(
     (val) => Number(val || ""),
     z.number().min(1, {
       message: "Topic is required",
-    })
+    }),
   ),
   // language: z.string().min(1, { message: "El idioma es obligatorio" }),
 
@@ -64,7 +64,7 @@ export const abstractSchema = z.object({
     (val) => Number(val || ""),
     z.number().min(1, {
       message: "User is required",
-    })
+    }),
   ),
 });
 
@@ -133,6 +133,11 @@ export const paperSchema = abstractSchema
     eventWhere: data.flagEvent ? data.eventWhere : undefined,
     eventWhich: data.flagEvent ? data.eventWhich : undefined,
     resume: "default",
+    
+    // reviewerUserId: z.string().optional(),
+    // reviewerSupport1Id: z.string().optional(), // AÑADIR ESTO
+    // reviewerSupport2Id: z.string().optional(), // AÑADIR ESTO
+    // reviewerSupport3Id: z.string().optional(), // AÑADIR ESTO
   }));
 
 export type AbstractFormData = z.infer<typeof abstractSchema>;

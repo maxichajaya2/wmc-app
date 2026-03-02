@@ -31,9 +31,7 @@ import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
-import {
-  AlertCircle,
-} from "lucide-react";
+import { AlertCircle } from "lucide-react";
 // Configurar los plugins de Day.js
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -123,6 +121,14 @@ function PapersManagementPage() {
       .length;
   }, [filtered]);
 
+  const hasObservedPaper = useMemo(() => {
+    return filtered?.some((paper) => paper.state === StatePaper.SUBSANATED);
+  }, [filtered]);
+
+  const hasAprovedPaper = useMemo(() => {
+    return filtered?.some((paper) => paper.state === StatePaper.APPROVED);
+  }, [filtered]);
+
   return (
     <main className="grid flex-1 items-start p-2 overflow-auto">
       {abstractRecords.length > 0 && (
@@ -161,6 +167,7 @@ function PapersManagementPage() {
           </AlertDescription>
         </Alert>
       )}
+      
       {/* Alerta de restricción para usuarios sin abstracts asociados */}
       {!isAuthorizedAuthor && !loading && (
         <Alert
@@ -172,8 +179,8 @@ function PapersManagementPage() {
           <AlertDescription className="space-y-2">
             <p>
               The <strong>Upload Submission</strong> button is disabled because
-              your current account email  is
-              not associated with any approved abstracts.
+              your current account email is not associated with any approved
+              abstracts.
             </p>
             <ul className="list-disc ml-5 mt-2 space-y-1">
               <li>
@@ -188,7 +195,7 @@ function PapersManagementPage() {
                   href="mailto:wmc2026@iimp.org.pe"
                   className="underline font-bold ml-1"
                 >
-                 wmc2026authors@iimp.org.pe
+                  wmc2026authors@iimp.org.pe
                 </a>
               </li>
             </ul>
@@ -261,7 +268,9 @@ function PapersManagementPage() {
               size="sm"
               className="h-8 gap-1 bg-gradient-to-br from-[#00b3dc] via-[#0124e0] to-[#00023f] text-white"
               onClick={handleCreate}
-              disabled={reachedMaxPapers || !isAuthorizedAuthor}
+              disabled={
+                reachedMaxPapers || !isAuthorizedAuthor || hasObservedPaper || hasAprovedPaper
+              }
             >
               <PlusCircle className="h-3.5 w-3.5 text-white " />
               <span className="sr-only sm:not-sr-only sm:whitespace-nowrap text-white">

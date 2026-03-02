@@ -11,7 +11,7 @@ import {
 } from "@/components"
 import { useCallback, useEffect } from "react"
 import { DataTable, DataTableSkeleton, FadeInComponent } from "@/shared"
-import { columns } from "./components"
+import { columns } from "./components/Table/columns"
 import { usePaperStore } from "./store/papers.store"
 import CustomerFilters from "./components/Filter/FilterDialog"
 import PaperDialog from "./components/Dialog/PaperDialog"

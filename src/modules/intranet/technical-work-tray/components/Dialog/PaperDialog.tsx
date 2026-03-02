@@ -59,7 +59,7 @@ import { PaperService } from "../../services/papers.service";
 import { useUsersStore } from "@/modules/back-office/users/store/users.store";
 import { useCategoryStore } from "@/modules/back-office/category/store/category.store";
 import { useAuthIntranetStore } from "@/modules/intranet/auth/store";
-// import { useAbstractStore } from "@/modules/intranet/technical-work-tray/store/abstract.store";
+import { useAbstractStore } from "@/modules/intranet/technical-work-tray/store/abstract.store";
 import { Loader } from "@/shared";
 import { DateClass } from "@/lib";
 
@@ -77,8 +77,8 @@ function PapersDialog() {
   );
   const topics = useTopicStore((state) => state.data);
   const categories = useCategoryStore((state) => state.data);
-  // const abstractRecords = useAbstractStore((state) => state.data);
-  // const hasAbstracts = abstractRecords.length > 0;
+  const abstractRecords = useAbstractStore((state) => state.data);
+  const hasAbstracts = abstractRecords.length > 0;
   // console.log("📌 ABSTRACT EN EL MODAL:", abstractRecords);
   const title = () => {
     switch (action) {
@@ -312,11 +312,11 @@ function PapersDialog() {
     }
   };
 
-  // const selectedAbstractId = useMemo(() => {
-  //   if (!selected?.correlative) return undefined;
-  //   const abs = abstractRecords.find((a) => a.codigo === selected.correlative);
-  //   return abs ? abs.id.toString() : undefined;
-  // }, [selected, abstractRecords]);
+  const selectedAbstractId = useMemo(() => {
+    if (!selected?.correlative) return undefined;
+    const abs = abstractRecords.find((a) => a.codigo === selected.correlative);
+    return abs ? abs.id.toString() : undefined;
+  }, [selected, abstractRecords]);
 
   const handleSendCompleteArchive = async () => {
     if (fullFileUrl && selected) {
@@ -571,7 +571,7 @@ function PapersDialog() {
                       </FormControl>
 
                       {/* 2. Si tiene abstracts, mostramos un selector opcional de "Sugerencias" o "Mis Abstracts" */}
-                      {/* {hasAbstracts && action !== "view" && (
+                      {hasAbstracts && action !== "view" && (
                         <div className="mt-2">
                           <Label className="text-xs text-muted-foreground">
                             Or select from your abstracts:
@@ -603,7 +603,7 @@ function PapersDialog() {
                             </SelectContent>
                           </Select>
                         </div>
-                      )} */}
+                      )}
 
                       <FormMessage />
                     </FormItem>

@@ -23,7 +23,10 @@ export type ActionsTypes =
   | "approve-paper"
   | "dismiss-paper"
   | 'assign-stand'
+  | "observe-paper"
+  | "subsanate-paper"
   | "charge-complete-archive"
+  | "reassign-paper";
 export class ErrorType extends Error {
   code: ERROR_CODES;
   constructor(code: ERROR_CODES, message: string) {

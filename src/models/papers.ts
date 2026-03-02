@@ -36,6 +36,12 @@ export interface Paper {
   webUser: UserWeb;
   reviewerUserId?: number;
   reviewerUser?: User;
+  reviewerSupport1Id?: number;
+  reviewerSupport1?: User;
+  reviewerSupport2Id?: number;
+  reviewerSupport2?: User;
+  reviewerSupport3Id?: number;
+  reviewerSupport3?: User;
   leaderId?: number;
   leader?: User;
   topicId: number;
@@ -80,6 +86,9 @@ export interface PayloadChangeStatusPaper {
   leaderId?: number;
   reviewerUserId?: number;
   type?: TypePaper;
+  reviewerSupport1Id?: number;
+  reviewerSupport2Id?: number;
+  reviewerSupport3Id?: number;
 }
 
 export enum TypePaper {
@@ -93,7 +102,7 @@ export const MapTypePaper: Record<TypePaper, string> = {
   // [TypePaper.ORAL]: "Oral",
   // [TypePaper.POSTER]: "Poster",
   // [TypePaper.PRESENTACION_INTERACTIVA]: "Presentación Interactiva",
-  [TypePaper.PRESENTACION_ORAL]: "Presentación Oral",
+  [TypePaper.PRESENTACION_ORAL]: "Oral Presentation",
 };
 
 export enum StatePaper {
@@ -104,6 +113,8 @@ export enum StatePaper {
   UNDER_REVIEW = 4,
   APPROVED = 5,
   DISMISSED = 6,
+  OBSERVED = 7,
+  SUBSANATED= 8,
 }
 export enum ProcessPaper {
   PRESELECCIONADO = "P",
@@ -125,6 +136,8 @@ export const MapStatePaper: Record<StatePaper, string> = {
   [StatePaper.UNDER_REVIEW]: "UNDER REVIEW",
   [StatePaper.APPROVED]: "APPROVED",
   [StatePaper.DISMISSED]: "DISMISSED",
+  [StatePaper.OBSERVED]: "OBSERVED",
+  [StatePaper.SUBSANATED]: "SUBSANATED",
 };
 
 export const MapStatePaperForUser: Record<StatePaper, string> = {
@@ -142,6 +155,8 @@ export const MapStatePaperForUser: Record<StatePaper, string> = {
   [StatePaper.UNDER_REVIEW]: "UNDER REVIEW",
   [StatePaper.APPROVED]: "APPROVED",
   [StatePaper.DISMISSED]: "DISMISSED",
+  [StatePaper.OBSERVED]: "OBSERVED",
+  [StatePaper.SUBSANATED]: "SUBSANATED",
 };
 
 export const MapProcessPaper: Record<ProcessPaper, string> = {

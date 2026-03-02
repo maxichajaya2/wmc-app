@@ -28,6 +28,7 @@ export class PaperService {
   };
 
   static update = async (id: number, payload: PayloadPaper) => {
+    
     const { data } = await api.patch<Paper>(`/papers/${id}`, payload);
     return data;
   };

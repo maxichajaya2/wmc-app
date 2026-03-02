@@ -74,6 +74,11 @@ function PapersDialog() {
   const topics = useTopicStore((state) => state.data);
   const categories = useCategoryStore((state) => state.data);
   const webUsers = useUserWebStore((state) => state.data);
+  const [mainReviewer, setMainReviewer] = useState<string>("");
+  const [support1, setSupport1] = useState<string>("");
+  const [support2, setSupport2] = useState<string>("");
+  const [support3, setSupport3] = useState<string>("");
+
   const title = useMemo(() => {
     switch (action) {
       case "view":
@@ -104,19 +109,20 @@ function PapersDialog() {
         // return "Puntuación";
         return "Score";
       case "approve-paper":
-        // return `Cambiar estado a: ${
-        //   selected?.process === ProcessPaper.PRESELECCIONADO
-        //     ? "PRESELECCIONADO"
-        //     : "SELECCIONADO"
-        // }`;
         return `Change status to: ${
           selected?.process === ProcessPaper.PRESELECCIONADO
             ? "PRESELECTED"
             : "SELECTED"
         }`;
+      case "observe-paper":
+        return "Change status to: OBSERVED";
+      case "subsanate-paper":
+        return "Change status to: SUBSANATED";
       case "dismiss-paper":
         // return "Cambiar estado a: DESESTIMADO";
         return "Change status to: DISMISSED";
+      case "reassign-paper":
+        return "Reassign Responsible (Reviewer)";
       default:
         // return "Trabajo Técnico";
         return "Technical Paper";
@@ -265,6 +271,15 @@ function PapersDialog() {
       case "dismiss-paper":
         status = StatePaper.DISMISSED;
         break;
+      case "observe-paper":
+        status = StatePaper.OBSERVED;
+        break;
+      case "reassign-paper":
+        status = StatePaper.ASSIGNED;
+        break;
+      case "subsanate-paper":
+        status = StatePaper.SUBSANATED;
+        break;
     }
     if (selected) {
       changeStatusPaper({
@@ -355,6 +370,11 @@ function PapersDialog() {
           flagEvent: selected.flagEvent ?? false,
           keywords: selected.keywords ?? [],
           industry: selected.industry ?? "",
+          // reviewerUser: selected.reviewerUserId ?? undefined,
+          // reviewerSupport1: selected.reviewerSupport1Id ?? undefined,
+          // reviewerSupport2: selected.reviewerSupport2Id ?? undefined,
+          // reviewerSupport3: selected.reviewerSupport3Id ?? undefined,
+          
         });
         try {
           const authors = await PaperService.findAuthorsByPaper(selected.id);
@@ -405,6 +425,41 @@ function PapersDialog() {
       form.reset();
     };
   }, []);
+
+  useEffect(() => {
+    if (
+      selected &&
+      (action === "assign-paper" || action === "reassign-paper")
+    ) {
+      setMainReviewer(selected.reviewerUserId?.toString() || "");
+      // Si tu modelo tiene supportReviewers, cárgalos aquí
+    }
+  }, [selected, action]);
+
+  useEffect(() => {
+    if (selected) {
+      // Si ya tiene un revisor principal asignado, lo ponemos en el estado
+      if (selected.reviewerUserId) {
+        setMainReviewer(selected.reviewerUserId.toString());
+        setSelectedReviewer(
+          reviewersUsers.find((u) => u.id === selected.reviewerUserId) || null,
+        );
+      }
+
+      // Si manejas apoyos, podrías cargarlos aquí también desde el modelo si existen
+      // setSupport1(selected.support1Id?.toString() || "");
+    }
+  }, [selected, action]);
+
+  // BUSCA ESTE BLOQUE:
+  // changeStatusPaper({
+  //   state: StatePaper.ASSIGNED,
+  //   reviewerUserId: Number(mainReviewer),
+  //   // Usa undefined en lugar de null para evitar errores de tipado
+  //   reviewerSupport1Id: support1 ? Number(support1) : undefined,
+  //   reviewerSupport2Id: support2 ? Number(support2) : undefined,
+  //   reviewerSupport3Id: support3 ? Number(support3) : undefined,
+  // });
 
   function onSubmit(data: PaperFormData) {
     if (action === "create") {
@@ -1148,13 +1203,20 @@ function PapersDialog() {
                 </div>
               </div>
             )}
+
+            {/* Este bloque renderiza los controles cuando el administrador elige 
+    cambiar el estado de un paper (Recibir, Enviar, Asignar, Revisar, Aprobar, Desestimar u OBSERVAR)
+*/}
             {(action === "receive-paper" ||
               action === "send-paper" ||
               action === "assign-paper" ||
               action === "review-paper" ||
               action === "approve-paper" ||
-              action === "dismiss-paper") && (
-              <div className="flex flex-row gap-3 p-3 rounded-md mb-3">
+              action === "dismiss-paper" ||
+              action === "reassign-paper" || // <--- Se añadió reassign-paper aquí
+              action === "observe-paper") && ( // <--- Se añadió observe-paper aquí
+              <div className="flex flex-row gap-3 p-3 rounded-md mb-3 items-center border bg-slate-50 dark:bg-slate-900">
+                {/* Si es para enviar a un Líder */}
                 {action === "send-paper" && (
                   <Popover>
                     <PopoverTrigger asChild>
@@ -1178,13 +1240,13 @@ function PapersDialog() {
                             {leaders.map((leader) => (
                               <CommandItem
                                 key={leader.id}
-                                onSelect={() => {
+                                onSelect={() =>
                                   setSelectedLeader(
                                     selectedLeader?.id === leader.id
                                       ? null
                                       : leader,
-                                  );
-                                }}
+                                  )
+                                }
                               >
                                 <Check
                                   className={cn(
@@ -1203,7 +1265,9 @@ function PapersDialog() {
                     </PopoverContent>
                   </Popover>
                 )}
-                {action === "assign-paper" && (
+
+                {/* Si es para asignar a un Revisor */}
+                {/* {action === "assign-paper" && (
                   <Popover>
                     <PopoverTrigger asChild>
                       <Button
@@ -1226,13 +1290,177 @@ function PapersDialog() {
                             {[...reviewers, ...leaders].map((reviewer) => (
                               <CommandItem
                                 key={reviewer.id}
-                                onSelect={() => {
+                                onSelect={() =>
                                   setSelectedReviewer(
                                     selectedReviewer?.id === reviewer.id
                                       ? null
                                       : reviewer,
-                                  );
-                                }}
+                                  )
+                                }
+                              >
+                                <Check
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    selectedReviewer?.id === reviewer.id
+                                      ? "opacity-100"
+                                      : "opacity-0",
+                                  )}
+                                />
+                                {`${reviewer.name}`}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                )} */}
+
+                {/* --- BLOQUE DE ASIGNACIÓN DE REVISORES (PRINCIPAL Y APOYO) --- */}
+                {action === "assign-paper" && (
+                  <div className="flex flex-col gap-4 p-4 border rounded-lg bg-slate-50 dark:bg-slate-900">
+                    <TypographyH4 className="text-sm font-bold uppercase text-slate-500">
+                      Assign Review Team
+                    </TypographyH4>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* REVISOR PRINCIPAL */}
+                      <div className="flex flex-col gap-2">
+                        <Label>Main Reviewer (Responsible)</Label>
+                        <Select
+                          value={mainReviewer}
+                          onValueChange={setMainReviewer}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select Main Reviewer" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {reviewers.map((u) => (
+                              <SelectItem key={u.id} value={u.id.toString()}>
+                                {u.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* APOYO 1 */}
+                      <div className="flex flex-col gap-2">
+                        <Label>Support Reviewer 1</Label>
+                        <Select value={support1} onValueChange={setSupport1}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Optional support" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {reviewers.map((u) => (
+                              <SelectItem key={u.id} value={u.id.toString()}>
+                                {u.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* APOYO 2 */}
+                      <div className="flex flex-col gap-2">
+                        <Label>Support Reviewer 2</Label>
+                        <Select value={support2} onValueChange={setSupport2}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Optional support" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {reviewers.map((u) => (
+                              <SelectItem key={u.id} value={u.id.toString()}>
+                                {u.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* APOYO 3 */}
+                      <div className="flex flex-col gap-2">
+                        <Label>Support Reviewer 3</Label>
+                        <Select value={support3} onValueChange={setSupport3}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Optional support" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {reviewers.map((u) => (
+                              <SelectItem key={u.id} value={u.id.toString()}>
+                                {u.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <Button
+                      disabled={loading || !mainReviewer}
+                      type="button"
+                      onClick={() => {
+                        if (selected) {
+                          // Busca este bloque dentro del JSX de asignación:
+                          changeStatusPaper({
+                            state: StatePaper.ASSIGNED,
+                            reviewerUserId: Number(mainReviewer),
+                            // CAMBIA 'null' POR 'undefined' EN ESTOS TRES CAMPOS:
+                            reviewerSupport1Id: support1
+                              ? Number(support1)
+                              : undefined,
+                            reviewerSupport2Id: support2
+                              ? Number(support2)
+                              : undefined,
+                            reviewerSupport3Id: support3
+                              ? Number(support3)
+                              : undefined,
+                          });
+                        }
+                      }}
+                      className="w-full mt-2 bg-blue-600 hover:bg-blue-700 text-white"
+                    >
+                      {loading ? (
+                        <LoaderCircle className="animate-spin" />
+                      ) : (
+                        "Confirm Assignment"
+                      )}
+                    </Button>
+                  </div>
+                )}
+
+                {/* Si es para REASIGNAR a un Revisor */}
+                {action === "reassign-paper" && (
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        className="w-[200px] justify-between"
+                      >
+                        {selectedReviewer
+                          ? `${selectedReviewer.name}`
+                          : "Select a reviewer"}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[200px] p-0">
+                      <Command>
+                        <CommandInput placeholder="Search reviewer..." />
+                        <CommandList>
+                          <CommandEmpty>Reviewer not found.</CommandEmpty>
+                          <CommandGroup>
+                            {/* CORRECCIÓN: Solo 'reviewers' */}
+                            {reviewers.map((reviewer) => (
+                              <CommandItem
+                                key={reviewer.id}
+                                onSelect={() =>
+                                  setSelectedReviewer(
+                                    selectedReviewer?.id === reviewer.id
+                                      ? null
+                                      : reviewer,
+                                  )
+                                }
                               >
                                 <Check
                                   className={cn(
@@ -1251,6 +1479,8 @@ function PapersDialog() {
                     </PopoverContent>
                   </Popover>
                 )}
+
+                {/* Si es para aprobar y asignar tipo (Oral/Poster) */}
                 {selected?.process === ProcessPaper.SELECCIONADO &&
                   action === "approve-paper" && (
                     <Popover>
@@ -1261,11 +1491,7 @@ function PapersDialog() {
                           className="w-[200px] justify-between"
                         >
                           {selectedTypePaper
-                            ? `${
-                                paperTypes.find(
-                                  (type) => type.id === selectedTypePaper,
-                                )?.name
-                              }`
+                            ? `${paperTypes.find((type) => type.id === selectedTypePaper)?.name}`
                             : "Assign a paper type"}
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
@@ -1279,13 +1505,13 @@ function PapersDialog() {
                               {paperTypes.map((typePaper) => (
                                 <CommandItem
                                   key={typePaper.id}
-                                  onSelect={() => {
+                                  onSelect={() =>
                                     setSelectedTypePaper(
                                       selectedTypePaper === typePaper.id
                                         ? null
                                         : typePaper.id,
-                                    );
-                                  }}
+                                    )
+                                  }
                                 >
                                   <Check
                                     className={cn(
@@ -1304,10 +1530,13 @@ function PapersDialog() {
                       </PopoverContent>
                     </Popover>
                   )}
+
+                {/* BOTÓN FINAL DE ACCIÓN */}
                 <Button
                   disabled={
                     loading ||
                     (action === "assign-paper" && !selectedReviewer) ||
+                    (action === "reassign-paper" && !selectedReviewer) ||
                     (action === "send-paper" && !selectedLeader) ||
                     (selected?.process === ProcessPaper.SELECCIONADO &&
                       action === "approve-paper" &&
@@ -1315,7 +1544,12 @@ function PapersDialog() {
                   }
                   type="button"
                   onClick={handleChangeStatus}
-                  className="font-bold py-2 px-4 rounded duration-300 text-white"
+                  className={cn(
+                    "font-bold py-2 px-4 rounded duration-300 text-white",
+                    action === "observe-paper"
+                      ? "bg-orange-500 hover:bg-orange-600"
+                      : "bg-primary",
+                  )}
                 >
                   {loading ? (
                     <div className="flex items-center justify-center space-x-2">
@@ -1324,6 +1558,8 @@ function PapersDialog() {
                         className="animate-spin text-white"
                       />
                     </div>
+                  ) : action === "observe-paper" ? (
+                    "Confirm Observation"
                   ) : (
                     "Change status"
                   )}
