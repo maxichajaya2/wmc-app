@@ -27,6 +27,8 @@ import { usePaperStore } from "../../store/papers.store";
 import { formatDate } from "../../../../../utils/format-date";
 import { useCheckPermission } from "@/utils";
 import { ActionRoles, ModulesRoles } from "@/constants";
+import { useSessionBoundStore } from "../../../auth/store/session.store";
+import { RoleName } from "@/models";
 // import { Category } from '../../../../../../../backend/src/domain/entities/category.entity';
 
 const CorrelativeCell = React.memo(({ item }: { item: Entity }) => (
@@ -325,11 +327,17 @@ const ButtonEdit = React.memo(({ item }: { item: Entity }) => {
   const { openActionModal } = usePaperStore((state) => ({
     openActionModal: state.openActionModal,
   }));
+  const session = useSessionBoundStore((state: any) => state.session);
+  const isAdmin =
+    session?.user.role.name === RoleName.SUPER_ADMIN ||
+    session?.user.role.name === RoleName.ADMIN;
+  const isMainReviewer = session?.user.id === item.reviewerUserId;
+
   const handleEdit = useCallback(() => {
     openActionModal(item.id, "edit");
   }, [item, openActionModal]);
 
-  if (!canEdit) return null;
+  if (!canEdit || (!isAdmin && !isMainReviewer)) return null;
 
   return <DropdownMenuItem onClick={handleEdit}>Edit</DropdownMenuItem>;
 });
@@ -339,12 +347,20 @@ const ButtonDelete = React.memo(({ item }: { item: Entity }) => {
     ModulesRoles.TECHINICAL_WORKS,
     ActionRoles.DELETE,
   );
-  const openActionModal = usePaperStore((state) => state.openActionModal);
+  const { openActionModal } = usePaperStore((state) => ({
+    openActionModal: state.openActionModal,
+  }));
+  const session = useSessionBoundStore((state: any) => state.session);
+  const isAdmin =
+    session?.user.role.name === RoleName.SUPER_ADMIN ||
+    session?.user.role.name === RoleName.ADMIN;
+  const isMainReviewer = session?.user.id === item.reviewerUserId;
+
   const handleDelete = useCallback(() => {
     openActionModal(item.id, "delete");
   }, [item, openActionModal]);
 
-  if (!canDelete) return null;
+  if (!canDelete || (!isAdmin && !isMainReviewer)) return null;
 
   return <DropdownMenuItem onClick={handleDelete}>Delete</DropdownMenuItem>;
 });
@@ -357,11 +373,22 @@ const ButtonSendToLeader = React.memo(({ item }: { item: Entity }) => {
   const { openActionModal } = usePaperStore((state) => ({
     openActionModal: state.openActionModal,
   }));
+  const session = useSessionBoundStore((state: any) => state.session);
+  const isAdmin =
+    session?.user.role.name === RoleName.SUPER_ADMIN ||
+    session?.user.role.name === RoleName.ADMIN;
+  const isMainReviewer = session?.user.id === item.reviewerUserId;
+
   const handleSend = useCallback(() => {
     openActionModal(item.id, "send-paper");
   }, [item, openActionModal]);
 
-  if (!canSendToLeader || item.state !== StatePaper.RECEIVED) return null;
+  if (
+    !canSendToLeader ||
+    item.state !== StatePaper.RECEIVED ||
+    (!isAdmin && !isMainReviewer)
+  )
+    return null;
 
   return (
     <DropdownMenuItem onClick={handleSend}>Send to Leader</DropdownMenuItem>
@@ -376,11 +403,22 @@ const ButtonSendToReviewer = React.memo(({ item }: { item: Entity }) => {
   const { openActionModal } = usePaperStore((state) => ({
     openActionModal: state.openActionModal,
   }));
+  const session = useSessionBoundStore((state: any) => state.session);
+  const isAdmin =
+    session?.user.role.name === RoleName.SUPER_ADMIN ||
+    session?.user.role.name === RoleName.ADMIN;
+  const isMainReviewer = session?.user.id === item.reviewerUserId;
+
   const handleAssign = useCallback(() => {
     openActionModal(item.id, "assign-paper");
   }, [item, openActionModal]);
 
-  if (!canSendToReviewer || item.state !== StatePaper.SENT) return null;
+  if (
+    !canSendToReviewer ||
+    item.state !== StatePaper.SENT ||
+    (!isAdmin && !isMainReviewer)
+  )
+    return null;
 
   return <DropdownMenuItem onClick={handleAssign}>Assign</DropdownMenuItem>;
 });
@@ -393,11 +431,22 @@ const ButtonReview = React.memo(({ item }: { item: Entity }) => {
   const { openActionModal } = usePaperStore((state) => ({
     openActionModal: state.openActionModal,
   }));
+  const session = useSessionBoundStore((state: any) => state.session);
+  const isAdmin =
+    session?.user.role.name === RoleName.SUPER_ADMIN ||
+    session?.user.role.name === RoleName.ADMIN;
+  const isMainReviewer = session?.user.id === item.reviewerUserId;
+
   const handleReview = useCallback(() => {
     openActionModal(item.id, "review-paper");
   }, [item, openActionModal]);
 
-  if (!canReview || item.state !== StatePaper.ASSIGNED) return null;
+  if (
+    !canReview ||
+    item.state !== StatePaper.ASSIGNED ||
+    (!isAdmin && !isMainReviewer)
+  )
+    return null;
 
   return <DropdownMenuItem onClick={handleReview}>In review</DropdownMenuItem>;
 });
@@ -410,6 +459,16 @@ const ButtonRate = React.memo(({ item }: { item: Entity }) => {
   const { openActionModal } = usePaperStore((state) => ({
     openActionModal: state.openActionModal,
   }));
+  const session = useSessionBoundStore((state: any) => state.session);
+  const isAdmin =
+    session?.user.role.name === RoleName.SUPER_ADMIN ||
+    session?.user.role.name === RoleName.ADMIN;
+  const isMainReviewer = session?.user.id === item.reviewerUserId;
+  const isSupportReviewer =
+    session?.user.id === item.reviewerSupport1Id ||
+    session?.user.id === item.reviewerSupport2Id ||
+    session?.user.id === item.reviewerSupport3Id;
+
   const handleReview = useCallback(() => {
     openActionModal(item.id, "rate-paper");
   }, [item, openActionModal]);
@@ -419,10 +478,8 @@ const ButtonRate = React.memo(({ item }: { item: Entity }) => {
     !canReview ||
     (item.state !== StatePaper.UNDER_REVIEW &&
       item.state !== StatePaper.OBSERVED &&
-      item.state !== StatePaper.SUBSANATED) // <-- AGREGAR ESTADO OBSERVED Y SUBSANATED
-    // || Comentamos esto para que puedan seguir calificando
-    // (item.process === ProcessPaper.PRESELECCIONADO && item.phase1Score) ||
-    // (item.process === ProcessPaper.SELECCIONADO && item.phase2Score)
+      item.state !== StatePaper.SUBSANATED) || // <-- AGREGAR ESTADO OBSERVED Y SUBSANATED
+    (!isAdmin && !isMainReviewer && !isSupportReviewer)
   )
     return null;
 
@@ -437,6 +494,12 @@ const ButtonApprove = React.memo(({ item }: { item: Entity }) => {
   const { openActionModal } = usePaperStore((state) => ({
     openActionModal: state.openActionModal,
   }));
+  const session = useSessionBoundStore((state: any) => state.session);
+  const isAdmin =
+    session?.user.role.name === RoleName.SUPER_ADMIN ||
+    session?.user.role.name === RoleName.ADMIN;
+  const isMainReviewer = session?.user.id === item.reviewerUserId;
+
   const handleApprove = useCallback(() => {
     openActionModal(item.id, "approve-paper");
   }, [item, openActionModal]);
@@ -451,7 +514,9 @@ const ButtonApprove = React.memo(({ item }: { item: Entity }) => {
     // O si falta el score según el proceso
     (item.process === ProcessPaper.PRESELECCIONADO &&
       !item.phase1_general_rate) ||
-    (item.process === ProcessPaper.SELECCIONADO && !item.phase2_general_rate)
+    (item.process === ProcessPaper.SELECCIONADO &&
+      !item.phase2_general_rate) ||
+    (!isAdmin && !isMainReviewer)
   ) {
     return null;
   }
@@ -467,20 +532,22 @@ const ButtonViewComments = React.memo(({ item }: { item: Entity }) => {
     openCommentsDialog: state.openCommentsDialog,
     setSelected: state.setSelected,
   }));
+  const session = useSessionBoundStore((state: any) => state.session);
+  const isAdmin =
+    session?.user.role.name === RoleName.SUPER_ADMIN ||
+    session?.user.role.name === RoleName.ADMIN;
+  const isMainReviewer = session?.user.id === item.reviewerUserId;
+  const isSupportReviewer =
+    session?.user.id === item.reviewerSupport1Id ||
+    session?.user.id === item.reviewerSupport2Id ||
+    session?.user.id === item.reviewerSupport3Id;
+
   const handleViewComments = useCallback(() => {
     openCommentsDialog(item.id);
     setSelected(item);
   }, [item, openCommentsDialog, setSelected]);
 
-  /* if (
-    (item.state !== StatePaper.UNDER_REVIEW &&
-      item.state !== StatePaper.OBSERVED &&
-      item.state !== StatePaper.SUBSANATED) ||
-    (item.process === ProcessPaper.PRESELECCIONADO && !item.phase1Score) ||
-    (item.process === ProcessPaper.SELECCIONADO && !item.phase2Score)
-  ) {
-    return null;
-  } */
+  if (!isAdmin && !isMainReviewer && !isSupportReviewer) return null;
 
   return (
     <DropdownMenuItem onClick={handleViewComments}>
@@ -498,6 +565,12 @@ const ButtonDismiss = React.memo(({ item }: { item: Entity }) => {
   const { openActionModal } = usePaperStore((state) => ({
     openActionModal: state.openActionModal,
   }));
+  const session = useSessionBoundStore((state: any) => state.session);
+  const isAdmin =
+    session?.user.role.name === RoleName.SUPER_ADMIN ||
+    session?.user.role.name === RoleName.ADMIN;
+  const isMainReviewer = session?.user.id === item.reviewerUserId;
+
   const handleDismiss = useCallback(() => {
     openActionModal(item.id, "dismiss-paper");
   }, [item, openActionModal]);
@@ -505,7 +578,8 @@ const ButtonDismiss = React.memo(({ item }: { item: Entity }) => {
   if (
     !canDismiss ||
     item.state === StatePaper.DISMISSED ||
-    item.state === StatePaper.APPROVED
+    item.state === StatePaper.APPROVED ||
+    (!isAdmin && !isMainReviewer)
   )
     return null;
 
@@ -520,6 +594,11 @@ const ButtonObserve = React.memo(({ item }: { item: Entity }) => {
   const { openActionModal } = usePaperStore((state) => ({
     openActionModal: state.openActionModal,
   }));
+  const session = useSessionBoundStore((state: any) => state.session);
+  const isAdmin =
+    session?.user.role.name === RoleName.SUPER_ADMIN ||
+    session?.user.role.name === RoleName.ADMIN;
+  const isMainReviewer = session?.user.id === item.reviewerUserId;
 
   const handleObserve = useCallback(() => {
     openActionModal(item.id, "observe-paper");
@@ -533,7 +612,8 @@ const ButtonObserve = React.memo(({ item }: { item: Entity }) => {
     item.state === StatePaper.DISMISSED ||
     item.state === StatePaper.OBSERVED || // <-- AGREGADO: Si ya está observado, no mostramos "Observe" (porque ya lo está)
     item.state === StatePaper.RECEIVED ||
-    item.state === StatePaper.SENT
+    item.state === StatePaper.SENT ||
+    (!isAdmin && !isMainReviewer)
   ) {
     return null;
   }
@@ -550,6 +630,11 @@ const ButtonReassign = React.memo(({ item }: { item: Entity }) => {
   const { openActionModal } = usePaperStore((state) => ({
     openActionModal: state.openActionModal,
   }));
+  const session = useSessionBoundStore((state: any) => state.session);
+  const isAdmin =
+    session?.user.role.name === RoleName.SUPER_ADMIN ||
+    session?.user.role.name === RoleName.ADMIN;
+  const isMainReviewer = session?.user.id === item.reviewerUserId;
 
   const handleReassign = useCallback(() => {
     // Si ya tiene un revisor, abrimos el modal de asignación de revisor
@@ -559,7 +644,11 @@ const ButtonReassign = React.memo(({ item }: { item: Entity }) => {
 
   // Regla: Se puede reasignar si ya está en estado ASSIGNED
   // (es decir, ya tiene a alguien pero aún no empieza la revisión)
-  if (!canReassign || item.state !== StatePaper.ASSIGNED) {
+  if (
+    !canReassign ||
+    item.state !== StatePaper.ASSIGNED ||
+    (!isAdmin && !isMainReviewer)
+  ) {
     return null;
   }
 
