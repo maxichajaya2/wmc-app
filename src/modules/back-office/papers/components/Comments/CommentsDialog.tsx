@@ -9,6 +9,7 @@ import {
   DialogTitle,
   Input,
   ScrollArea,
+  Separator,
 } from "@/components";
 import { formatDate } from "@/utils/format-date";
 import {
@@ -17,9 +18,11 @@ import {
   Trash2,
   ExternalLink,
   Paperclip,
+  FileText,
+  Eye,
 } from "lucide-react";
 import mammoth from "mammoth";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import { usePaperStore } from "../../store/papers.store";
 import { useCommentPapers } from "./useCommentPapers";
 import ConfirmDeleteComment from "./ConfirmDeleteComment";
@@ -30,10 +33,9 @@ function CommentsDialog() {
     closeCommentsDialog,
     comments,
     loading,
-    errors,
     register,
     handleSubmit,
-    onSubmit,
+    onSubmit, // Función del hook que conecta con el servicio
     handleEdit,
     handleFileUpload,
     uploading,
@@ -47,30 +49,42 @@ function CommentsDialog() {
   const selected = usePaperStore((state) => state.selected);
   const [htmlContent, setHtmlContent] = useState<string>("");
   const [converting, setConverting] = useState(false);
+  
+  // ESTADOS DE CONTROL DE VERSIÓN
+  const [viewingVersion, setViewingVersion] = useState<string>("Actual");
+  const [currentVersionKey, setCurrentVersionKey] = useState<string>("Actual");
+  const [currentDocUrl, setCurrentDocUrl] = useState<string>("");
+  
   const docContainerRef = useRef<HTMLDivElement>(null);
 
+  // EFECTO PRINCIPAL: Carga inicial del documento
   useEffect(() => {
-    if (isOpenCommentsDialog) {
-      if (selected?.fullFileUrl) {
-        loadDocument(selected.fullFileUrl);
-      } else if (selected?.file) {
-        loadDocument(selected.file);
+    if (isOpenCommentsDialog && selected) {
+      const initialUrl = selected.fullFileUrl || selected.file;
+      if (initialUrl) {
+        setViewingVersion("Actual");
+        setCurrentVersionKey("Actual");
+        setCurrentDocUrl(initialUrl); 
+        loadDocument(initialUrl);
       }
     } else {
       setHtmlContent("");
       setSelectedBlockId(null);
+      setCurrentDocUrl("");
     }
-  }, [isOpenCommentsDialog, selected, setSelectedBlockId]);
+  }, [isOpenCommentsDialog, selected?.id]);
 
-  // Effect to handle paragraph highlighting
+  // FILTRADO DE COMENTARIOS: Solo muestra los de la versión activa en el visor
+  const filteredComments = useMemo(() => {
+    return comments.filter((c: any) => c.documentVersion === currentVersionKey);
+  }, [comments, currentVersionKey]);
+
+  // EFECTO DE RESALTADO (HIGHLIGHT)
   useEffect(() => {
     if (!docContainerRef.current) return;
-
-    // Remove previous highlighting
     const prev = docContainerRef.current.querySelector(".selected-paragraph");
     if (prev) prev.classList.remove("selected-paragraph");
 
-    // Add new highlighting
     if (selectedBlockId) {
       const current = docContainerRef.current.querySelector(
         `[data-block="${selectedBlockId}"]`,
@@ -84,11 +98,10 @@ function CommentsDialog() {
   const loadDocument = async (url: string) => {
     setConverting(true);
     try {
-      const response = await fetch(url);
+      const response = await fetch(`${url}?t=${new Date().getTime()}`);
       const arrayBuffer = await response.arrayBuffer();
       const result = await mammoth.convertToHtml({ arrayBuffer });
 
-      // Post-process to add data-block IDs
       const parser = new DOMParser();
       const doc = parser.parseFromString(result.value, "text/html");
       const paragraphs = doc.querySelectorAll("p");
@@ -103,9 +116,7 @@ function CommentsDialog() {
       setHtmlContent(doc.body.innerHTML);
     } catch (error) {
       console.error("Error converting document:", error);
-      setHtmlContent(
-        "<p class='text-red-500'>Error loading document. Please check if the file URL is accessible.</p>",
-      );
+      setHtmlContent("<p class='text-red-500 font-bold p-4'>Error al cargar el documento.</p>");
     } finally {
       setConverting(false);
     }
@@ -115,301 +126,205 @@ function CommentsDialog() {
     const target = event.target as HTMLElement;
     const paragraph = target.closest("p");
     if (!paragraph) return;
-
     const blockId = paragraph.getAttribute("data-block");
     if (!blockId) return;
-
     setSelectedBlockId(Number(blockId));
   };
 
   const scrollToBlock = (blockId?: number) => {
     if (!blockId) return;
-    const element = docContainerRef.current?.querySelector(
-      `[data-block="${blockId}"]`,
-    );
+    const element = docContainerRef.current?.querySelector(`[data-block="${blockId}"]`);
     if (element) {
       element.scrollIntoView({ behavior: "smooth", block: "center" });
       setSelectedBlockId(blockId);
     }
   };
 
+  /**
+   * FUNCIÓN MEDIADORA DE ENVÍO
+   * Evita el error 400 asegurando que documentVersion sea un string válido.
+   */
+  const handleOnSubmit = (data: any) => {
+    const payload = { 
+      ...data, 
+      documentUrl: currentDocUrl ,
+     documentVersion: currentVersionKey || "Actual"
+    };
+    onSubmit(payload);
+  };
+
+  // SUB-COMPONENTE PARA LINKS DE VERSIONES
+  const VersionLink = ({ label, url, versionKey }: { label: string; url?: string | null; versionKey: string }) => {
+    if (!url) return null;
+    
+    const versionCommentsCount = comments.filter((c: any) => c.documentVersion === versionKey).length;
+    const isActive = currentVersionKey === versionKey;
+
+    return (
+      <div className={`flex items-center justify-between p-2 rounded-lg border transition-all ${isActive ? "bg-blue-50 border-blue-300 ring-1 ring-blue-100" : "bg-white border-gray-100"}`}>
+        <div className="flex flex-col">
+          <span className="text-[11px] font-medium text-gray-700">{label}</span>
+          {versionCommentsCount > 0 && (
+            <span className="text-[9px] text-blue-500 font-bold">{versionCommentsCount} comentarios</span>
+          )}
+        </div>
+        <div className="flex gap-1">
+          <Button
+            size="icon"
+            variant={isActive ? "default" : "ghost"}
+            className={`h-6 w-6 ${isActive ? "bg-blue-600" : "text-blue-600"}`}
+            onClick={() => {
+              setViewingVersion(label);
+              setCurrentVersionKey(versionKey);
+              setCurrentDocUrl(url);
+              loadDocument(url);
+              setSelectedBlockId(null);
+            }}
+          >
+            <Eye size={12} />
+          </Button>
+          <Button size="icon" variant="ghost" className="h-6 w-6 text-gray-400" onClick={() => window.open(url, "_blank")}>
+            <ExternalLink size={12} />
+          </Button>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <>
       <style>{`
-        .selected-paragraph {
-          background-color: #fff3b0 !important;
-          transition: background 0.2s ease;
-          border-left: 4px solid #eab308 !important;
-          padding-left: 8px !important;
-        }
-        .document-viewer .doc-p:hover {
-          background-color: #f3f4f6;
-        }
-        .document-viewer img {
-          max-width: 100%;
-          height: auto;
-          margin: 10px 0;
-        }
+        .selected-paragraph { background-color: #fff3b0 !important; transition: background 0.2s ease; border-left: 4px solid #eab308 !important; padding-left: 8px !important; }
+        .document-viewer .doc-p:hover { background-color: #f3f4f6; }
       `}</style>
+
       <Dialog open={isOpenCommentsDialog} onOpenChange={closeCommentsDialog}>
-        <DialogContent
-          className="!max-w-[98%] !h-[90vh] flex flex-col"
-          onPointerDownOutside={(e) => {
-            e.preventDefault();
-          }}
-        >
-          <DialogHeader>
+        <DialogContent className="!max-w-[98%] !h-[95vh] flex flex-col p-4" onPointerDownOutside={(e) => e.preventDefault()}>
+          <DialogHeader className="pb-2 border-b">
             <DialogTitle className="flex items-center gap-2">
-              <span className="text-blue-600">Comments</span>
-              <span className="text-gray-400 font-normal">|</span>
-              <span className="truncate max-w-[50vw]">
-                {selected?.title || "Document View"}
-              </span>
+              <span className="text-blue-600 font-bold">Review Dashboard</span>
+              <span className="text-gray-300">|</span>
+              <span className="truncate max-w-[40vw] text-gray-600 font-medium text-sm">{selected?.title}</span>
+              <div className="ml-auto flex items-center gap-2 bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
+                <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+                <span className="text-[10px] font-bold text-blue-700 uppercase">Versión: {viewingVersion}</span>
+              </div>
             </DialogTitle>
           </DialogHeader>
+
           <div className="flex flex-col md:flex-row gap-4 flex-grow overflow-hidden pt-4">
-            <div className="w-full flex md:flex-1 border rounded-md p-6 bg-white overflow-y-auto document-viewer shadow-inner h-[200px] md:min-h-full">
-              {converting ? (
-                <div className="flex flex-col items-center justify-center h-full gap-2">
-                  <LoaderCircle
-                    className="animate-spin text-blue-500"
-                    size={48}
-                  />
-                  <p className="text-gray-500 font-medium">
-                    Converting document...
-                  </p>
-                </div>
-              ) : htmlContent ? (
-                <div
-                  ref={docContainerRef}
-                  className="prose prose-sm max-w-none"
-                  dangerouslySetInnerHTML={{ __html: htmlContent }}
-                  onClick={handleParagraphClick}
-                />
-              ) : (
-                <div className="flex items-center justify-center h-full text-gray-400">
-                  No document content available.
-                </div>
-              )}
-            </div>
-            <div className="md:w-1/3 xl:w-[450px] flex flex-col gap-4 overflow-hidden border rounded-md bg-gray-100/30 p-1">
-              <form
-                onSubmit={handleSubmit(onSubmit)}
-                className="p-4 bg-white border-b shrink-0 shadow-sm"
-              >
-                <div className="flex flex-col gap-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-bold text-gray-700 flex items-center gap-2">
-                      <Pencil size={14} className="text-blue-500" />
-                      {editingCommentId ? "Edit Comment" : "Add Comment"}
-                    </span>
-                    {selectedBlockId && (
-                      <span className="text-[10px] uppercase font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
-                        Paragraph #{selectedBlockId}
-                      </span>
-                    )}
-                  </div>
-
-                  <Input
-                    {...register("comentary")}
-                    placeholder={
-                      selectedBlockId
-                        ? `Comment on paragraph ${selectedBlockId}...`
-                        : "Write a general comment..."
-                    }
-                    className="bg-gray-50/50 border-gray-200 focus:bg-white transition-all"
-                  />
-
-                  <input
-                    type="hidden"
-                    {...register("blockId", { valueAsNumber: true })}
-                  />
-
-                  <div className="flex flex-col gap-2">
-                    <div className="flex items-center gap-2">
-                      <div className="relative flex-1 group">
-                        <Input
-                          type="file"
-                          onChange={(e) => handleFileUpload(e)}
-                          disabled={uploading}
-                          className="opacity-0 absolute inset-0 w-full h-full cursor-pointer z-10"
-                        />
-                        <div className="flex items-center gap-2 text-[10px] text-gray-500 border border-dashed border-gray-300 rounded px-2 py-1 bg-gray-50 group-hover:bg-gray-100 transition-colors">
-                          <Paperclip size={12} />
-                          <span>
-                            {watch("fileUrl") ? "Change file" : "Attach file"}
-                          </span>
-                        </div>
-                      </div>
-                      {selectedBlockId && (
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setSelectedBlockId(null)}
-                          className="h-7 text-[10px] text-gray-400 hover:text-red-500"
-                        >
-                          Clear Selection
-                        </Button>
-                      )}
-                    </div>
-
-                    {uploading && (
-                      <div className="flex items-center space-x-2 text-xs">
-                        <LoaderCircle
-                          size={14}
-                          className="animate-spin text-blue-500"
-                        />
-                        <span className="text-blue-500">Uploading file...</span>
-                      </div>
-                    )}
-
-                    {watch("fileUrl") && (
-                      <div className="text-[10px] bg-blue-50 p-2 rounded border border-blue-100 flex items-center justify-between">
-                        <div className="flex items-center gap-2 text-blue-700 truncate mr-2">
-                          <Paperclip size={10} />
-                          <span className="truncate">File attached</span>
-                        </div>
-                        <a
-                          href={watch("fileUrl") || "#"}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-blue-600 font-bold hover:underline flex items-center gap-1 shrink-0"
-                        >
-                          View <ExternalLink size={10} />
-                        </a>
-                      </div>
-                    )}
-                  </div>
-
-                  <Button
-                    type="submit"
-                    disabled={loading || uploading}
-                    className="w-full h-9 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 shadow-sm transition-all"
-                  >
-                    {loading ? (
-                      <LoaderCircle className="h-4 w-4 animate-spin" />
-                    ) : editingCommentId ? (
-                      "Update Comment"
-                    ) : (
-                      "Post Comment"
-                    )}
-                  </Button>
-                </div>
-                {errors.comentary && (
-                  <p className="text-[10px] text-red-500 mt-2 italic">
-                    {errors.comentary.message}
-                  </p>
-                )}
-              </form>
-
-              <ScrollArea className="flex-grow p-3">
-                <div className="flex items-center justify-between mb-4 px-1">
-                  <h3 className="font-bold text-gray-800 text-xs uppercase tracking-wider">
-                    Discussion
-                  </h3>
-                  <span className="text-[10px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full font-bold">
-                    {comments.length}
-                  </span>
-                </div>
-
-                {comments.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-12 text-gray-400">
-                    <p className="text-xs">No comments yet</p>
+            {/* IZQUIERDA: VISOR DE DOCUMENTO */}
+            <div className="w-full flex md:flex-1 border rounded-xl bg-white overflow-hidden shadow-sm flex-col">
+              <div className="bg-gray-50 border-b p-2 flex justify-between items-center px-4">
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Visor</span>
+                <Button variant="ghost" size="sm" className="h-6 text-[10px] text-blue-600" onClick={() => currentDocUrl && window.open(currentDocUrl, "_blank")}>
+                  <ExternalLink size={12} className="mr-1" /> Ver PDF Externo
+                </Button>
+              </div>
+              <ScrollArea className="flex-grow p-8 document-viewer bg-[#fdfdfd]">
+                {converting ? (
+                  <div className="flex flex-col items-center justify-center h-full gap-3 py-20">
+                    <LoaderCircle className="animate-spin text-blue-500" size={40} />
+                    <p className="text-sm text-gray-400">Cargando contenido...</p>
                   </div>
                 ) : (
-                  <div className="space-y-3">
-                    {comments.map((comment) => (
-                      <div
-                        key={comment.id}
-                        className={`group p-3 rounded-lg border transition-all duration-200 cursor-pointer ${
-                          comment.blockId === selectedBlockId
-                            ? "bg-amber-50/70 border-amber-200 shadow-sm"
-                            : "bg-white border-gray-100 hover:border-blue-200 hover:shadow-xs"
-                        }`}
-                        onClick={() => scrollToBlock(comment.blockId)}
-                      >
-                        <div className="flex justify-between items-start mb-2">
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <span className="font-bold text-xs text-blue-900 truncate">
-                                {comment.user?.name}
-                              </span>
-                              {comment.blockId && (
-                                <span className="text-[9px] bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded font-bold border border-blue-100">
-                                  P#{comment.blockId}
-                                </span>
-                              )}
-                            </div>
-                            <span className="text-[9px] text-gray-400 block mt-0.5">
-                              {formatDate(comment.createdAt)}
-                            </span>
-                          </div>
-
-                          <div className="flex opacity-0 group-hover:opacity-100 transition-opacity">
-                            <Button
-                              variant="ghost"
-                              type="button"
-                              size="icon"
-                              className="h-7 w-7 text-gray-400 hover:text-blue-600 hover:bg-blue-50"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleEdit(comment);
-                              }}
-                              disabled={loading}
-                            >
-                              <Pencil className="h-3.5 w-3.5" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              type="button"
-                              className="h-7 w-7 text-gray-400 hover:text-red-500 hover:bg-red-50"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                openConfirmDeleteComment(comment.id);
-                              }}
-                              disabled={loading}
-                            >
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </Button>
-                          </div>
-                        </div>
-
-                        <p className="text-xs text-gray-700 leading-relaxed whitespace-pre-wrap">
-                          {comment.comentary}
-                        </p>
-
-                        {comment.fileUrl && (
-                          <div className="mt-3 pt-2 border-t border-gray-50 flex justify-end">
-                            <a
-                              href={comment.fileUrl || "#"}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="inline-flex items-center gap-1.5 text-[10px] font-bold text-blue-600 hover:text-blue-800 transition-colors"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <span>View attachment</span>
-                              <ExternalLink size={10} />
-                            </a>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
+                  <div ref={docContainerRef} className="prose prose-sm max-w-none w-full" dangerouslySetInnerHTML={{ __html: htmlContent }} onClick={handleParagraphClick} />
                 )}
               </ScrollArea>
             </div>
+
+            {/* DERECHA: HISTORIAL Y FEEDBACK */}
+            <div className="md:w-[400px] xl:w-[460px] flex flex-col gap-3 overflow-y-auto">
+              {/* SECCIÓN DE VERSIONES */}
+              <div className="bg-white border rounded-xl p-4 shadow-sm space-y-4">
+                <h3 className="text-sm font-bold flex items-center gap-2 text-slate-700">
+                  <FileText className="w-4 h-4 text-blue-600" /> Historial de Archivos
+                </h3>
+                <div className="grid grid-cols-1 gap-4">
+                  <div className="space-y-2">
+                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Fase 1 (Abstract)</p>
+                    <VersionLink label="P1 Actual" url={selected?.file} versionKey="Actual" />
+                    <VersionLink label="P1 V1" url={selected?.fileVersion1} versionKey="V1" />
+                    <VersionLink label="P1 V2" url={selected?.fileVersion2} versionKey="V2" />
+                  </div>
+                  <Separator />
+                  <div className="space-y-2">
+                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Fase 2 (Trabajo Final)</p>
+                    <VersionLink label="P2 Actual" url={selected?.fullFileUrl} versionKey="Actual" />
+                    <VersionLink label="P2 V1" url={selected?.fullFileUrlVersion1} versionKey="V1" />
+                    <VersionLink label="P2 V2" url={selected?.fullFileUrlVersion2} versionKey="V2" />
+                  </div>
+                </div>
+              </div>
+
+              {/* FORMULARIO DE COMENTARIOS */}
+              <div className="bg-white border rounded-xl p-4 shadow-sm">
+                <form onSubmit={handleSubmit(handleOnSubmit)} className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-gray-700 uppercase">{editingCommentId ? "Actualizar Feedback" : "Agregar Feedback"}</span>
+                    {selectedBlockId && <span className="text-[9px] font-black text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">PÁRRAFO #{selectedBlockId}</span>}
+                  </div>
+                  <Input {...register("comentary")} placeholder={selectedBlockId ? "Feedback específico..." : "Comentario general..."} className="text-xs h-10" />
+                  <div className="flex items-center gap-2">
+                    <div className="relative flex-1 group">
+                      <Input type="file" onChange={handleFileUpload} disabled={uploading} className="opacity-0 absolute inset-0 z-10 cursor-pointer" />
+                      <div className="flex items-center gap-2 text-[10px] text-gray-500 border border-dashed rounded-lg px-3 py-2 bg-gray-50 group-hover:bg-blue-50 transition-all">
+                        <Paperclip size={12} className={watch("fileUrl") ? "text-blue-500" : ""} />
+                        <span>{watch("fileUrl") ? "Archivo Adjunto" : "Adjuntar evidencia"}</span>
+                      </div>
+                    </div>
+                    {selectedBlockId && <Button type="button" variant="ghost" size="sm" onClick={() => setSelectedBlockId(null)} className="h-9 text-[10px]">Limpiar</Button>}
+                  </div>
+                  <Button type="submit" disabled={loading || uploading} className="w-full h-10 bg-blue-600 hover:bg-blue-700 text-xs font-bold">
+                    {loading ? <LoaderCircle className="animate-spin h-4 w-4" /> : "Enviar Comentario"}
+                  </Button>
+                </form>
+              </div>
+
+              {/* LISTA FILTRADA DE COMENTARIOS */}
+              <div className="bg-white border rounded-xl flex-grow flex flex-col shadow-sm min-h-[300px]">
+                <div className="p-3 border-b bg-gray-50/50 flex justify-between items-center">
+                  <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Discusión ({currentVersionKey})</h3>
+                  <span className="bg-blue-100 text-blue-600 text-[10px] px-2 py-0.5 rounded-full font-bold">{filteredComments.length}</span>
+                </div>
+                <ScrollArea className="flex-grow p-3">
+                  <div className="space-y-4">
+                    {filteredComments.length === 0 ? (
+                      <div className="text-center py-10 text-gray-400 text-xs italic">No hay comentarios en esta versión.</div>
+                    ) : (
+                      filteredComments.map((comment: any) => (
+                        <div key={comment.id} className={`group p-3 rounded-xl border transition-all cursor-pointer ${comment.blockId === selectedBlockId ? "bg-amber-50 border-amber-200 ring-1 ring-amber-100" : "bg-white border-gray-100 hover:border-gray-200"}`} onClick={() => scrollToBlock(comment.blockId)}>
+                          <div className="flex justify-between items-start mb-1">
+                            <div className="min-w-0">
+                              <span className="font-bold text-[11px] text-blue-900 block truncate">{comment.user?.name}</span>
+                              <span className="text-[8px] text-gray-400 uppercase">{formatDate(comment.createdAt)}</span>
+                            </div>
+                            <div className="flex opacity-0 group-hover:opacity-100 transition-opacity">
+                              <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => { e.stopPropagation(); handleEdit(comment); }}>
+                                <Pencil className="h-3 w-3 text-gray-400" />
+                              </Button>
+                              <Button variant="ghost" size="icon" className="h-6 w-6" onClick={(e) => { e.stopPropagation(); openConfirmDeleteComment(comment.id); }}>
+                                <Trash2 className="h-3 w-3 text-gray-400" />
+                              </Button>
+                            </div>
+                          </div>
+                          <p className="text-[12px] text-gray-700 leading-snug mt-1">{comment.comentary}</p>
+                          {comment.fileUrl && (
+                            <a href={comment.fileUrl} target="_blank" rel="noreferrer" className="mt-2 inline-flex items-center gap-1 text-[9px] font-bold text-blue-600 hover:bg-blue-50 p-1 px-2 rounded-md border border-blue-100">
+                              <Paperclip size={10} /> Ver evidencia
+                            </a>
+                          )}
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </ScrollArea>
+              </div>
+            </div>
           </div>
-          <DialogFooter className="shrink-0 mt-4 border-t pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={closeCommentsDialog}
-              className="px-8"
-            >
-              Close
-            </Button>
+
+          <DialogFooter className="mt-4 pt-4 border-t">
+            <Button type="button" variant="outline" onClick={closeCommentsDialog} className="px-10 rounded-full text-xs font-bold">Finalizar Sesión de Revisión</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

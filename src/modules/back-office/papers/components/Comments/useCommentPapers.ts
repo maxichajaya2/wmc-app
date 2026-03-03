@@ -12,6 +12,7 @@ const commentSchema = z.object({
   comentary: z.string().min(1, "El comentario no puede estar vacío"),
   fileUrl: z.string().optional(),
   blockId: z.number().optional(),
+  documentVersion: z.string().optional(),
 });
 
 type CommentFormData = z.infer<typeof commentSchema>;
@@ -60,6 +61,7 @@ export const useCommentPapers = () => {
       comentary: "",
       fileUrl: "",
       blockId: selectedBlockId || undefined,
+      documentVersion: "Actual",
     },
   });
 
@@ -107,19 +109,67 @@ export const useCommentPapers = () => {
   };
   /* END LOGIC FILE UPLOAD */
 
-  const onSubmit = async (data: CommentFormData) => {
+  // const onSubmit = async (data: CommentFormData) => {
+  //   if (!selected || !currentUser) return;
+  //   setLoading(true);
+  //   try {
+  //     if (editingCommentId) {
+  //       const updatedComment = await PaperService.updateComment(
+  //         selected.id,
+  //         editingCommentId,
+  //         {
+  //           comentary: data.comentary,
+  //           fileUrl: data.fileUrl || undefined,
+  //           blockId: data.blockId,
+            
+            
+  //         },
+  //       );
+  //       setComments(
+  //         comments.map((comment) =>
+  //           comment.id === updatedComment.id ? updatedComment : comment,
+  //         ),
+  //       );
+  //       setEditingCommentId(null);
+  //     } else {
+  //       const newComment = await PaperService.createComment(selected.id, {
+  //         comentary: data.comentary,
+  //         fileUrl: data.fileUrl || undefined,
+  //         blockId: data.blockId,
+  //       });
+  //       setComments([...comments, newComment]);
+  //     }
+  //     reset({
+  //       comentary: "",
+  //       fileUrl: "",
+  //       blockId: undefined,
+  //     });
+  //     setSelectedBlockId(null); // Clear selected block after submission
+  //   } catch (error) {
+  //     console.error("Error creating/updating comment:", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  const onSubmit = async (data: CommentFormData & { documentVersion?: string }) => {
     if (!selected || !currentUser) return;
     setLoading(true);
     try {
+      // 1. Creamos el objeto que vamos a enviar (el payload)
+      const payload = {
+        comentary: data.comentary,
+        fileUrl: data.fileUrl || undefined,
+        blockId: data.blockId,
+        documentVersion: String(data.documentVersion || "Actual"), // <-- ESTO ARREGLA EL ERROR 400
+      };
+
       if (editingCommentId) {
+        // 2. Para actualizar el comentario
         const updatedComment = await PaperService.updateComment(
           selected.id,
           editingCommentId,
-          {
-            comentary: data.comentary,
-            fileUrl: data.fileUrl || undefined,
-            blockId: data.blockId,
-          },
+          payload // Enviamos el payload con la versión
         );
         setComments(
           comments.map((comment) =>
@@ -128,26 +178,30 @@ export const useCommentPapers = () => {
         );
         setEditingCommentId(null);
       } else {
-        const newComment = await PaperService.createComment(selected.id, {
-          comentary: data.comentary,
-          fileUrl: data.fileUrl || undefined,
-          blockId: data.blockId,
-        });
+        // 3. Para crear un nuevo comentario
+        const newComment = await PaperService.createComment(
+          selected.id, 
+          payload // Enviamos el payload con la versión
+        );
         setComments([...comments, newComment]);
       }
+
+      // 4. Limpiamos el formulario
       reset({
         comentary: "",
         fileUrl: "",
         blockId: undefined,
+        // @ts-ignore (por si el tipo de reset no reconoce el campo aún)
+        documentVersion: "Actual", 
       });
-      setSelectedBlockId(null); // Clear selected block after submission
+      setSelectedBlockId(null); 
     } catch (error) {
       console.error("Error creating/updating comment:", error);
     } finally {
       setLoading(false);
     }
   };
-
+  
   const handleEdit = (comment: Commentary) => {
     reset({
       comentary: comment.comentary,

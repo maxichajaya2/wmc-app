@@ -457,9 +457,9 @@ const ButtonViewComments = React.memo(({ item }: { item: Entity }) => {
 
   if (
     // Si el estado NO es ninguno de estos tres, se oculta (return null)
-    (item.state !== StatePaper.UNDER_REVIEW &&
-      item.state !== StatePaper.OBSERVED &&
-      item.state !== StatePaper.SUBSANATED) ||
+    // (item.state !== StatePaper.UNDER_REVIEW &&
+    //   item.state !== StatePaper.OBSERVED &&
+    //   item.state !== StatePaper.SUBSANATED) ||
     // O si falta el score según el proceso
     (item.process === ProcessPaper.PRESELECCIONADO && !item.phase1Score) ||
     (item.process === ProcessPaper.SELECCIONADO && !item.phase2Score)

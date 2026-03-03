@@ -31,10 +31,11 @@ import {
   Separator,
   Switch,
   toast,
+ 
 } from "@/components";
 import { TypographyH4 } from "@/shared/typography";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Check, ChevronsUpDown, LoaderCircle } from "lucide-react";
+import { Check, ChevronsUpDown, LoaderCircle , FileText, ExternalLink} from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
 import Creatable from "react-select/creatable";
 import { useEffect, useMemo, useState } from "react";
@@ -1248,6 +1249,31 @@ function PapersDialog() {
                   </div>
                 )}
                 <Separator />
+                {/* --- SECCIÓN DE HISTORIAL DE ARCHIVOS --- */}
+                {(selected?.fileVersion1 || selected?.fullFileUrlVersion1) && (
+                  <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                    <h3 className="text-lg font-bold flex items-center gap-2 mb-4 text-slate-700">
+                      <FileText className="w-5 h-5 text-blue-600" />
+                      Document History
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* FASE 1 */}
+                      <div className="space-y-2">
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Phase 1 Versions</p>
+                        <VersionLink label="Current" url={selected.file} isMain />
+                        <VersionLink label="Version 1" url={selected.fileVersion1} />
+                        <VersionLink label="Version 2" url={selected.fileVersion2} />
+                      </div>
+                      {/* FASE 2 */}
+                      <div className="space-y-2">
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Phase 2 Versions</p>
+                        <VersionLink label="Current Full Paper" url={selected.fullFileUrl} isMain />
+                        <VersionLink label="Version 1" url={selected.fullFileUrlVersion1} />
+                        <VersionLink label="Version 2" url={selected.fullFileUrlVersion2} />
+                      </div>
+                    </div>
+                  </div>
+                )}
                 <h1 className="text-xl font-bold">Authors</h1>
                 {fields.map((field, index) => (
                   <AuthorForm
@@ -1749,4 +1775,22 @@ function PapersDialog() {
   );
 }
 
+const VersionLink = ({ label, url, isMain }: { label: string, url: string | undefined | null, isMain?: boolean }) => {
+  if (!url) return null;
+  return (
+    <a 
+      href={url} 
+      target="_blank" 
+      rel="noopener noreferrer"
+      className={`flex items-center justify-between p-2 rounded-md border transition-colors ${
+        isMain 
+        ? "bg-blue-50 border-blue-200 hover:bg-blue-100 text-blue-700 font-medium" 
+        : "bg-white border-gray-200 hover:bg-gray-50 text-gray-600 shadow-sm"
+      }`}
+    >
+      <span className="text-xs uppercase font-bold">{label}</span>
+      <ExternalLink className="w-3 h-3" />
+    </a>
+  );
+};
 export default PapersDialog;
