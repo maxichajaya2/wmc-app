@@ -121,10 +121,7 @@ function PapersDialog() {
         return "Technical Paper";
     }
   };
-
   const userWeb = useAuthIntranetStore((state) => state.user);
-
-  if (!userWeb) return <Loader />;
 
   const form = useForm<PaperFormData>({
     resolver: zodResolver(paperSchema),
@@ -389,12 +386,13 @@ function PapersDialog() {
   }, [form.watch("categoryId")]);
   // END LOGIC CATEGORIES
 
-  // Reset form when dialog is closed
   useEffect(() => {
     return () => {
       form.reset();
     };
   }, []);
+
+  if (!userWeb) return <Loader />;
 
   function onSubmit(data: PaperFormData) {
     if (action === "create") {
@@ -1111,116 +1109,226 @@ function PapersDialog() {
                 />
                 <Separator />
                 {/* TODO: se agrego && false porque el cliente ya no quiere mostrar estos datos */}
-                {selected?.phase1Score && false && (
-                  <div className="flex-col gap-2 hidden">
-                    <h1 className="text-xl font-bold">Puntuación: FASE 1</h1>
-                    <div className="flex gap-3">
-                      <div className="w-full">
-                        <Label className="text-sm">Impacto</Label>
-                        <Input
-                          name="score1"
-                          readOnly
-                          value={selected?.phase1Score1}
-                          type="number"
-                          placeholder="Impacto"
-                          className="w-full"
-                        />
-                      </div>
-                      <div className="w-full">
-                        <Label className="text-sm">Calidad</Label>
-                        <Input
-                          name="score2"
-                          readOnly
-                          value={selected?.phase1Score2}
-                          type="number"
-                          placeholder="Calidad"
-                          className="w-full"
-                        />
-                      </div>
-                      <div className="w-full">
-                        <Label className="text-sm">Innovación</Label>
-                        <Input
-                          name="score3"
-                          readOnly
-                          value={selected?.phase1Score3}
-                          type="number"
-                          placeholder="Innovación"
-                          className="w-full"
-                        />
-                      </div>
+                {(selected?.phase1_general_rate ||
+                  selected?.p1_m_rate ||
+                  selected?.p1_s1_rate ||
+                  selected?.p1_s2_rate ||
+                  selected?.p1_s3_rate) && (
+                  <div className="flex flex-col gap-4">
+                    <h1 className="text-xl font-bold">Scores: PHASE 1</h1>
 
-                      <div className="flex flex-row gap-3 w-full">
-                        <Separator orientation="vertical" />
-                        <div className="w-full">
-                          <Label className="text-sm">Puntuación Final</Label>
-                          <Input
-                            name="scoreFinal"
-                            readOnly
-                            value={selected?.phase1Score}
-                            type="number"
-                            placeholder="Score 3"
-                            className="w-full"
-                          />
-                        </div>
+                    {[
+                      {
+                        key: "m",
+                        label: "Main Reviewer",
+                        user: selected.reviewerUser,
+                      },
+                      {
+                        key: "s1",
+                        label: "Support 1",
+                        user: selected.reviewerSupport1,
+                      },
+                      {
+                        key: "s2",
+                        label: "Support 2",
+                        user: selected.reviewerSupport2,
+                      },
+                      {
+                        key: "s3",
+                        label: "Support 3",
+                        user: selected.reviewerSupport3,
+                      },
+                    ].map(
+                      (reviewer) =>
+                        (selected as any)?.[`p1_${reviewer.key}_rate`] !==
+                          undefined && (
+                          <div
+                            key={reviewer.key}
+                            className="flex flex-col gap-1 border p-3 rounded bg-slate-50/50"
+                          >
+                            <Label className="text-xs uppercase text-slate-500 font-bold">
+                              {reviewer.label} ({reviewer.user?.name || "N/A"})
+                            </Label>
+                            <div className="flex gap-3 items-end">
+                              <div className="flex-1">
+                                <Label className="text-[10px]">Impact</Label>
+                                <Input
+                                  readOnly
+                                  value={
+                                    (selected as any)[
+                                      `p1_${reviewer.key}_impact`
+                                    ] as string
+                                  }
+                                  className="h-8 text-sm"
+                                />
+                              </div>
+                              <div className="flex-1">
+                                <Label className="text-[10px]">Quality</Label>
+                                <Input
+                                  readOnly
+                                  value={
+                                    (selected as any)[
+                                      `p1_${reviewer.key}_quality`
+                                    ] as string
+                                  }
+                                  className="h-8 text-sm"
+                                />
+                              </div>
+                              <div className="flex-1">
+                                <Label className="text-[10px]">
+                                  Innovation
+                                </Label>
+                                <Input
+                                  readOnly
+                                  value={
+                                    (selected as any)[
+                                      `p1_${reviewer.key}_innovation`
+                                    ] as string
+                                  }
+                                  className="h-8 text-sm"
+                                />
+                              </div>
+                              <div className="w-20">
+                                <Label className="text-[10px] font-bold">
+                                  Total
+                                </Label>
+                                <Input
+                                  readOnly
+                                  value={
+                                    (selected as any)[
+                                      `p1_${reviewer.key}_rate`
+                                    ] as string
+                                  }
+                                  className="h-8 text-sm font-bold bg-slate-100"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        ),
+                    )}
+
+                    {selected?.phase1_general_rate && (
+                      <div className="flex justify-between items-center p-3 bg-blue-50 rounded border border-blue-100">
+                        <Label className="font-bold text-blue-700">
+                          PHASE 1 GENERAL RATE
+                        </Label>
+                        <span className="text-2xl font-black text-blue-800">
+                          {selected.phase1_general_rate}
+                        </span>
                       </div>
-                    </div>
+                    )}
                   </div>
                 )}
                 <Separator />
                 {/* TODO: se agrego && false porque el cliente ya no quiere mostrar estos datos */}
-                {selected?.phase2Score && false && (
-                  <div className="flex-col gap-2 hidden">
-                    <h1 className="text-xl font-bold">Puntuación: FASE 2</h1>
-                    <div className="flex gap-3">
-                      <div className="w-full">
-                        <Label className="text-sm">Impacto</Label>
-                        <Input
-                          name="score1"
-                          readOnly
-                          value={selected?.phase2Score1}
-                          type="number"
-                          placeholder="Impacto"
-                          className="w-full"
-                        />
-                      </div>
-                      <div className="w-full">
-                        <Label className="text-sm">Calidad</Label>
-                        <Input
-                          name="score2"
-                          readOnly
-                          value={selected?.phase2Score2}
-                          type="number"
-                          placeholder="Calidad"
-                          className="w-full"
-                        />
-                      </div>
-                      <div className="w-full">
-                        <Label className="text-sm">Innovación</Label>
-                        <Input
-                          name="score3"
-                          readOnly
-                          value={selected?.phase2Score3}
-                          type="number"
-                          placeholder="Innovación"
-                          className="w-full"
-                        />
-                      </div>
+                {(selected?.phase2_general_rate ||
+                  selected?.p2_m_rate ||
+                  selected?.p2_s1_rate ||
+                  selected?.p2_s2_rate ||
+                  selected?.p2_s3_rate) && (
+                  <div className="flex flex-col gap-4">
+                    <h1 className="text-xl font-bold">Scores: PHASE 2</h1>
 
-                      <div className="flex flex-row gap-3 w-full">
-                        <Separator orientation="vertical" />
-                        <div className="w-full">
-                          <Label className="text-sm">Puntuación Final</Label>
-                          <Input
-                            name="scoreFinal"
-                            readOnly
-                            value={selected?.phase2Score}
-                            type="number"
-                            placeholder="Score 3"
-                            className="w-full"
-                          />
-                        </div>
+                    {[
+                      {
+                        key: "m",
+                        label: "Main Reviewer",
+                        user: selected.reviewerUser,
+                      },
+                      {
+                        key: "s1",
+                        label: "Support 1",
+                        user: selected.reviewerSupport1,
+                      },
+                      {
+                        key: "s2",
+                        label: "Support 2",
+                        user: selected.reviewerSupport2,
+                      },
+                      {
+                        key: "s3",
+                        label: "Support 3",
+                        user: selected.reviewerSupport3,
+                      },
+                    ].map(
+                      (reviewer) =>
+                        (selected as any)?.[`p2_${reviewer.key}_rate`] !==
+                          undefined && (
+                          <div
+                            key={reviewer.key}
+                            className="flex flex-col gap-1 border p-3 rounded bg-slate-50/50"
+                          >
+                            <Label className="text-xs uppercase text-slate-500 font-bold">
+                              {reviewer.label} ({reviewer.user?.name || "N/A"})
+                            </Label>
+                            <div className="flex gap-3 items-end">
+                              <div className="flex-1">
+                                <Label className="text-[10px]">Impact</Label>
+                                <Input
+                                  readOnly
+                                  value={
+                                    (selected as any)[
+                                      `p2_${reviewer.key}_impact`
+                                    ] as string
+                                  }
+                                  className="h-8 text-sm"
+                                />
+                              </div>
+                              <div className="flex-1">
+                                <Label className="text-[10px]">Quality</Label>
+                                <Input
+                                  readOnly
+                                  value={
+                                    (selected as any)[
+                                      `p2_${reviewer.key}_quality`
+                                    ] as string
+                                  }
+                                  className="h-8 text-sm"
+                                />
+                              </div>
+                              <div className="flex-1">
+                                <Label className="text-[10px]">
+                                  Innovation
+                                </Label>
+                                <Input
+                                  readOnly
+                                  value={
+                                    (selected as any)[
+                                      `p2_${reviewer.key}_innovation`
+                                    ] as string
+                                  }
+                                  className="h-8 text-sm"
+                                />
+                              </div>
+                              <div className="w-20">
+                                <Label className="text-[10px] font-bold">
+                                  Total
+                                </Label>
+                                <Input
+                                  readOnly
+                                  value={
+                                    (selected as any)[
+                                      `p2_${reviewer.key}_rate`
+                                    ] as string
+                                  }
+                                  className="h-8 text-sm font-bold bg-slate-100"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        ),
+                    )}
+
+                    {selected?.phase2_general_rate && (
+                      <div className="flex justify-between items-center p-3 bg-blue-50 rounded border border-blue-100">
+                        <Label className="font-bold text-blue-700">
+                          PHASE 2 GENERAL RATE
+                        </Label>
+                        <span className="text-2xl font-black text-blue-800">
+                          {selected.phase2_general_rate}
+                        </span>
                       </div>
-                    </div>
+                    )}
                   </div>
                 )}
                 <Separator />

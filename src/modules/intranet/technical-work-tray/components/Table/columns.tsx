@@ -235,29 +235,35 @@ const StatusCell = React.memo(({ item }: { item: Entity }) => {
   );
 });
 
-// const Phase1ScoreFinalCell = React.memo(({ item }: { item: Entity }) => (
-//     <div className="flex flex-col gap-2">
-//         {item.phase1Score ? (
-//             <div className="flex flex-col gap-1">
-//                 {item.phase1Score}
-//             </div>
-//         ) : (
-//             "--"
-//         )}
-//     </div>
-// ))
+const ReviewerScoreCell = React.memo(
+  ({ item, slot }: { item: Entity; slot: 1 | 2 | 3 | 4 }) => {
+    const phasePrefix =
+      item.process === ProcessPaper.PRESELECCIONADO ? "p1" : "p2";
+    const slotKey =
+      slot === 1 ? "m" : slot === 2 ? "s1" : slot === 3 ? "s2" : "s3";
+    const key = `${phasePrefix}_${slotKey}_rate` as keyof Entity;
+    const value = item[key] as any;
 
-// const Phase2ScoreFinalCell = React.memo(({ item }: { item: Entity }) => (
-//     <div className="flex flex-col gap-2">
-//         {item.phase2Score ? (
-//             <div className="flex flex-col gap-1">
-//                 {item.phase2Score}
-//             </div>
-//         ) : (
-//             "--"
-//         )}
-//     </div>
-// ))
+    return (
+      <div className="flex flex-col gap-2">
+        {value ? <div className="flex flex-col gap-1">{value}</div> : "--"}
+      </div>
+    );
+  },
+);
+
+const TotalScoreCell = React.memo(({ item }: { item: Entity }) => {
+  const value =
+    item.process === ProcessPaper.PRESELECCIONADO
+      ? item.phase1_general_rate
+      : item.phase2_general_rate;
+
+  return (
+    <div className="flex flex-col gap-2 font-bold">
+      {value ? <div className="flex flex-col gap-1">{value}</div> : "--"}
+    </div>
+  );
+});
 
 const ButtonView = React.memo(({ item }: { item: Entity }) => {
   const { openActionModal } = usePaperStore((state) => ({
@@ -302,7 +308,7 @@ const ButtonSend = React.memo(({ item }: { item: Entity }) => {
   ) {
     return <DropdownMenuItem onClick={handleSend}>Submit</DropdownMenuItem>;
   } else {
-    null;
+    return null;
   }
 });
 
@@ -325,7 +331,7 @@ const ButtonChargeCompleteArchive = React.memo(({ item }: { item: Entity }) => {
       </DropdownMenuItem>
     );
   } else {
-    null;
+    return null;
   }
 });
 
@@ -337,7 +343,7 @@ const ButtonViewComments = React.memo(({ item }: { item: Entity }) => {
   const handleViewComments = useCallback(() => {
     openCommentsDialog(item.id);
     setSelected(item);
-  }, [item, openCommentsDialog]);
+  }, [item, openCommentsDialog, setSelected]);
 
   return (
     <DropdownMenuItem onClick={handleViewComments}>
@@ -432,16 +438,26 @@ export const columns: ColumnDef<Entity>[] = [
     header: "Submission Date",
     cell: ({ row }) => <CreationDateCell item={row.original} />,
   },
-  // {
-  //     accessorKey: "phase1Score",
-  //     header: "Puntuación Fase 1",
-  //     cell: ({ row }) => <Phase1ScoreFinalCell item={row.original} />,
-  // },
-  // {
-  //     accessorKey: "phase2Score",
-  //     header: "Puntuación Fase 2",
-  //     cell: ({ row }) => <Phase2ScoreFinalCell item={row.original} />,
-  // },
+  {
+    id: "p1_score",
+    header: "P. 1 Score",
+    cell: ({ row }) => <ReviewerScoreCell item={row.original} slot={1} />,
+  },
+  {
+    id: "p2_score",
+    header: "P. 2 Score",
+    cell: ({ row }) => <ReviewerScoreCell item={row.original} slot={2} />,
+  },
+  {
+    id: "p3_score",
+    header: "P. 3 Score",
+    cell: ({ row }) => <ReviewerScoreCell item={row.original} slot={3} />,
+  },
+  {
+    id: "p4_score",
+    header: "P. 4 Score",
+    cell: ({ row }) => <ReviewerScoreCell item={row.original} slot={4} />,
+  },
   {
     accessorKey: "type",
     header: "Type",

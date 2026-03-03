@@ -87,7 +87,6 @@ function CommentsDialog() {
       const response = await fetch(url);
       const arrayBuffer = await response.arrayBuffer();
       const result = await mammoth.convertToHtml({ arrayBuffer });
-
       // Post-process to add data-block IDs
       const parser = new DOMParser();
       const doc = parser.parseFromString(result.value, "text/html");

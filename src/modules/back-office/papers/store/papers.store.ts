@@ -302,8 +302,8 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
         ReportService.getPapersReport({
           state: selectedState ?? undefined,
           reviewerUserId: selectedReviewer?.id,
-         // Asumiendo que el filtro de revisor también aplica para support3
-       
+          // Asumiendo que el filtro de revisor también aplica para support3
+
           leaderId: selectedLeader?.id,
           // Tomamos el primer ID seleccionado para el reporte si hay múltiples
           topicId:
