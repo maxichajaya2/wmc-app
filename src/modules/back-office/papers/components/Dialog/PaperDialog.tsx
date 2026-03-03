@@ -171,6 +171,44 @@ function PapersDialog() {
     score3: 0,
   });
   const [errorRating, setErrorRating] = useState("");
+
+  const realTimeGeneralRate = useMemo(() => {
+    if (!selected) return "0.00";
+    const phasePrefix =
+      selected.process === ProcessPaper.PRESELECCIONADO ? "p1" : "p2";
+
+    const slots = [
+      { id: selected.reviewerUserId, slot: "m" },
+      { id: selected.reviewerSupport1Id, slot: "s1" },
+      { id: selected.reviewerSupport2Id, slot: "s2" },
+      { id: selected.reviewerSupport3Id, slot: "s3" },
+    ];
+
+    let totalSum = 0;
+    let count = 0;
+
+    slots.forEach((rev) => {
+      if (!rev.id) return;
+
+      let rate = 0;
+      if (user?.id === rev.id && action === "rate-paper") {
+        rate =
+          (Number(rating.score1) +
+            Number(rating.score2) +
+            Number(rating.score3)) /
+          3;
+      } else {
+        rate = Number((selected as any)[`${phasePrefix}_${rev.slot}_rate`]);
+      }
+
+      if (rate > 0) {
+        totalSum += rate;
+        count++;
+      }
+    });
+
+    return count > 0 ? (totalSum / count).toFixed(2) : "0.00";
+  }, [selected, rating, user?.id, action]);
   const handleInputRate = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setErrorRating("");
@@ -1978,9 +2016,7 @@ function PapersDialog() {
                     )
                   </div>
                   <div className="text-2xl font-black">
-                    {selected.process === ProcessPaper.PRESELECCIONADO
-                      ? selected.phase1_general_rate
-                      : selected.phase2_general_rate || "0.00"}
+                    {realTimeGeneralRate}
                   </div>
                 </div>
 
