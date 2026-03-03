@@ -302,8 +302,8 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
         ReportService.getPapersReport({
           state: selectedState ?? undefined,
           reviewerUserId: selectedReviewer?.id,
-         // Asumiendo que el filtro de revisor también aplica para support3
-       
+          // Asumiendo que el filtro de revisor también aplica para support3
+
           leaderId: selectedLeader?.id,
           // Tomamos el primer ID seleccionado para el reporte si hay múltiples
           topicId:
@@ -350,11 +350,13 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
 
     const filtered = data.filter((item) => {
       const matchesTerm =
-        item.webUser.name.toLowerCase().includes(filterTerm.toLowerCase()) ||
-        item.webUser.lastName
+        (item.webUser?.name || "")
           .toLowerCase()
           .includes(filterTerm.toLowerCase()) ||
-        item.webUser.documentNumber.includes(filterTerm);
+        (item.webUser?.lastName || "")
+          .toLowerCase()
+          .includes(filterTerm.toLowerCase()) ||
+        (item.webUser?.documentNumber || "").includes(filterTerm);
 
       const matchesDate =
         (!dateRange.start ||
@@ -472,22 +474,17 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
           score2: Number(rating.score2),
           score3: Number(rating.score3),
         }),
-      (updatedItem) => {
-        const data = get().data.map((item) =>
-          item.id === updatedItem.id ? updatedItem : item,
-        );
+      () => {
         set(
           {
-            data: sortPapers(data),
-            filtered: sortPapers(data),
             isOpenDialog: false,
             selected: undefined,
           },
           false,
           "ratingPaperSuccess",
         );
-        get().clearFilters();
         get().closeActionModal();
+        window.location.reload();
       },
       (error) => console.error(error),
     );

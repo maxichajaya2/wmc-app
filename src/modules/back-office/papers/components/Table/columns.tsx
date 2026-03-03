@@ -97,21 +97,30 @@ const ReviewersTeamCell = React.memo(({ item }: { item: Entity }) => {
 
       {/* REVISOR DE APOYO 1 */}
       {item.reviewerSupport1 && (
-        <Badge variant="outline" className="border-slate-300 text-slate-700 w-fit">
+        <Badge
+          variant="outline"
+          className="border-slate-300 text-slate-700 w-fit"
+        >
           👥 Apoyo 1: {item.reviewerSupport1.name}
         </Badge>
       )}
 
       {/* REVISOR DE APOYO 2 */}
       {item.reviewerSupport2 && (
-        <Badge variant="outline" className="border-slate-300 text-slate-700 w-fit">
+        <Badge
+          variant="outline"
+          className="border-slate-300 text-slate-700 w-fit"
+        >
           👥 Apoyo 2: {item.reviewerSupport2.name}
         </Badge>
       )}
 
       {/* REVISOR DE APOYO 3 (Agregado por si lo necesitas) */}
       {item.reviewerSupport3 && (
-        <Badge variant="outline" className="border-slate-300 text-slate-700 w-fit">
+        <Badge
+          variant="outline"
+          className="border-slate-300 text-slate-700 w-fit"
+        >
           👥 Apoyo 3: {item.reviewerSupport3.name}
         </Badge>
       )}
@@ -268,25 +277,35 @@ const StatusCell = React.memo(({ item }: { item: Entity }) => {
   );
 });
 
-const Phase1ScoreFinalCell = React.memo(({ item }: { item: Entity }) => (
-  <div className="flex flex-col gap-2">
-    {item.phase1Score ? (
-      <div className="flex flex-col gap-1">{item.phase1Score}</div>
-    ) : (
-      "--"
-    )}
-  </div>
-));
+const ReviewerScoreCell = React.memo(
+  ({ item, slot }: { item: Entity; slot: 1 | 2 | 3 | 4 }) => {
+    const phasePrefix =
+      item.process === ProcessPaper.PRESELECCIONADO ? "p1" : "p2";
+    const slotKey =
+      slot === 1 ? "m" : slot === 2 ? "s1" : slot === 3 ? "s2" : "s3";
+    const key = `${phasePrefix}_${slotKey}_rate` as keyof Entity;
+    const value = item[key] as any;
 
-const Phase2ScoreFinalCell = React.memo(({ item }: { item: Entity }) => (
-  <div className="flex flex-col gap-2">
-    {item.phase2Score ? (
-      <div className="flex flex-col gap-1">{item.phase2Score}</div>
-    ) : (
-      "--"
-    )}
-  </div>
-));
+    return (
+      <div className="flex flex-col gap-2">
+        {value ? <div className="flex flex-col gap-1">{value}</div> : "--"}
+      </div>
+    );
+  },
+);
+
+const TotalScoreCell = React.memo(({ item }: { item: Entity }) => {
+  const value =
+    item.process === ProcessPaper.PRESELECCIONADO
+      ? item.phase1_general_rate
+      : item.phase2_general_rate;
+
+  return (
+    <div className="flex flex-col gap-2 font-bold">
+      {value ? <div className="flex flex-col gap-1">{value}</div> : "--"}
+    </div>
+  );
+});
 
 const ButtonView = React.memo(({ item }: { item: Entity }) => {
   const { openActionModal } = usePaperStore((state) => ({
@@ -383,8 +402,6 @@ const ButtonReview = React.memo(({ item }: { item: Entity }) => {
   return <DropdownMenuItem onClick={handleReview}>In review</DropdownMenuItem>;
 });
 
-
-
 const ButtonRate = React.memo(({ item }: { item: Entity }) => {
   const canReview = useCheckPermission(
     ModulesRoles.TECHINICAL_WORKS,
@@ -432,8 +449,9 @@ const ButtonApprove = React.memo(({ item }: { item: Entity }) => {
       item.state !== StatePaper.OBSERVED &&
       item.state !== StatePaper.SUBSANATED) ||
     // O si falta el score según el proceso
-    (item.process === ProcessPaper.PRESELECCIONADO && !item.phase1Score) ||
-    (item.process === ProcessPaper.SELECCIONADO && !item.phase2Score)
+    (item.process === ProcessPaper.PRESELECCIONADO &&
+      !item.phase1_general_rate) ||
+    (item.process === ProcessPaper.SELECCIONADO && !item.phase2_general_rate)
   ) {
     return null;
   }
@@ -452,21 +470,17 @@ const ButtonViewComments = React.memo(({ item }: { item: Entity }) => {
   const handleViewComments = useCallback(() => {
     openCommentsDialog(item.id);
     setSelected(item);
-  }, [item, openCommentsDialog]);
+  }, [item, openCommentsDialog, setSelected]);
 
-
-  // if (
-  //   // Si el estado NO es ninguno de estos tres, se oculta (return null)
-  //   // (item.state !== StatePaper.UNDER_REVIEW &&
-  //   //   item.state !== StatePaper.OBSERVED &&
-  //   //   item.state !== StatePaper.SUBSANATED) ||
-  //   // O si falta el score según el proceso
-  //   (item.process === ProcessPaper.PRESELECCIONADO && !item.phase1Score) ||
-  //   (item.process === ProcessPaper.SELECCIONADO && !item.phase2Score)
-  // ) {
-  //   return null;
-  // }
-
+  /* if (
+    (item.state !== StatePaper.UNDER_REVIEW &&
+      item.state !== StatePaper.OBSERVED &&
+      item.state !== StatePaper.SUBSANATED) ||
+    (item.process === ProcessPaper.PRESELECCIONADO && !item.phase1Score) ||
+    (item.process === ProcessPaper.SELECCIONADO && !item.phase2Score)
+  ) {
+    return null;
+  } */
 
   return (
     <DropdownMenuItem onClick={handleViewComments}>
@@ -520,7 +534,6 @@ const ButtonObserve = React.memo(({ item }: { item: Entity }) => {
     item.state === StatePaper.OBSERVED || // <-- AGREGADO: Si ya está observado, no mostramos "Observe" (porque ya lo está)
     item.state === StatePaper.RECEIVED ||
     item.state === StatePaper.SENT
- 
   ) {
     return null;
   }
@@ -556,7 +569,6 @@ const ButtonReassign = React.memo(({ item }: { item: Entity }) => {
     </DropdownMenuItem>
   );
 });
-
 
 const ActionsCell = React.memo(({ item }: { item: Entity }) => {
   return (
@@ -626,11 +638,6 @@ export const columns: ColumnDef<Entity>[] = [
     cell: ({ row }) => <ReviewersTeamCell item={row.original} />, // <--- USAMOS TU NUEVO COMPONENTE
   },
   {
-    accessorKey: "reviewerUser",
-    header: "Reviewer",
-    cell: ({ row }) => <ReviewerAssignedCell item={row.original} />,
-  },
-  {
     accessorKey: "approvedDate",
     // header: "F. Preselecc.",
     header: "D. Preselection",
@@ -648,16 +655,24 @@ export const columns: ColumnDef<Entity>[] = [
     cell: ({ row }) => <TypeAssignedCell item={row.original} />,
   },
   {
-    accessorKey: "phase1Score",
-    // header: "Puntuación Fase 1",
+    id: "p1_score",
     header: "P. 1 Score",
-    cell: ({ row }) => <Phase1ScoreFinalCell item={row.original} />,
+    cell: ({ row }) => <ReviewerScoreCell item={row.original} slot={1} />,
   },
   {
-    accessorKey: "phase2Score",
-    // header: "Puntuación Fase 2",
+    id: "p2_score",
     header: "P. 2 Score",
-    cell: ({ row }) => <Phase2ScoreFinalCell item={row.original} />,
+    cell: ({ row }) => <ReviewerScoreCell item={row.original} slot={2} />,
+  },
+  {
+    id: "p3_score",
+    header: "P. 3 Score",
+    cell: ({ row }) => <ReviewerScoreCell item={row.original} slot={3} />,
+  },
+  {
+    id: "p4_score",
+    header: "P. 4 Score",
+    cell: ({ row }) => <ReviewerScoreCell item={row.original} slot={4} />,
   },
   {
     accessorKey: "process",
@@ -674,7 +689,4 @@ export const columns: ColumnDef<Entity>[] = [
     id: "actions",
     cell: ({ row }) => <ActionsCell item={row.original} />,
   },
-
-
-
 ];

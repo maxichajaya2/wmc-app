@@ -171,7 +171,7 @@ function PapersManagementPage() {
           </AlertDescription>
         </Alert>
       )}
-      
+
       {/* Alerta de restricción para usuarios sin abstracts asociados */}
       {!isAuthorizedAuthor && !loading && (
         <Alert
@@ -273,7 +273,11 @@ function PapersManagementPage() {
               className="h-8 gap-1 bg-gradient-to-br from-[#00b3dc] via-[#0124e0] to-[#00023f] text-white"
               onClick={handleCreate}
               disabled={
-                reachedMaxPapers || !isAuthorizedAuthor || hasObservedPaper || hasAprovedPaper || hasSentPaper
+                reachedMaxPapers ||
+                !isAuthorizedAuthor ||
+                hasObservedPaper ||
+                hasAprovedPaper ||
+                hasSentPaper
               }
             >
               <PlusCircle className="h-3.5 w-3.5 text-white " />
