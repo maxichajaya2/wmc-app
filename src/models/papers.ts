@@ -9,8 +9,12 @@ export interface Paper {
   correlative: string;
   resume: string;
   file?: string;
+  fileVersion1?: string;
+  fileVersion2?: string;
   state: StatePaper;
   fullFileUrl?: string;
+  fullFileUrlVersion1?: string;
+  fullFileUrlVersion2?: string;
   receivedDate?: string;
   selectedReceivedDate?: string;
   sentDate?: string;
