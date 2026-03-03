@@ -17,6 +17,8 @@ type CommentFormData = z.infer<typeof commentSchema>;
 
 export const useCommentPapers = () => {
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
+  const [selectedBlockId, setSelectedBlockId] = useState<number | null>(null);
+
   const loading = usePaperStore((state) => state.loading);
   const setLoading = usePaperStore((state) => state.setLoading);
   const comments = usePaperStore((state) => state.comments);
@@ -171,5 +173,8 @@ export const useCommentPapers = () => {
     handleEdit,
     setDeletingCommentId,
     handleDelete,
+    selectedBlockId,
+    setSelectedBlockId,
   };
 };
+
