@@ -638,11 +638,6 @@ export const columns: ColumnDef<Entity>[] = [
     cell: ({ row }) => <ReviewersTeamCell item={row.original} />, // <--- USAMOS TU NUEVO COMPONENTE
   },
   {
-    accessorKey: "reviewerUser",
-    header: "Reviewer",
-    cell: ({ row }) => <ReviewerAssignedCell item={row.original} />,
-  },
-  {
     accessorKey: "approvedDate",
     // header: "F. Preselecc.",
     header: "D. Preselection",
