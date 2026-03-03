@@ -35,7 +35,7 @@ function CommentsDialog() {
     loading,
     register,
     handleSubmit,
-    onSubmit, // Función del hook que conecta con el servicio
+    onSubmit, // Hook function connecting to service
     handleEdit,
     handleFileUpload,
     uploading,
@@ -50,19 +50,19 @@ function CommentsDialog() {
   const [htmlContent, setHtmlContent] = useState<string>("");
   const [converting, setConverting] = useState(false);
   
-  // ESTADOS DE CONTROL DE VERSIÓN
-  const [viewingVersion, setViewingVersion] = useState<string>("Actual");
+  // VERSION CONTROL STATES
+  const [viewingVersion, setViewingVersion] = useState<string>("Current");
   const [currentVersionKey, setCurrentVersionKey] = useState<string>("Actual");
   const [currentDocUrl, setCurrentDocUrl] = useState<string>("");
   
   const docContainerRef = useRef<HTMLDivElement>(null);
 
-  // EFECTO PRINCIPAL: Carga inicial del documento
+  // MAIN EFFECT: Initial document load
   useEffect(() => {
     if (isOpenCommentsDialog && selected) {
       const initialUrl = selected.fullFileUrl || selected.file;
       if (initialUrl) {
-        setViewingVersion("Actual");
+        setViewingVersion("Current");
         setCurrentVersionKey("Actual");
         setCurrentDocUrl(initialUrl); 
         loadDocument(initialUrl);
@@ -74,12 +74,12 @@ function CommentsDialog() {
     }
   }, [isOpenCommentsDialog, selected?.id]);
 
-  // FILTRADO DE COMENTARIOS: Solo muestra los de la versión activa en el visor
+  // COMMENT FILTERING: Only show comments for the active version in the viewer
   const filteredComments = useMemo(() => {
     return comments.filter((c: any) => c.documentVersion === currentVersionKey);
   }, [comments, currentVersionKey]);
 
-  // EFECTO DE RESALTADO (HIGHLIGHT)
+  // HIGHLIGHT EFFECT
   useEffect(() => {
     if (!docContainerRef.current) return;
     const prev = docContainerRef.current.querySelector(".selected-paragraph");
@@ -101,6 +101,7 @@ function CommentsDialog() {
       const response = await fetch(`${url}?t=${new Date().getTime()}`);
       const arrayBuffer = await response.arrayBuffer();
       const result = await mammoth.convertToHtml({ arrayBuffer });
+      
       // Post-process to add data-block IDs
       const parser = new DOMParser();
       const doc = parser.parseFromString(result.value, "text/html");
@@ -116,7 +117,7 @@ function CommentsDialog() {
       setHtmlContent(doc.body.innerHTML);
     } catch (error) {
       console.error("Error converting document:", error);
-      setHtmlContent("<p class='text-red-500 font-bold p-4'>Error al cargar el documento.</p>");
+      setHtmlContent("<p class='text-red-500 font-bold p-4'>Error loading document.</p>");
     } finally {
       setConverting(false);
     }
@@ -141,19 +142,19 @@ function CommentsDialog() {
   };
 
   /**
-   * FUNCIÓN MEDIADORA DE ENVÍO
-   * Evita el error 400 asegurando que documentVersion sea un string válido.
+   * MEDIATOR SUBMIT FUNCTION
+   * Ensures documentVersion is a valid string to avoid 400 errors.
    */
   const handleOnSubmit = (data: any) => {
     const payload = { 
       ...data, 
       documentUrl: currentDocUrl ,
-     documentVersion: currentVersionKey || "Actual"
+      documentVersion: currentVersionKey || "Actual"
     };
     onSubmit(payload);
   };
 
-  // SUB-COMPONENTE PARA LINKS DE VERSIONES
+  // SUB-COMPONENT FOR VERSION LINKS
   const VersionLink = ({ label, url, versionKey }: { label: string; url?: string | null; versionKey: string }) => {
     if (!url) return null;
     
@@ -165,7 +166,7 @@ function CommentsDialog() {
         <div className="flex flex-col">
           <span className="text-[11px] font-medium text-gray-700">{label}</span>
           {versionCommentsCount > 0 && (
-            <span className="text-[9px] text-blue-500 font-bold">{versionCommentsCount} comentarios</span>
+            <span className="text-[9px] text-blue-500 font-bold">{versionCommentsCount} comments</span>
           )}
         </div>
         <div className="flex gap-1">
@@ -207,25 +208,25 @@ function CommentsDialog() {
               <span className="truncate max-w-[40vw] text-gray-600 font-medium text-sm">{selected?.title}</span>
               <div className="ml-auto flex items-center gap-2 bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
                 <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-                <span className="text-[10px] font-bold text-blue-700 uppercase">Versión: {viewingVersion}</span>
+                <span className="text-[10px] font-bold text-blue-700 uppercase">Version: {viewingVersion}</span>
               </div>
             </DialogTitle>
           </DialogHeader>
 
           <div className="flex flex-col md:flex-row gap-4 flex-grow overflow-hidden pt-4">
-            {/* IZQUIERDA: VISOR DE DOCUMENTO */}
+            {/* LEFT: DOCUMENT VIEWER */}
             <div className="w-full flex md:flex-1 border rounded-xl bg-white overflow-hidden shadow-sm flex-col">
               <div className="bg-gray-50 border-b p-2 flex justify-between items-center px-4">
-                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Visor</span>
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Viewer</span>
                 <Button variant="ghost" size="sm" className="h-6 text-[10px] text-blue-600" onClick={() => currentDocUrl && window.open(currentDocUrl, "_blank")}>
-                  <ExternalLink size={12} className="mr-1" /> Ver PDF Externo
+                  <ExternalLink size={12} className="mr-1" /> Open External PDF
                 </Button>
               </div>
               <ScrollArea className="flex-grow p-8 document-viewer bg-[#fdfdfd]">
                 {converting ? (
                   <div className="flex flex-col items-center justify-center h-full gap-3 py-20">
                     <LoaderCircle className="animate-spin text-blue-500" size={40} />
-                    <p className="text-sm text-gray-400">Cargando contenido...</p>
+                    <p className="text-sm text-gray-400">Loading content...</p>
                   </div>
                 ) : (
                   <div ref={docContainerRef} className="prose prose-sm max-w-none w-full" dangerouslySetInnerHTML={{ __html: htmlContent }} onClick={handleParagraphClick} />
@@ -233,64 +234,64 @@ function CommentsDialog() {
               </ScrollArea>
             </div>
 
-            {/* DERECHA: HISTORIAL Y FEEDBACK */}
+            {/* RIGHT: HISTORY AND FEEDBACK */}
             <div className="md:w-[400px] xl:w-[460px] flex flex-col gap-3 overflow-y-auto">
-              {/* SECCIÓN DE VERSIONES */}
+              {/* VERSIONS SECTION */}
               <div className="bg-white border rounded-xl p-4 shadow-sm space-y-4">
                 <h3 className="text-sm font-bold flex items-center gap-2 text-slate-700">
-                  <FileText className="w-4 h-4 text-blue-600" /> Historial de Archivos
+                  <FileText className="w-4 h-4 text-blue-600" /> File History
                 </h3>
                 <div className="grid grid-cols-1 gap-4">
                   <div className="space-y-2">
-                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Fase 1 (Abstract)</p>
-                    <VersionLink label="P1 Actual" url={selected?.file} versionKey="Actual" />
+                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Phase 1 (Abstract)</p>
+                    <VersionLink label="P1 Current" url={selected?.file} versionKey="Actual" />
                     <VersionLink label="P1 V1" url={selected?.fileVersion1} versionKey="V1" />
                     <VersionLink label="P1 V2" url={selected?.fileVersion2} versionKey="V2" />
                   </div>
                   <Separator />
                   <div className="space-y-2">
-                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Fase 2 (Trabajo Final)</p>
-                    <VersionLink label="P2 Actual" url={selected?.fullFileUrl} versionKey="Actual" />
+                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Phase 2 (Final Paper)</p>
+                    <VersionLink label="P2 Current" url={selected?.fullFileUrl} versionKey="Actual" />
                     <VersionLink label="P2 V1" url={selected?.fullFileUrlVersion1} versionKey="V1" />
                     <VersionLink label="P2 V2" url={selected?.fullFileUrlVersion2} versionKey="V2" />
                   </div>
                 </div>
               </div>
 
-              {/* FORMULARIO DE COMENTARIOS */}
+              {/* FEEDBACK FORM */}
               <div className="bg-white border rounded-xl p-4 shadow-sm">
                 <form onSubmit={handleSubmit(handleOnSubmit)} className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-gray-700 uppercase">{editingCommentId ? "Actualizar Feedback" : "Agregar Feedback"}</span>
-                    {selectedBlockId && <span className="text-[9px] font-black text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">PÁRRAFO #{selectedBlockId}</span>}
+                    <span className="text-xs font-bold text-gray-700 uppercase">{editingCommentId ? "Update Feedback" : "Add Feedback"}</span>
+                    {selectedBlockId && <span className="text-[9px] font-black text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">PARAGRAPH #{selectedBlockId}</span>}
                   </div>
-                  <Input {...register("comentary")} placeholder={selectedBlockId ? "Feedback específico..." : "Comentario general..."} className="text-xs h-10" />
+                  <Input {...register("comentary")} placeholder={selectedBlockId ? "Specific feedback..." : "General comment..."} className="text-xs h-10" />
                   <div className="flex items-center gap-2">
                     <div className="relative flex-1 group">
                       <Input type="file" onChange={handleFileUpload} disabled={uploading} className="opacity-0 absolute inset-0 z-10 cursor-pointer" />
                       <div className="flex items-center gap-2 text-[10px] text-gray-500 border border-dashed rounded-lg px-3 py-2 bg-gray-50 group-hover:bg-blue-50 transition-all">
                         <Paperclip size={12} className={watch("fileUrl") ? "text-blue-500" : ""} />
-                        <span>{watch("fileUrl") ? "Archivo Adjunto" : "Adjuntar evidencia"}</span>
+                        <span>{watch("fileUrl") ? "File Attached" : "Attach evidence"}</span>
                       </div>
                     </div>
-                    {selectedBlockId && <Button type="button" variant="ghost" size="sm" onClick={() => setSelectedBlockId(null)} className="h-9 text-[10px]">Limpiar</Button>}
+                    {selectedBlockId && <Button type="button" variant="ghost" size="sm" onClick={() => setSelectedBlockId(null)} className="h-9 text-[10px]">Clear</Button>}
                   </div>
                   <Button type="submit" disabled={loading || uploading} className="w-full h-10 bg-blue-600 hover:bg-blue-700 text-xs font-bold">
-                    {loading ? <LoaderCircle className="animate-spin h-4 w-4" /> : "Enviar Comentario"}
+                    {loading ? <LoaderCircle className="animate-spin h-4 w-4" /> : "Submit Feedback"}
                   </Button>
                 </form>
               </div>
 
-              {/* LISTA FILTRADA DE COMENTARIOS */}
+              {/* FILTERED COMMENTS LIST */}
               <div className="bg-white border rounded-xl flex-grow flex flex-col shadow-sm min-h-[300px]">
                 <div className="p-3 border-b bg-gray-50/50 flex justify-between items-center">
-                  <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Discusión ({currentVersionKey})</h3>
+                  <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Discussion ({currentVersionKey})</h3>
                   <span className="bg-blue-100 text-blue-600 text-[10px] px-2 py-0.5 rounded-full font-bold">{filteredComments.length}</span>
                 </div>
                 <ScrollArea className="flex-grow p-3">
                   <div className="space-y-4">
                     {filteredComments.length === 0 ? (
-                      <div className="text-center py-10 text-gray-400 text-xs italic">No hay comentarios en esta versión.</div>
+                      <div className="text-center py-10 text-gray-400 text-xs italic">No comments in this version.</div>
                     ) : (
                       filteredComments.map((comment: any) => (
                         <div key={comment.id} className={`group p-3 rounded-xl border transition-all cursor-pointer ${comment.blockId === selectedBlockId ? "bg-amber-50 border-amber-200 ring-1 ring-amber-100" : "bg-white border-gray-100 hover:border-gray-200"}`} onClick={() => scrollToBlock(comment.blockId)}>
@@ -311,7 +312,7 @@ function CommentsDialog() {
                           <p className="text-[12px] text-gray-700 leading-snug mt-1">{comment.comentary}</p>
                           {comment.fileUrl && (
                             <a href={comment.fileUrl} target="_blank" rel="noreferrer" className="mt-2 inline-flex items-center gap-1 text-[9px] font-bold text-blue-600 hover:bg-blue-50 p-1 px-2 rounded-md border border-blue-100">
-                              <Paperclip size={10} /> Ver evidencia
+                              <Paperclip size={10} /> View evidence
                             </a>
                           )}
                         </div>
@@ -324,7 +325,7 @@ function CommentsDialog() {
           </div>
 
           <DialogFooter className="mt-4 pt-4 border-t">
-            <Button type="button" variant="outline" onClick={closeCommentsDialog} className="px-10 rounded-full text-xs font-bold">Finalizar Sesión de Revisión</Button>
+            <Button type="button" variant="outline" onClick={closeCommentsDialog} className="px-10 rounded-full text-xs font-bold">End Review Session</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
