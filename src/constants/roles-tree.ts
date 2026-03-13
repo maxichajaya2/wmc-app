@@ -79,7 +79,7 @@ export const MapActionRoles: Record<ActionRoles, string> = {
   [ActionRoles.SEND_TO_REVIEWER]: "Send to reviewer",
   [ActionRoles.IN_REVIEW]: "In review",
   [ActionRoles.APPROVED]: "Approve",
-  [ActionRoles.DISMISS]: "Dismiss",
+  [ActionRoles.DISMISS]: "Reject",
   [ActionRoles.OBSERVED]: "Observed",
   [ActionRoles.RECEIVED]: "Received",
   [ActionRoles.SENT]: "Sent",

@@ -43,6 +43,7 @@ export interface State extends HttpRequestState {
   loading: boolean;
   isOpenDialog: boolean;
   action: ActionsTypes;
+  filterId: string; // <-- Nuevo
 
   /* Filter States */
   dateRange: { start: string; end: string };
@@ -73,6 +74,7 @@ export interface State extends HttpRequestState {
   getReport: () => Promise<void>;
 
   /* Particular Filter Actions */
+  setFilterId: (id: string) => void;
   setDateRange: (range: { start: string; end: string }) => void;
   setSelectedTopic: (topic: Topic[] | null) => void; // <-- CAMBIADO A ARREGLO
   setSelectedReviewer: (reviewer: User | null) => void;
@@ -121,6 +123,7 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
   isOpenDialog: false,
   action: "none",
   error: null,
+  filterId: "",
   httpRequest: () => {
     throw new Error("Not implemented yet");
   },
@@ -227,6 +230,11 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
       },
       (error) => console.error(error),
     );
+  },
+
+  setFilterId(id) {
+    set({ filterId: id }, false, "setFilterId");
+    get().updateFiltered();
   },
 
   setFilterTerm(term) {
@@ -339,6 +347,7 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
     const {
       data,
       filterTerm,
+      filterId,
       dateRange,
       selectedTopic,
       selectedReviewer,
@@ -349,6 +358,18 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
     } = get();
 
     const filtered = data.filter((item) => {
+      const term = filterTerm.toLowerCase();
+      const idTerm = filterId.toLowerCase();
+
+      const formattedId = `A-${item.correlative}`.toLowerCase();
+      const matchesId = idTerm === "" || formattedId.includes(idTerm);
+
+      const matchesGeneral =
+        term === "" ||
+        (item.webUser?.name || "").toLowerCase().includes(term) ||
+        (item.webUser?.lastName || "").toLowerCase().includes(term) ||
+        (item.webUser?.documentNumber || "").includes(term);
+
       const matchesTerm =
         (item.webUser?.name || "")
           .toLowerCase()
@@ -387,6 +408,8 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
         !selectedProcess || item.process === selectedProcess;
 
       return (
+        matchesId &&
+        matchesGeneral &&
         matchesTerm &&
         matchesDate &&
         matchesTopic &&

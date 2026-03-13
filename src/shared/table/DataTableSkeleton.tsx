@@ -26,6 +26,7 @@ export function DataTableSkeleton<TData, TValue>({
     const table = useReactTable({
         data: [],
         columns,
+        autoResetPageIndex: false,
         getCoreRowModel: getCoreRowModel(),
     })
 

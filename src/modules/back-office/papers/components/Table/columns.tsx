@@ -249,7 +249,7 @@ const StatusCell = React.memo(({ item }: { item: Entity }) => {
     if (item.state === StatePaper.APPROVED) {
       if (item.process === ProcessPaper.PRESELECCIONADO) {
         // return "Preseleccionado"
-        return "PRESELECTED";
+        return "APPROVED";
       }
       if (item.process === ProcessPaper.SELECCIONADO) {
         // return "Seleccionado"
@@ -457,7 +457,7 @@ const ButtonApprove = React.memo(({ item }: { item: Entity }) => {
 
   return (
     <DropdownMenuItem onClick={handleApprove}>
-      {item.process === ProcessPaper.PRESELECCIONADO ? "Preselect" : "Approve"}
+      {item.process === ProcessPaper.PRESELECCIONADO ? "Approve" : "ApproveF2"}
     </DropdownMenuItem>
   );
 });
@@ -508,37 +508,37 @@ const ButtonDismiss = React.memo(({ item }: { item: Entity }) => {
   )
     return null;
 
-  return <DropdownMenuItem onClick={handleDismiss}>Dismiss</DropdownMenuItem>;
+  return <DropdownMenuItem onClick={handleDismiss}>Reject</DropdownMenuItem>;
 });
 
-const ButtonObserve = React.memo(({ item }: { item: Entity }) => {
-  const canObserve = useCheckPermission(
-    ModulesRoles.TECHINICAL_WORKS,
-    ActionRoles.IN_REVIEW,
-  );
-  const { openActionModal } = usePaperStore((state) => ({
-    openActionModal: state.openActionModal,
-  }));
+// const ButtonObserve = React.memo(({ item }: { item: Entity }) => {
+//   const canObserve = useCheckPermission(
+//     ModulesRoles.TECHINICAL_WORKS,
+//     ActionRoles.IN_REVIEW,
+//   );
+//   const { openActionModal } = usePaperStore((state) => ({
+//     openActionModal: state.openActionModal,
+//   }));
 
-  const handleObserve = useCallback(() => {
-    openActionModal(item.id, "observe-paper");
-  }, [item.id, openActionModal]);
+//   const handleObserve = useCallback(() => {
+//     openActionModal(item.id, "observe-paper");
+//   }, [item.id, openActionModal]);
 
   // CONDICIÓN CORREGIDA:
   // Queremos que aparezca si el usuario tiene permiso Y el trabajo NO está finalizado (ni aprobado ni desestimado)
-  if (
-    !canObserve ||
-    item.state === StatePaper.APPROVED ||
-    item.state === StatePaper.DISMISSED ||
-    item.state === StatePaper.OBSERVED || // <-- AGREGADO: Si ya está observado, no mostramos "Observe" (porque ya lo está)
-    item.state === StatePaper.RECEIVED ||
-    item.state === StatePaper.SENT
-  ) {
-    return null;
-  }
+//   if (
+//     !canObserve ||
+//     item.state === StatePaper.APPROVED ||
+//     item.state === StatePaper.DISMISSED ||
+//     item.state === StatePaper.OBSERVED || // <-- AGREGADO: Si ya está observado, no mostramos "Observe" (porque ya lo está)
+//     item.state === StatePaper.RECEIVED ||
+//     item.state === StatePaper.SENT
+//   ) {
+//     return null;
+//   }
 
-  return <DropdownMenuItem onClick={handleObserve}>Observe</DropdownMenuItem>;
-});
+//   return <DropdownMenuItem onClick={handleObserve}>Observe</DropdownMenuItem>;
+// });
 
 const ButtonReassign = React.memo(({ item }: { item: Entity }) => {
   const canReassign = useCheckPermission(
@@ -590,7 +590,7 @@ const ActionsCell = React.memo(({ item }: { item: Entity }) => {
         <ButtonReview item={item} />
         <ButtonRate item={item} />
         <ButtonApprove item={item} />
-        <ButtonObserve item={item} />
+        {/* <ButtonObserve item={item} /> */}
         <ButtonViewComments item={item} />
         <ButtonDismiss item={item} />
         {/* DEV
