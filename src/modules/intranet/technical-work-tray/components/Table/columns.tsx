@@ -208,7 +208,7 @@ const StatusCell = React.memo(({ item }: { item: Entity }) => {
     if (item.state === StatePaper.APPROVED) {
       if (item.process === ProcessPaper.PRESELECCIONADO) {
         // return "Preseleccionado";
-        return "APPROVED";
+        return "PRESELECTED";
       }
       if (item.process === ProcessPaper.SELECCIONADO) {
         // return "Seleccionado";
@@ -252,18 +252,18 @@ const ReviewerScoreCell = React.memo(
   },
 );
 
-// const TotalScoreCell = React.memo(({ item }: { item: Entity }) => {
-//   const value =
-//     item.process === ProcessPaper.PRESELECCIONADO
-//       ? item.phase1_general_rate
-//       : item.phase2_general_rate;
+const TotalScoreCell = React.memo(({ item }: { item: Entity }) => {
+  const value =
+    item.process === ProcessPaper.PRESELECCIONADO
+      ? item.phase1_general_rate
+      : item.phase2_general_rate;
 
-//   return (
-//     <div className="flex flex-col gap-2 font-bold">
-//       {value ? <div className="flex flex-col gap-1">{value}</div> : "--"}
-//     </div>
-//   );
-// });
+  return (
+    <div className="flex flex-col gap-2 font-bold">
+      {value ? <div className="flex flex-col gap-1">{value}</div> : "--"}
+    </div>
+  );
+});
 
 const ButtonView = React.memo(({ item }: { item: Entity }) => {
   const { openActionModal } = usePaperStore((state) => ({
@@ -312,28 +312,28 @@ const ButtonSend = React.memo(({ item }: { item: Entity }) => {
   }
 });
 
-// const ButtonChargeCompleteArchive = React.memo(({ item }: { item: Entity }) => {
-//   const { openActionModal } = usePaperStore((state) => ({
-//     openActionModal: state.openActionModal,
-//   }));
-//   const handleChargeCompleteArchive = useCallback(() => {
-//     openActionModal(item.id, "charge-complete-archive");
-//   }, [item, openActionModal]);
+const ButtonChargeCompleteArchive = React.memo(({ item }: { item: Entity }) => {
+  const { openActionModal } = usePaperStore((state) => ({
+    openActionModal: state.openActionModal,
+  }));
+  const handleChargeCompleteArchive = useCallback(() => {
+    openActionModal(item.id, "charge-complete-archive");
+  }, [item, openActionModal]);
 
-//   if (
-//     item.process === ProcessPaper.PRESELECCIONADO &&
-//     item.state === StatePaper.APPROVED &&
-//     !item.fullFileUrl
-//   ) {
-//     return (
-//       <DropdownMenuItem onClick={handleChargeCompleteArchive}>
-//         Upload Complete Work
-//       </DropdownMenuItem>
-//     );
-//   } else {
-//     return null;
-//   }
-// });
+  if (
+    item.process === ProcessPaper.PRESELECCIONADO &&
+    item.state === StatePaper.APPROVED &&
+    !item.fullFileUrl
+  ) {
+    return (
+      <DropdownMenuItem onClick={handleChargeCompleteArchive}>
+        Upload Complete Work
+      </DropdownMenuItem>
+    );
+  } else {
+    return null;
+  }
+});
 
 const ButtonViewComments = React.memo(({ item }: { item: Entity }) => {
   const { openCommentsDialog, setSelected } = usePaperStore((state) => ({
@@ -402,7 +402,7 @@ const ActionsCell = React.memo(({ item }: { item: Entity }) => {
           (isValidDatePhaseTwo &&
             item.process === ProcessPaper.PRESELECCIONADO &&
             item.state === StatePaper.APPROVED)) && <ButtonEdit item={item} />}
-        {/* <ButtonChargeCompleteArchive item={item} /> */}
+        <ButtonChargeCompleteArchive item={item} />
         {(isValidDate || isValidDatePhaseTwo) && <ButtonSend item={item} />}
         <ButtonViewComments item={item} />
         {/* DEV

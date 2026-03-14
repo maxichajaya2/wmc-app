@@ -4,7 +4,7 @@ import {
   Button,
   Dialog,
   DialogContent,
-
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   ScrollArea,
@@ -28,7 +28,7 @@ function CommentsDialog() {
     isOpenCommentsDialog,
     closeCommentsDialog,
     comments,
-
+    loading,
     selectedBlockId,
     setSelectedBlockId,
   } = useCommentPapers();
@@ -38,18 +38,18 @@ function CommentsDialog() {
   const [converting, setConverting] = useState(false);
 
   // ESTADOS DE CONTROL DE VERSIÓN
-  // const [viewingVersion, setViewingVersion] = useState<string>("Actual");
+  const [viewingVersion, setViewingVersion] = useState<string>("Actual");
   const [currentVersionKey, setCurrentVersionKey] = useState<string>("Actual");
   const [currentDocUrl, setCurrentDocUrl] = useState<string>("");
 
   const docContainerRef = useRef<HTMLDivElement>(null);
-  
+
   // EFECTO PRINCIPAL: Carga inicial del documento
   useEffect(() => {
     if (isOpenCommentsDialog && selected) {
       const initialUrl = selected.fullFileUrl || selected.file;
       if (initialUrl) {
-        // setViewingVersion("Actual");
+        setViewingVersion("Actual");
         setCurrentVersionKey("Actual");
         setCurrentDocUrl(initialUrl);
         loadDocument(initialUrl);
@@ -148,7 +148,7 @@ function CommentsDialog() {
             variant={isActive ? "default" : "ghost"}
             className={`h-6 w-6 ${isActive ? "bg-blue-600" : "text-blue-600"}`}
             onClick={() => {
-              // setViewingVersion(label);
+              setViewingVersion(label);
               setCurrentVersionKey(versionKey);
               setCurrentDocUrl(url);
               loadDocument(url);

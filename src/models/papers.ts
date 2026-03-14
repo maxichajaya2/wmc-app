@@ -168,7 +168,7 @@ export const MapStatePaper: Record<StatePaper, string> = {
   [StatePaper.ASSIGNED]: "ASSIGNED",
   [StatePaper.UNDER_REVIEW]: "UNDER REVIEW",
   [StatePaper.APPROVED]: "APPROVED",
-  [StatePaper.DISMISSED]: "REJECTED",
+  [StatePaper.DISMISSED]: "DISMISSED",
   [StatePaper.OBSERVED]: "OBSERVED",
   [StatePaper.SUBSANATED]: "SUBSANATED",
 };

@@ -75,8 +75,6 @@ function CustomerFilters() {
     setSelectedProcess,
     setSelectedState,
     updateFiltered,
-    filterId,
-    setFilterId,
     loading,
     findAll,
   } = usePaperStore();
@@ -88,25 +86,21 @@ function CustomerFilters() {
   const loadingUsers = useUsersStore((state) => state.loading);
 
   const reviewers = filteredUsers.filter(
-    (user) => user.role.id === PrimaryRoles.REVIEWER,
+    (user) => user.role.id === PrimaryRoles.REVIEWER
   );
   const leaders = filteredUsers.filter(
-    (user) => user.role.id === PrimaryRoles.LEADER,
+    (user) => user.role.id === PrimaryRoles.LEADER
   );
 
   // 1. FILTRAR DUPLICADOS por NOMBRE (para ignorar IDs diferentes con el mismo texto)
-  const uniqueCategories = categories.filter(
-    (v, i, a) => a.findIndex((t) => t.name.trim() === v.name.trim()) === i,
-  );
-  const uniqueTopics = topics.filter(
-    (v, i, a) => a.findIndex((t) => t.name.trim() === v.name.trim()) === i,
-  );
+  const uniqueCategories = categories.filter((v, i, a) => a.findIndex(t => t.name.trim() === v.name.trim()) === i);
+  const uniqueTopics = topics.filter((v, i, a) => a.findIndex(t => t.name.trim() === v.name.trim()) === i);
 
   useEffect(() => {
     if (!user || !leaders || !reviewers) return;
     if (selectedLeader || selectedReviewer) return;
     if (loadingUsers || loading) return;
-
+    
     if (user.role.id === PrimaryRoles.LEADER) {
       const leader = leaders.find((leader) => leader.id === user.id);
       if (leader) setSelectedLeader(leader);
@@ -114,15 +108,7 @@ function CustomerFilters() {
       const reviewer = reviewers.find((reviewer) => reviewer.id === user.id);
       if (reviewer) setSelectedReviewer(reviewer);
     }
-  }, [
-    user,
-    leaders,
-    reviewers,
-    selectedLeader,
-    selectedReviewer,
-    setSelectedLeader,
-    setSelectedReviewer,
-  ]);
+  }, [user, leaders, reviewers, selectedLeader, selectedReviewer, setSelectedLeader, setSelectedReviewer]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFilterTerm(e.target.value);
@@ -131,15 +117,10 @@ function CustomerFilters() {
 
   const handleDateChange = (date: Date | undefined, type: "start" | "end") => {
     if (date) {
-      const dateToFormat = dayjs(date)
-        .tz("America/Bogota")
-        .format(DateClass.FORMAT_INPUT_SHORT);
+      const dateToFormat = dayjs(date).tz("America/Bogota").format(DateClass.FORMAT_INPUT_SHORT);
       setDateRange({
         ...dateRange,
-        [type]: DateClass.DateToFormat(
-          dateToFormat,
-          DateClass.FORMAT_INPUT_SHORT,
-        ),
+        [type]: DateClass.DateToFormat(dateToFormat, DateClass.FORMAT_INPUT_SHORT),
       });
       updateFiltered();
     }
@@ -151,9 +132,7 @@ function CustomerFilters() {
   };
 
   const formatDate = (date: string) => {
-    return dayjs(date)
-      .tz("America/Bogota")
-      .format(DateClass.FORMAT_INPUT_SHORT);
+    return dayjs(date).tz("America/Bogota").format(DateClass.FORMAT_INPUT_SHORT);
   };
 
   const viewAllReviewers = () => {
@@ -162,26 +141,18 @@ function CustomerFilters() {
   };
 
   // --- LÓGICA DE SELECCIÓN MÚLTIPLE ---
-
+  
   // Helpers para convertir el estado actual en array (por si en el store aún es un objeto único)
-  const currentCategories = Array.isArray(selectedCategory)
-    ? selectedCategory
-    : selectedCategory
-      ? [selectedCategory]
-      : [];
-  const currentTopics = Array.isArray(selectedTopic)
-    ? selectedTopic
-    : selectedTopic
-      ? [selectedTopic]
-      : [];
+  const currentCategories = Array.isArray(selectedCategory) ? selectedCategory : (selectedCategory ? [selectedCategory] : []);
+  const currentTopics = Array.isArray(selectedTopic) ? selectedTopic : (selectedTopic ? [selectedTopic] : []);
 
   const handleCategorySelect = (category: any) => {
     // Validar por nombre en lugar de id
-    const exists = currentCategories.find((c) => c.name === category.name);
-    const newSelection = exists
-      ? currentCategories.filter((c) => c.name !== category.name)
+    const exists = currentCategories.find(c => c.name === category.name);
+    const newSelection = exists 
+      ? currentCategories.filter(c => c.name !== category.name) 
       : [...currentCategories, category];
-
+      
     // Usamos "as any" para evitar el error de TypeScript al guardar un array en un campo de objeto único
     setSelectedCategory(newSelection as any);
     updateFiltered();
@@ -189,11 +160,11 @@ function CustomerFilters() {
 
   const handleTopicSelect = (topic: any) => {
     // Validar por nombre en lugar de id
-    const exists = currentTopics.find((t) => t.name === topic.name);
-    const newSelection = exists
-      ? currentTopics.filter((t) => t.name !== topic.name)
+    const exists = currentTopics.find(t => t.name === topic.name);
+    const newSelection = exists 
+      ? currentTopics.filter(t => t.name !== topic.name) 
       : [...currentTopics, topic];
-
+      
     // Usamos "as any" para evitar el error de TypeScript al guardar un array en un campo de objeto único
     setSelectedTopic(newSelection as any);
     updateFiltered();
@@ -202,27 +173,18 @@ function CustomerFilters() {
   // Renderizadores de texto para los botones múltiples
   const renderCategoryText = () => {
     if (currentCategories.length === 0) return "Choose a category";
-    if (currentCategories.length > 2)
-      return `${currentCategories.length} categories selected`;
-    return currentCategories.map((c) => c.name).join(", ");
+    if (currentCategories.length > 2) return `${currentCategories.length} categories selected`;
+    return currentCategories.map(c => c.name).join(", ");
   };
 
   const renderTopicText = () => {
     if (currentTopics.length === 0) return "Choose a topic";
-    if (currentTopics.length > 2)
-      return `${currentTopics.length} topics selected`;
-    return currentTopics.map((t) => t.name).join(", ");
+    if (currentTopics.length > 2) return `${currentTopics.length} topics selected`;
+    return currentTopics.map(t => t.name).join(", ");
   };
 
   return (
     <div className="flex flex-wrap gap-4 items-center p-4 bg-white shadow rounded-lg mb-4">
-      <Input
-        placeholder="Buscar por número (A-XXX)..."
-        value={filterId}
-        onChange={(e) => setFilterId(e.target.value)}
-        className="w-64"
-      />
-
       <Input
         placeholder="Search by name or document"
         value={filterTerm}
@@ -233,16 +195,11 @@ function CustomerFilters() {
       {/* Rango de Fechas */}
       <Popover>
         <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            className="w-[280px] justify-start text-left font-normal"
-          >
+          <Button variant="outline" className="w-[280px] justify-start text-left font-normal">
             <CalendarIcon className="mr-2 h-4 w-4" />
             {dateRange.start ? (
               dateRange.end ? (
-                <>
-                  {formatDate(dateRange.start)} | {formatDate(dateRange.end)}
-                </>
+                <>{formatDate(dateRange.start)} | {formatDate(dateRange.end)}</>
               ) : (
                 <>{formatDate(dateRange.start)}</>
               )
@@ -255,13 +212,9 @@ function CustomerFilters() {
           <Calendar
             initialFocus
             mode="range"
-            defaultMonth={
-              dateRange.start ? dayjs(dateRange.start).toDate() : undefined
-            }
+            defaultMonth={dateRange.start ? dayjs(dateRange.start).toDate() : undefined}
             selected={{
-              from: dateRange.start
-                ? dayjs(dateRange.start).toDate()
-                : undefined,
+              from: dateRange.start ? dayjs(dateRange.start).toDate() : undefined,
               to: dateRange.end ? dayjs(dateRange.end).toDate() : undefined,
             }}
             onSelect={(range) => {
@@ -271,11 +224,7 @@ function CustomerFilters() {
             numberOfMonths={2}
           />
           <div className="flex items-center justify-between p-2">
-            <Button
-              variant="destructive"
-              className="w-full"
-              onClick={resetDateRange}
-            >
+            <Button variant="destructive" className="w-full" onClick={resetDateRange}>
               Clear
             </Button>
           </div>
@@ -285,11 +234,7 @@ function CustomerFilters() {
       {/* Categories Popover (Múltiple) */}
       <Popover>
         <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            role="combobox"
-            className="w-[200px] justify-between"
-          >
+          <Button variant="outline" role="combobox" className="w-[200px] justify-between">
             <span className="truncate">{renderCategoryText()}</span>
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
@@ -302,9 +247,7 @@ function CustomerFilters() {
               <CommandGroup>
                 {uniqueCategories.map((category) => {
                   // Validación por nombre
-                  const isSelected = currentCategories.some(
-                    (c) => c.name === category.name,
-                  );
+                  const isSelected = currentCategories.some(c => c.name === category.name);
                   return (
                     <CommandItem
                       key={category.id}
@@ -313,7 +256,7 @@ function CustomerFilters() {
                       <Check
                         className={cn(
                           "mr-2 h-4 w-4",
-                          isSelected ? "opacity-100" : "opacity-0",
+                          isSelected ? "opacity-100" : "opacity-0"
                         )}
                       />
                       {category.name}
@@ -329,11 +272,7 @@ function CustomerFilters() {
       {/* Topics Popover (Múltiple) */}
       <Popover>
         <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            role="combobox"
-            className="w-[200px] justify-between"
-          >
+          <Button variant="outline" role="combobox" className="w-[200px] justify-between">
             <span className="truncate">{renderTopicText()}</span>
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
@@ -346,9 +285,7 @@ function CustomerFilters() {
               <CommandGroup>
                 {uniqueTopics.map((topic) => {
                   // Validación por nombre
-                  const isSelected = currentTopics.some(
-                    (t) => t.name === topic.name,
-                  );
+                  const isSelected = currentTopics.some(t => t.name === topic.name);
                   return (
                     <CommandItem
                       key={topic.id}
@@ -357,7 +294,7 @@ function CustomerFilters() {
                       <Check
                         className={cn(
                           "mr-2 h-4 w-4",
-                          isSelected ? "opacity-100" : "opacity-0",
+                          isSelected ? "opacity-100" : "opacity-0"
                         )}
                       />
                       {topic.name}
@@ -373,11 +310,7 @@ function CustomerFilters() {
       {/* States Popover */}
       <Popover>
         <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            role="combobox"
-            className="w-[200px] justify-between"
-          >
+          <Button variant="outline" role="combobox" className="w-[200px] justify-between">
             {selectedState ? MapStatePaper[selectedState] : "Select a status"}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
@@ -399,7 +332,7 @@ function CustomerFilters() {
                     <Check
                       className={cn(
                         "mr-2 h-4 w-4",
-                        selectedState === state ? "opacity-100" : "opacity-0",
+                        selectedState === state ? "opacity-100" : "opacity-0"
                       )}
                     />
                     {MapStatePaper[state]}
@@ -414,14 +347,8 @@ function CustomerFilters() {
       {/* Processes Popover */}
       <Popover>
         <PopoverTrigger asChild>
-          <Button
-            variant="outline"
-            role="combobox"
-            className="w-[200px] justify-between"
-          >
-            {selectedProcess
-              ? MapProcessPaper[selectedProcess as ProcessPaper]
-              : "Choose a process"}
+          <Button variant="outline" role="combobox" className="w-[200px] justify-between">
+            {selectedProcess ? MapProcessPaper[selectedProcess as ProcessPaper] : "Choose a process"}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
@@ -435,16 +362,14 @@ function CustomerFilters() {
                   <CommandItem
                     key={state}
                     onSelect={() => {
-                      setSelectedProcess(
-                        selectedProcess === state ? null : state,
-                      );
+                      setSelectedProcess(selectedProcess === state ? null : state);
                       updateFiltered();
                     }}
                   >
                     <Check
                       className={cn(
                         "mr-2 h-4 w-4",
-                        selectedProcess === state ? "opacity-100" : "opacity-0",
+                        selectedProcess === state ? "opacity-100" : "opacity-0"
                       )}
                     />
                     {MapProcessPaper[state]}
@@ -456,11 +381,7 @@ function CustomerFilters() {
         </PopoverContent>
       </Popover>
 
-      <Button
-        variant="secondary"
-        onClick={viewAllReviewers}
-        className="w-[200px]"
-      >
+      <Button variant="secondary" onClick={viewAllReviewers} className="w-[200px]">
         View all
       </Button>
     </div>

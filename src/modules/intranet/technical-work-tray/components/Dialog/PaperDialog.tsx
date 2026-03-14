@@ -112,7 +112,7 @@ function PapersDialog() {
         return "Change status to: APPROVED";
       case "dismiss-paper":
         // return "Cambiar estado a: DESESTIMADO";
-        return "Change status to: REJECTED";
+        return "Change status to: DISMISSED";
       case "charge-complete-archive":
         // return "Cargar trabajo completo";
         return "Upload complete paper";
@@ -1109,7 +1109,7 @@ function PapersDialog() {
                 />
                 <Separator />
                 {/* TODO: se agrego && false porque el cliente ya no quiere mostrar estos datos */}
-                {/* {(selected?.phase1_general_rate ||
+                {(selected?.phase1_general_rate ||
                   selected?.p1_m_rate ||
                   selected?.p1_s1_rate ||
                   selected?.p1_s2_rate ||
@@ -1218,10 +1218,10 @@ function PapersDialog() {
                       </div>
                     )}
                   </div>
-                )} */}
+                )}
                 <Separator />
-              
-                {/* {(selected?.phase2_general_rate ||
+                {/* TODO: se agrego && false porque el cliente ya no quiere mostrar estos datos */}
+                {(selected?.phase2_general_rate ||
                   selected?.p2_m_rate ||
                   selected?.p2_s1_rate ||
                   selected?.p2_s2_rate ||
@@ -1330,7 +1330,7 @@ function PapersDialog() {
                       </div>
                     )}
                   </div>
-                )} */}
+                )}
                 <Separator />
                 <h1 className="text-xl font-bold">Author</h1>
                 {fields.map((field, index) => (
