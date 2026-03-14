@@ -125,7 +125,7 @@ function PapersManagementPage() {
           </CardHeader>
           <CardContent>
             {hasReadPermission &&
-              (loading ? (
+              (loading && filtered.length === 0 ? (
                 <DataTableSkeleton columns={columns} />
               ) : (
                 <FadeInComponent className="overflow-auto">

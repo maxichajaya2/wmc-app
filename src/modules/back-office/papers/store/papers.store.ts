@@ -444,7 +444,8 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
           false,
           "changeStatusPaperSuccess",
         );
-        get().clearFilters();
+        // get().clearFilters();
+        get().updateFiltered();
         get().closeActionModal();
       },
       (error) => console.error(error),
