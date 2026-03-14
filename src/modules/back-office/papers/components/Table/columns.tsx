@@ -69,64 +69,65 @@ const RegisterDateCell = React.memo(({ item }: { item: Entity }) => (
     {item.receivedDate ? formatDate(item.receivedDate) : "No date"}
   </div>
 ));
-// const ReviewerAssignedCell = React.memo(({ item }: { item: Entity }) => (
-//   <div className="flex flex-col gap-2">
-//     {item.reviewerUser ? (
-//       <>
-//         <div className="flex flex-col gap-1">
-//           {item.reviewerUser.name} <br />
-//           {item.reviewerUser.email}
-//         </div>
-//       </>
-//     ) : (
-//       "Not assigned"
-//     )}
-//   </div>
-// ));
+const ReviewerAssignedCell = React.memo(({ item }: { item: Entity }) => (
+  <div className="flex flex-col gap-2">
+    {item.reviewerUser ? (
+      <>
+        <div className="flex flex-col gap-1">
+          {item.reviewerUser.name} <br />
+          {item.reviewerUser.email}
+        </div>
+      </>
+    ) : (
+      "Not assigned"
+    )}
+  </div>
+));
 const ReviewersTeamCell = React.memo(({ item }: { item: Entity }) => {
   return (
     <div className="flex flex-col gap-2 min-w-[200px]">
-      {/* LEAD REVIEWER */}
+      {/* REVISOR PRINCIPAL */}
       {item.reviewerUser ? (
         <Badge className="bg-amber-500 hover:bg-amber-600 text-white w-fit">
-          ⭐ Lead: {item.reviewerUser.name}
+          ⭐ Principal: {item.reviewerUser.name}
         </Badge>
       ) : (
-        <span className="text-[11px] text-gray-400 italic">No lead assigned</span>
+        <span className="text-[11px] text-gray-400 italic">Sin principal</span>
       )}
 
-      {/* SUPPORT REVIEWER 1 */}
+      {/* REVISOR DE APOYO 1 */}
       {item.reviewerSupport1 && (
         <Badge
           variant="outline"
           className="border-slate-300 text-slate-700 w-fit"
         >
-          👥 Support 1: {item.reviewerSupport1.name}
+          👥 Apoyo 1: {item.reviewerSupport1.name}
         </Badge>
       )}
 
-      {/* SUPPORT REVIEWER 2 */}
+      {/* REVISOR DE APOYO 2 */}
       {item.reviewerSupport2 && (
         <Badge
           variant="outline"
           className="border-slate-300 text-slate-700 w-fit"
         >
-          👥 Support 2: {item.reviewerSupport2.name}
+          👥 Apoyo 2: {item.reviewerSupport2.name}
         </Badge>
       )}
 
-      {/* SUPPORT REVIEWER 3 */}
+      {/* REVISOR DE APOYO 3 (Agregado por si lo necesitas) */}
       {item.reviewerSupport3 && (
         <Badge
           variant="outline"
           className="border-slate-300 text-slate-700 w-fit"
         >
-          👥 Support 3: {item.reviewerSupport3.name}
+          👥 Apoyo 3: {item.reviewerSupport3.name}
         </Badge>
       )}
     </div>
   );
 });
+
 const TypeAssignedCell = React.memo(({ item }: { item: Entity }) => (
   <div className="flex flex-col gap-2">
     {item.type ? (
@@ -293,18 +294,18 @@ const ReviewerScoreCell = React.memo(
   },
 );
 
-// const TotalScoreCell = React.memo(({ item }: { item: Entity }) => {
-//   const value =
-//     item.process === ProcessPaper.PRESELECCIONADO
-//       ? item.phase1_general_rate
-//       : item.phase2_general_rate;
+const TotalScoreCell = React.memo(({ item }: { item: Entity }) => {
+  const value =
+    item.process === ProcessPaper.PRESELECCIONADO
+      ? item.phase1_general_rate
+      : item.phase2_general_rate;
 
-//   return (
-//     <div className="flex flex-col gap-2 font-bold">
-//       {value ? <div className="flex flex-col gap-1">{value}</div> : "--"}
-//     </div>
-//   );
-// });
+  return (
+    <div className="flex flex-col gap-2 font-bold">
+      {value ? <div className="flex flex-col gap-1">{value}</div> : "--"}
+    </div>
+  );
+});
 
 const ButtonView = React.memo(({ item }: { item: Entity }) => {
   const { openActionModal } = usePaperStore((state) => ({
