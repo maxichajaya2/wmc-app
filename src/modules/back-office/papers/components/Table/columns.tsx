@@ -485,7 +485,7 @@ const ButtonViewComments = React.memo(({ item }: { item: Entity }) => {
   return (
     <DropdownMenuItem onClick={handleViewComments}>
       <MessageSquare className="mr-2 h-4 w-4" />
-      View comments
+      View comments x
     </DropdownMenuItem>
   );
 });
@@ -581,7 +581,6 @@ const ActionsCell = React.memo(({ item }: { item: Entity }) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-        <DropdownMenuSeparator />
         <ButtonView item={item} />
         <ButtonEdit item={item} />
         <ButtonDelete item={item} />
@@ -671,7 +670,7 @@ export const columns: ColumnDef<Entity>[] = [
   },
   {
     id: "p4_score",
-    header: "P. 4 Score",
+    header: "P. 4 Score x",
     cell: ({ row }) => <ReviewerScoreCell item={row.original} slot={4} />,
   },
   {

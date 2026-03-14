@@ -43,6 +43,7 @@ export interface State extends HttpRequestState {
   loading: boolean;
   isOpenDialog: boolean;
   action: ActionsTypes;
+  filterId: string;
 
   /* Filter States */
   dateRange: { start: string; end: string };
@@ -73,6 +74,7 @@ export interface State extends HttpRequestState {
   getReport: () => Promise<void>;
 
   /* Particular Filter Actions */
+  setFilterId: (id: string) => void;
   setDateRange: (range: { start: string; end: string }) => void;
   setSelectedTopic: (topic: Topic[] | null) => void; // <-- CAMBIADO A ARREGLO
   setSelectedReviewer: (reviewer: User | null) => void;
@@ -121,6 +123,7 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
   isOpenDialog: false,
   action: "none",
   error: null,
+  filterId: "",
   httpRequest: () => {
     throw new Error("Not implemented yet");
   },
@@ -227,6 +230,11 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
       },
       (error) => console.error(error),
     );
+  },
+
+  setFilterId(id) {
+    set({ filterId: id }, false, "setFilterId");
+    get().updateFiltered();
   },
 
   setFilterTerm(term) {
@@ -339,6 +347,7 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
     const {
       data,
       filterTerm,
+      filterId,
       dateRange,
       selectedTopic,
       selectedReviewer,
@@ -349,6 +358,11 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
     } = get();
 
     const filtered = data.filter((item) => {
+      const idTerm = filterId.toLowerCase();
+
+      const formattedId = (item.correlative || "").toLowerCase();
+      const matchesId = idTerm === "" || formattedId.includes(idTerm);
+
       const matchesTerm =
         (item.webUser?.name || "")
           .toLowerCase()
@@ -387,6 +401,7 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
         !selectedProcess || item.process === selectedProcess;
 
       return (
+        matchesId &&
         matchesTerm &&
         matchesDate &&
         matchesTopic &&
@@ -475,17 +490,22 @@ export const storeApi: StateCreator<State, [["zustand/devtools", never]]> = (
           score2: Number(rating.score2),
           score3: Number(rating.score3),
         }),
-      () => {
+      (updatedItem) => {
+        const data = get().data.map((item) =>
+          item.id === updatedItem.id ? updatedItem : item,
+        );
         set(
           {
+            data: sortPapers(data),
+            filtered: sortPapers(data),
             isOpenDialog: false,
             selected: undefined,
           },
           false,
           "ratingPaperSuccess",
         );
+        get().updateFiltered();
         get().closeActionModal();
-        window.location.reload();
       },
       (error) => console.error(error),
     );
@@ -502,9 +522,11 @@ function sortPapers(data: Entity[]): Entity[] {
   return data
     .filter((item) => item.state !== StatePaper.REGISTERED)
     .sort((a, b) => {
-      if (a.createdAt < b.createdAt) return 1;
-      if (a.createdAt > b.createdAt) return -1;
+      const dateA = a.receivedDate || a.createdAt;
+      const dateB = b.receivedDate || b.createdAt;
+      
+      if (dateA < dateB) return 1;
+      if (dateA > dateB) return -1;
       return 0;
     });
-  // return data.filter((item) => item);
 }
