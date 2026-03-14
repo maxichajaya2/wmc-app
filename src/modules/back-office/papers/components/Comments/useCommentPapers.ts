@@ -19,8 +19,7 @@ type CommentFormData = z.infer<typeof commentSchema>;
 
 export const useCommentPapers = () => {
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
-  const loading = usePaperStore((state) => state.loading);
-  const setLoading = usePaperStore((state) => state.setLoading);
+  const [loading, setLoading] = useState(false);
   const comments = usePaperStore((state) => state.comments);
   const setComments = usePaperStore((state) => state.setComments);
   const selected = usePaperStore((state) => state.selected);
@@ -121,8 +120,7 @@ export const useCommentPapers = () => {
   //           comentary: data.comentary,
   //           fileUrl: data.fileUrl || undefined,
   //           blockId: data.blockId,
-            
-            
+
   //         },
   //       );
   //       setComments(
@@ -152,7 +150,9 @@ export const useCommentPapers = () => {
   //   }
   // };
 
-  const onSubmit = async (data: CommentFormData & { documentVersion?: string }) => {
+  const onSubmit = async (
+    data: CommentFormData & { documentVersion?: string },
+  ) => {
     if (!selected || !currentUser) return;
     setLoading(true);
     try {
@@ -169,7 +169,7 @@ export const useCommentPapers = () => {
         const updatedComment = await PaperService.updateComment(
           selected.id,
           editingCommentId,
-          payload // Enviamos el payload con la versión
+          payload, // Enviamos el payload con la versión
         );
         setComments(
           comments.map((comment) =>
@@ -180,8 +180,8 @@ export const useCommentPapers = () => {
       } else {
         // 3. Para crear un nuevo comentario
         const newComment = await PaperService.createComment(
-          selected.id, 
-          payload // Enviamos el payload con la versión
+          selected.id,
+          payload, // Enviamos el payload con la versión
         );
         setComments([...comments, newComment]);
       }
@@ -192,16 +192,16 @@ export const useCommentPapers = () => {
         fileUrl: "",
         blockId: undefined,
         // @ts-ignore (por si el tipo de reset no reconoce el campo aún)
-        documentVersion: "Actual", 
+        documentVersion: "Actual",
       });
-      setSelectedBlockId(null); 
+      setSelectedBlockId(null);
     } catch (error) {
       console.error("Error creating/updating comment:", error);
     } finally {
       setLoading(false);
     }
   };
-  
+
   const handleEdit = (comment: Commentary) => {
     reset({
       comentary: comment.comentary,
