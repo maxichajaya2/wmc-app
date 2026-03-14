@@ -112,7 +112,7 @@ function PapersDialog() {
         return "Change status to: APPROVED";
       case "dismiss-paper":
         // return "Cambiar estado a: DESESTIMADO";
-        return "Change status to: DISMISSED";
+        return "Change status to: REJECTED";
       case "charge-complete-archive":
         // return "Cargar trabajo completo";
         return "Upload complete paper";

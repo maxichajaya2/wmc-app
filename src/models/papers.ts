@@ -169,7 +169,7 @@ export const MapStatePaper: Record<StatePaper, string> = {
   [StatePaper.ASSIGNED]: "ASSIGNED",
   [StatePaper.UNDER_REVIEW]: "UNDER REVIEW",
   [StatePaper.APPROVED]: "APPROVED",
-  [StatePaper.DISMISSED]: "DISMISSED",
+  [StatePaper.DISMISSED]: "REJECTED",
   [StatePaper.OBSERVED]: "OBSERVED",
   [StatePaper.SUBSANATED]: "SUBSANATED",
 };
@@ -188,7 +188,7 @@ export const MapStatePaperForUser: Record<StatePaper, string> = {
   [StatePaper.ASSIGNED]: "ASSIGNED",
   [StatePaper.UNDER_REVIEW]: "UNDER REVIEW",
   [StatePaper.APPROVED]: "APPROVED",
-  [StatePaper.DISMISSED]: "DISMISSED",
+  [StatePaper.DISMISSED]: "REJECTED",
   [StatePaper.OBSERVED]: "OBSERVED",
   [StatePaper.SUBSANATED]: "SUBSANATED",
 };

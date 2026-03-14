@@ -125,7 +125,7 @@ function PapersDialog() {
         return "Change status to: SUBSANATED";
       case "dismiss-paper":
         // return "Cambiar estado a: DESESTIMADO";
-        return "Change status to: DISMISSED";
+        return "Change status to: REJECTED";
       case "reassign-paper":
         return "Reassign Responsible (Reviewer)";
       default:
