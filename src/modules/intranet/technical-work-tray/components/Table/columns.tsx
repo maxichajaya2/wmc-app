@@ -242,7 +242,7 @@ const ReviewerScoreCell = React.memo(
     const slotKey =
       slot === 1 ? "m" : slot === 2 ? "s1" : slot === 3 ? "s2" : "s3";
     const key = `${phasePrefix}_${slotKey}_rate` as keyof Entity;
-    const value = item[key] as any;
+    const value = item[key] as number | undefined;
 
     return (
       <div className="flex flex-col gap-2">
@@ -252,18 +252,18 @@ const ReviewerScoreCell = React.memo(
   },
 );
 
-const TotalScoreCell = React.memo(({ item }: { item: Entity }) => {
-  const value =
-    item.process === ProcessPaper.PRESELECCIONADO
-      ? item.phase1_general_rate
-      : item.phase2_general_rate;
+// const TotalScoreCell = React.memo(({ item }: { item: Entity }) => {
+//   const value =
+//     item.process === ProcessPaper.PRESELECCIONADO
+//       ? item.phase1_general_rate
+//       : item.phase2_general_rate;
 
-  return (
-    <div className="flex flex-col gap-2 font-bold">
-      {value ? <div className="flex flex-col gap-1">{value}</div> : "--"}
-    </div>
-  );
-});
+//   return (
+//     <div className="flex flex-col gap-2 font-bold">
+//       {value ? <div className="flex flex-col gap-1">{value}</div> : "--"}
+//     </div>
+//   );
+// });
 
 const ButtonView = React.memo(({ item }: { item: Entity }) => {
   const { openActionModal } = usePaperStore((state) => ({
@@ -285,11 +285,13 @@ const ButtonEdit = React.memo(({ item }: { item: Entity }) => {
 
   // if (item.state !== StatePaper.REGISTERED) return null;
   if (
-    item.state !== StatePaper.REGISTERED &&
-    item.state !== StatePaper.RECEIVED &&
-    item.state == StatePaper.OBSERVED // <--- AGREGAR ESTO
-  )
+    item.state === StatePaper.REGISTERED ||
+    item.state === StatePaper.RECEIVED ||
+    item.state === StatePaper.OBSERVED
+  ) {
     return <DropdownMenuItem onClick={handleEdit}>Edit</DropdownMenuItem>;
+  }
+  return null;
 });
 
 const ButtonSend = React.memo(({ item }: { item: Entity }) => {

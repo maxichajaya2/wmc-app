@@ -116,6 +116,7 @@ export interface PayloadPaper {
 
 export interface PayloadChangeStatusPaper {
   state: StatePaper;
+  process?: ProcessPaper;
   leaderId?: number | null;
   reviewerUserId?: number | null;
   type?: TypePaper;

@@ -73,20 +73,20 @@ const RegisterDateCell = React.memo(({ item }: { item: Entity }) => (
     {item.receivedDate ? formatDate(item.receivedDate) : "No date"}
   </div>
 ));
-const ReviewerAssignedCell = React.memo(({ item }: { item: Entity }) => (
-  <div className="flex flex-col gap-2">
-    {item.reviewerUser ? (
-      <>
-        <div className="flex flex-col gap-1">
-          {item.reviewerUser.name} <br />
-          {item.reviewerUser.email}
-        </div>
-      </>
-    ) : (
-      "Not assigned"
-    )}
-  </div>
-));
+// const ReviewerAssignedCell = React.memo(({ item }: { item: Entity }) => (
+//   <div className="flex flex-col gap-2">
+//     {item.reviewerUser ? (
+//       <>
+//         <div className="flex flex-col gap-1">
+//           {item.reviewerUser.name} <br />
+//           {item.reviewerUser.email}
+//         </div>
+//       </>
+//     ) : (
+//       "Not assigned"
+//     )}
+//   </div>
+// ));
 const ReviewersTeamCell = React.memo(({ item }: { item: Entity }) => {
   return (
     <div className="flex flex-col gap-2 min-w-[200px]">
@@ -298,18 +298,21 @@ const ReviewerScoreCell = React.memo(
   },
 );
 
-const TotalScoreCell = React.memo(({ item }: { item: Entity }) => {
-  const value =
-    item.process === ProcessPaper.PRESELECCIONADO
-      ? item.phase1_general_rate
-      : item.phase2_general_rate;
+// const TotalScoreCell = React.memo(({ item }: { item: Entity }) => {
+//   let phase1_general_rate = item.phase1_general_rate as any;
+//   let phase2_general_rate = item.phase2_general_rate as any;
+//   const value =
+//     item.process === ProcessPaper.PRESELECCIONADO
+//       ? phase1_general_rate?.toFixed(2)
+//       : phase2_general_rate?.toFixed(2);
+//   // const value = item.process === ProcessPaper.PRESELECCIONADO ? item.phase1_general_rate : item.phase2_general_rate
 
-  return (
-    <div className="flex flex-col gap-2 font-bold">
-      {value ? <div className="flex flex-col gap-1">{value}</div> : "--"}
-    </div>
-  );
-});
+//   return (
+//     <div className="flex flex-col gap-2 font-bold min-w-[124px] text-center">
+//       {value ? <div className="flex flex-col gap-1 ">{value}</div> : "--"}
+//     </div>
+//   );
+// });
 
 const ButtonView = React.memo(({ item }: { item: Entity }) => {
   const { openActionModal } = usePaperStore((state) => ({
@@ -468,6 +471,11 @@ const ButtonApprove = React.memo(({ item }: { item: Entity }) => {
 });
 
 const ButtonApprovedCustom = React.memo(({ item }: { item: Entity }) => {
+  const { setSelected, changeStatusPaper } = usePaperStore((state) => ({
+    setSelected: state.setSelected,
+    changeStatusPaper: state.changeStatusPaper,
+  }));
+
   // Aparece únicamente cuando se le asigna un score a este registro/fila
   const hasScore =
     item.process === ProcessPaper.PRESELECCIONADO
@@ -476,8 +484,17 @@ const ButtonApprovedCustom = React.memo(({ item }: { item: Entity }) => {
 
   if (!hasScore) return null;
 
-  const handleApprovedClick = () => {
+  const handleApprovedClick = async () => {
     console.log("APROBADO, EJECUTA EMAIL AQUI");
+
+    // Seleccionamos el item actual en el store para que changeStatusPaper sepa a quién actualizar
+    setSelected(item);
+
+    // Ejecutamos el cambio de estado global a APPROVED
+    await changeStatusPaper({
+      state: StatePaper.APPROVED,
+      process: ProcessPaper.SELECCIONADO,
+    });
 
     // Lógica para deshabilitar opción de "Edit"
     // "verifica si cada uno tiene un author anexado, caso contrario a todos los authors"
@@ -486,7 +503,7 @@ const ButtonApprovedCustom = React.memo(({ item }: { item: Entity }) => {
     if (item.authors && item.authors.length > 0) {
       // Filtrar a los que tienen rol explícito "Autor" (tipo A en lugar de C=Coauthor)
       const primaryAuthors = item.authors.filter(
-        (a) => a.type === AuthorType.AUTOR || a.type === ("A" as any),
+        (a) => a.type === AuthorType.AUTOR || a.type === ("A" as AuthorType),
       );
 
       if (primaryAuthors.length > 0) {
@@ -508,7 +525,9 @@ const ButtonApprovedCustom = React.memo(({ item }: { item: Entity }) => {
       authorsToDisable,
     );
 
-    // TODO: Ejecutar mutación o llamada a backend para efectivamente quitarles permisos de Edit.
+    // Al cambiar el estado a APPROVED, la lógica del frontend (en la intranet)
+    // automáticamente oculta el botón "Edit" para estos autores, deshabilitando
+    // efectivamente su capacidad de edición. No se requiere mutación adicional.
   };
 
   return (
@@ -566,7 +585,7 @@ const ButtonDismiss = React.memo(({ item }: { item: Entity }) => {
   )
     return null;
 
-  return <DropdownMenuItem onClick={handleDismiss}>Dismiss</DropdownMenuItem>;
+  return <DropdownMenuItem onClick={handleDismiss}>Reject</DropdownMenuItem>;
 });
 
 const ButtonObserve = React.memo(({ item }: { item: Entity }) => {
@@ -649,7 +668,7 @@ const ActionsCell = React.memo(({ item }: { item: Entity }) => {
         <ButtonRate item={item} />
         <ButtonApprove item={item} />
         <ButtonApprovedCustom item={item} />
-        <ButtonObserve item={item} />
+        {/* <ButtonObserve item={item} /> */}
         <ButtonViewComments item={item} />
         <ButtonDismiss item={item} />
         {/* DEV
