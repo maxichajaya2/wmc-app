@@ -20,9 +20,13 @@ import {
   MapTypePaper,
   ProcessPaper,
   StatePaper,
+  AuthorType,
+  type Author,
+  type User,
+  type UserWeb,
 } from "@/models";
 import type { ColumnDef } from "@tanstack/react-table";
-import { MessageSquare } from "lucide-react";
+import { MessageSquare, CheckCircle } from "lucide-react";
 import { usePaperStore } from "../../store/papers.store";
 import { formatDate } from "../../../../../utils/format-date";
 import { useCheckPermission } from "@/utils";
@@ -462,6 +466,59 @@ const ButtonApprove = React.memo(({ item }: { item: Entity }) => {
     </DropdownMenuItem>
   );
 });
+
+const ButtonApprovedCustom = React.memo(({ item }: { item: Entity }) => {
+  // Aparece únicamente cuando se le asigna un score a este registro/fila
+  const hasScore =
+    item.process === ProcessPaper.PRESELECCIONADO
+      ? !!item.phase1_general_rate
+      : !!item.phase2_general_rate;
+
+  if (!hasScore) return null;
+
+  const handleApprovedClick = () => {
+    console.log("APROBADO, EJECUTA EMAIL AQUI");
+
+    // Lógica para deshabilitar opción de "Edit"
+    // "verifica si cada uno tiene un author anexado, caso contrario a todos los authors"
+    let authorsToDisable: (Author | User | UserWeb)[] = [];
+
+    if (item.authors && item.authors.length > 0) {
+      // Filtrar a los que tienen rol explícito "Autor" (tipo A en lugar de C=Coauthor)
+      const primaryAuthors = item.authors.filter(
+        (a) => a.type === AuthorType.AUTOR || a.type === ("A" as any),
+      );
+
+      if (primaryAuthors.length > 0) {
+        authorsToDisable = primaryAuthors;
+      } else {
+        // Caso contrario, a todos los authors anexados
+        authorsToDisable = item.authors;
+      }
+    } else if (item.author) {
+      // Si solo viene un author en base
+      authorsToDisable = [item.author];
+    } else if (item.webUser) {
+      // Fallback al usuario creador
+      authorsToDisable = [item.webUser];
+    }
+
+    console.log(
+      "Usuarios identificados para deshabilitar la opción 'Edit':",
+      authorsToDisable,
+    );
+
+    // TODO: Ejecutar mutación o llamada a backend para efectivamente quitarles permisos de Edit.
+  };
+
+  return (
+    <DropdownMenuItem onClick={handleApprovedClick}>
+      <CheckCircle className="mr-2 h-4 w-4 text-green-600" />
+      Approved
+    </DropdownMenuItem>
+  );
+});
+
 const ButtonViewComments = React.memo(({ item }: { item: Entity }) => {
   const { openCommentsDialog, setSelected } = usePaperStore((state) => ({
     openCommentsDialog: state.openCommentsDialog,
@@ -485,7 +542,7 @@ const ButtonViewComments = React.memo(({ item }: { item: Entity }) => {
   return (
     <DropdownMenuItem onClick={handleViewComments}>
       <MessageSquare className="mr-2 h-4 w-4" />
-      View comments x
+      View comments
     </DropdownMenuItem>
   );
 });
@@ -581,6 +638,7 @@ const ActionsCell = React.memo(({ item }: { item: Entity }) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuLabel>Actions</DropdownMenuLabel>
+        <DropdownMenuSeparator />
         <ButtonView item={item} />
         <ButtonEdit item={item} />
         <ButtonDelete item={item} />
@@ -590,6 +648,7 @@ const ActionsCell = React.memo(({ item }: { item: Entity }) => {
         <ButtonReview item={item} />
         <ButtonRate item={item} />
         <ButtonApprove item={item} />
+        <ButtonApprovedCustom item={item} />
         <ButtonObserve item={item} />
         <ButtonViewComments item={item} />
         <ButtonDismiss item={item} />
