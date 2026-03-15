@@ -208,7 +208,7 @@ const StatusCell = React.memo(({ item }: { item: Entity }) => {
     if (item.state === StatePaper.APPROVED) {
       if (item.process === ProcessPaper.PRESELECCIONADO) {
         // return "Preseleccionado";
-        return "PRESELECTED";
+        return "REVISION";
       }
       if (item.process === ProcessPaper.SELECCIONADO) {
         // return "Seleccionado";

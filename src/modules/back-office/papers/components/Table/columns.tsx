@@ -89,43 +89,43 @@ const RegisterDateCell = React.memo(({ item }: { item: Entity }) => (
 // ));
 const ReviewersTeamCell = React.memo(({ item }: { item: Entity }) => {
   return (
-    <div className="flex flex-col gap-2 min-w-[200px]">
-      {/* REVISOR PRINCIPAL */}
+   <div className="flex flex-col gap-2 min-w-[200px]">
+      {/* MAIN REVIEWER */}
       {item.reviewerUser ? (
         <Badge className="bg-amber-500 hover:bg-amber-600 text-white w-fit">
-          ⭐ Principal: {item.reviewerUser.name}
+          ⭐ Main: {item.reviewerUser.name}
         </Badge>
       ) : (
-        <span className="text-[11px] text-gray-400 italic">Sin principal</span>
+        <span className="text-[11px] text-gray-400 italic">No main reviewer</span>
       )}
 
-      {/* REVISOR DE APOYO 1 */}
+      {/* SUPPORT REVIEWER 1 */}
       {item.reviewerSupport1 && (
         <Badge
           variant="outline"
           className="border-slate-300 text-slate-700 w-fit"
         >
-          👥 Apoyo 1: {item.reviewerSupport1.name}
+          👥 Support 1: {item.reviewerSupport1.name}
         </Badge>
       )}
 
-      {/* REVISOR DE APOYO 2 */}
+      {/* SUPPORT REVIEWER 2 */}
       {item.reviewerSupport2 && (
         <Badge
           variant="outline"
           className="border-slate-300 text-slate-700 w-fit"
         >
-          👥 Apoyo 2: {item.reviewerSupport2.name}
+          👥 Support 2: {item.reviewerSupport2.name}
         </Badge>
       )}
 
-      {/* REVISOR DE APOYO 3 (Agregado por si lo necesitas) */}
+      {/* SUPPORT REVIEWER 3 */}
       {item.reviewerSupport3 && (
         <Badge
           variant="outline"
           className="border-slate-300 text-slate-700 w-fit"
         >
-          👥 Apoyo 3: {item.reviewerSupport3.name}
+          👥 Support 3: {item.reviewerSupport3.name}
         </Badge>
       )}
     </div>
@@ -254,7 +254,7 @@ const StatusCell = React.memo(({ item }: { item: Entity }) => {
     if (item.state === StatePaper.APPROVED) {
       if (item.process === ProcessPaper.PRESELECCIONADO) {
         // return "Preseleccionado"
-        return "PRESELECTED";
+        return "REVISION";
       }
       if (item.process === ProcessPaper.SELECCIONADO) {
         // return "Seleccionado"
@@ -465,7 +465,7 @@ const ButtonApprove = React.memo(({ item }: { item: Entity }) => {
 
   return (
     <DropdownMenuItem onClick={handleApprove}>
-      {item.process === ProcessPaper.PRESELECCIONADO ? "Preselect" : "Approve"}
+      {item.process === ProcessPaper.PRESELECCIONADO ? "Revision" : "Approve"}
     </DropdownMenuItem>
   );
 });
@@ -588,34 +588,34 @@ const ButtonDismiss = React.memo(({ item }: { item: Entity }) => {
   return <DropdownMenuItem onClick={handleDismiss}>Reject</DropdownMenuItem>;
 });
 
-const ButtonObserve = React.memo(({ item }: { item: Entity }) => {
-  const canObserve = useCheckPermission(
-    ModulesRoles.TECHINICAL_WORKS,
-    ActionRoles.IN_REVIEW,
-  );
-  const { openActionModal } = usePaperStore((state) => ({
-    openActionModal: state.openActionModal,
-  }));
+// const ButtonObserve = React.memo(({ item }: { item: Entity }) => {
+//   const canObserve = useCheckPermission(
+//     ModulesRoles.TECHINICAL_WORKS,
+//     ActionRoles.IN_REVIEW,
+//   );
+//   const { openActionModal } = usePaperStore((state) => ({
+//     openActionModal: state.openActionModal,
+//   }));
 
-  const handleObserve = useCallback(() => {
-    openActionModal(item.id, "observe-paper");
-  }, [item.id, openActionModal]);
+//   const handleObserve = useCallback(() => {
+//     openActionModal(item.id, "observe-paper");
+//   }, [item.id, openActionModal]);
 
-  // CONDICIÓN CORREGIDA:
-  // Queremos que aparezca si el usuario tiene permiso Y el trabajo NO está finalizado (ni aprobado ni desestimado)
-  if (
-    !canObserve ||
-    item.state === StatePaper.APPROVED ||
-    item.state === StatePaper.DISMISSED ||
-    item.state === StatePaper.OBSERVED || // <-- AGREGADO: Si ya está observado, no mostramos "Observe" (porque ya lo está)
-    item.state === StatePaper.RECEIVED ||
-    item.state === StatePaper.SENT
-  ) {
-    return null;
-  }
+//   // CONDICIÓN CORREGIDA:
+//   // Queremos que aparezca si el usuario tiene permiso Y el trabajo NO está finalizado (ni aprobado ni desestimado)
+//   if (
+//     !canObserve ||
+//     item.state === StatePaper.APPROVED ||
+//     item.state === StatePaper.DISMISSED ||
+//     item.state === StatePaper.OBSERVED || // <-- AGREGADO: Si ya está observado, no mostramos "Observe" (porque ya lo está)
+//     item.state === StatePaper.RECEIVED ||
+//     item.state === StatePaper.SENT
+//   ) {
+//     return null;
+//   }
 
-  return <DropdownMenuItem onClick={handleObserve}>Observe</DropdownMenuItem>;
-});
+//   return <DropdownMenuItem onClick={handleObserve}>Observe</DropdownMenuItem>;
+// });
 
 const ButtonReassign = React.memo(({ item }: { item: Entity }) => {
   const canReassign = useCheckPermission(

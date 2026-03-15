@@ -116,7 +116,7 @@ function PapersDialog() {
       case "approve-paper":
         return `Change status to: ${
           selected?.process === ProcessPaper.PRESELECCIONADO
-            ? "PRESELECTED"
+            ? "REVISION"
             : "SELECTED"
         }`;
       case "observe-paper":
@@ -363,7 +363,8 @@ function PapersDialog() {
 
   const categoryReviewers = useMemo(() => {
     return categoryUsers.filter(
-      (user) => user.role.id === PrimaryRoles.REVIEWER,
+      (user) => user.role.id === PrimaryRoles.REVIEWER ||
+        user.role.id === PrimaryRoles.LEADER, // <--- Agregamos esta condición,
     );
   }, [categoryUsers]);
 
